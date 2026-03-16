@@ -15,7 +15,7 @@
 -- Copyright (C) 2015-present, Xmake Open Source Community.
 --
 -- @author      JassJam
--- @file        csharp_common.lua
+-- @file        csharp_utils.lua
 --
 
 -- imports

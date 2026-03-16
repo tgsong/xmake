@@ -23,7 +23,7 @@ import("core.base.option")
 import("core.tool.compiler")
 import("core.project.depend")
 import("utils.progress")
-import("rules.modules.csharp_common", {rootdir = os.scriptdir(), alias = "csharp_common"})
+import("rules.csharp.modules.csharp_utils", {rootdir = os.programdir(), alias = "csharp_utils"})
 
 -- find or generate .csproj file
 function _get_csprojfile(target)
@@ -31,7 +31,7 @@ function _get_csprojfile(target)
     if csprojfile then
         return csprojfile
     end
-    csprojfile = csharp_common.find_or_generate_csproj(target)
+    csprojfile = csharp_utils.find_or_generate_csproj(target)
     if csprojfile then
         target:data_set("csharp.csproj", csprojfile)
     end
