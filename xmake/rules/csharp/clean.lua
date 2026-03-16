@@ -18,8 +18,9 @@
 -- @file        clean.lua
 --
 
+-- imports
 import("target.action.clean", {alias = "_do_clean_target"})
-import("modules.csharp_common", {rootdir = os.scriptdir(), alias = "csharp_common"})
+import("rules.modules.csharp_common", {rootdir = os.scriptdir(), alias = "csharp_common"})
 
 function main(target, opt)
     _do_clean_target(target)

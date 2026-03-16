@@ -18,10 +18,11 @@
 -- @file        install.lua
 --
 
+-- imports
 import("core.base.option")
 import("core.project.config")
 import("core.tool.compiler")
-import("modules.csharp_common", {rootdir = os.scriptdir(), alias = "csharp_common"})
+import("rules.modules.csharp_common", {rootdir = os.scriptdir(), alias = "csharp_common"})
 
 function main(target, opt)
     local csprojfile = assert(csharp_common.find_or_generate_csproj(target), "target(%s): missing csharp .csproj file!", target:name())
@@ -62,5 +63,4 @@ function main(target, opt)
         os.mkdir(install_abs)
         os.cp(path.join(tmpdir, "**"), install_abs, {rootdir = tmpdir})
     end
-
 end

@@ -18,8 +18,9 @@
 -- @file        csproj_generator.lua
 --
 
-import("properties", {rootdir = os.scriptdir(), alias = "csharp_properties"})
-import("itemgroups", {rootdir = os.scriptdir(), alias = "csharp_itemgroups"})
+-- imports
+import("properties", {alias = "csharp_properties"})
+import("itemgroups", {alias = "csharp_itemgroups"})
 
 function _xml_escape(value)
     value = tostring(value or "")

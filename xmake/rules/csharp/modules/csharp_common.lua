@@ -18,9 +18,10 @@
 -- @file        csharp_common.lua
 --
 
+-- imports
 import("core.base.option")
 import("core.project.config")
-import("csproj_generator", {rootdir = os.scriptdir(), alias = "generate_csproj"})
+import("csproj_generator")
 
 function _is_csharp_target(target)
     if target:rule("csharp") then
