@@ -20,17 +20,6 @@
 
 rule("csharp.build")
     set_sourcekinds("cs")
-    on_load(function (target)
-        -- set target extension and prefix
-        if target:is_shared() then
-            if not target:get("extension") then
-                target:set("extension", ".dll")
-            end
-            if target:get("prefixname") == nil then
-                target:set("prefixname", "")
-            end
-        end
-    end)
     on_build("build.target")
 
 rule("csharp")
