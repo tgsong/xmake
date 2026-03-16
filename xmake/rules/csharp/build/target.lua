@@ -23,7 +23,7 @@ import("core.base.option")
 import("core.tool.compiler")
 import("core.project.depend")
 import("utils.progress")
-import("rules.csharp.modules.csharp_utils", {rootdir = os.programdir(), alias = "csharp_utils"})
+import(".modules.csharp_utils")
 
 -- find or generate .csproj file
 function _get_csprojfile(target)
