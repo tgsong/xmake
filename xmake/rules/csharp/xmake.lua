@@ -20,7 +20,7 @@
 
 rule("csharp.build")
     set_sourcekinds("cs")
-    on_prepare("prepare")
+    on_config("config")
     on_build("build")
 
 rule("csharp")
