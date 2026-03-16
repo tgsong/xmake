@@ -76,12 +76,6 @@ function _get_csprojfile(sourcefiles, opt)
             return csprojfile
         end
     end
-    -- find .csproj from source files
-    for _, sourcefile in ipairs(sourcefiles) do
-        if sourcefile:endswith(".csproj") then
-            return sourcefile
-        end
-    end
 end
 
 -- get dotnet verbosity level
