@@ -23,17 +23,6 @@ import("core.base.option")
 import("core.tool.compiler")
 import("core.project.depend")
 import("utils.progress")
-import(".modules.csharp_utils")
-
--- generate .csproj file
-function _get_csprojfile(target)
-    local csprojfile = target:data("csharp.csproj")
-    if not csprojfile then
-        csprojfile = csharp_utils.generate_csproj_file(target)
-        target:data_set("csharp.csproj", csprojfile)
-    end
-    return csprojfile
-end
 
 -- build the source files
 function build_sourcefiles(target, sourcebatch, opt)
@@ -44,7 +33,7 @@ function build_sourcefiles(target, sourcebatch, opt)
     -- get source files and kind
     local sourcefiles = sourcebatch.sourcefiles
     local sourcekind  = sourcebatch.sourcekind
-    local csprojfile  = _get_csprojfile(target)
+    local csprojfile  = target:data("csharp.csproj")
 
     -- get depend file
     local dependfile = target:dependfile(targetfile)

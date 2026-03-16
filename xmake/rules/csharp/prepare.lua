@@ -14,41 +14,37 @@
 --
 -- Copyright (C) 2015-present, Xmake Open Source Community.
 --
--- @author      JassJam
--- @file        csharp_utils.lua
+-- @author      ruki
+-- @file        prepare.lua
 --
 
 -- imports
 import("core.project.config")
-import("csproj_generator", {alias = "generate_csproj"})
+import("core.project.depend")
+import("modules.csproj_generator", {rootdir = os.scriptdir()})
 
-function _is_csharp_target(target)
-    if target:rule("csharp") then
-        return true
-    end
-    for _, sourcefile in ipairs(target:sourcefiles()) do
-        local ext = path.extension(sourcefile):lower()
-        if ext == ".cs" or ext == ".csproj" then
-            return true
-        end
-    end
-    return false
-end
+function main(target)
 
-function _generated_csproj_path(target)
+    -- compute csproj path
     local targetkey = target:fullname():replace("::", path.sep())
     local csprojdir = path.join(config.directory(), "rules", "csharp", targetkey, target:plat(), target:arch())
-    local csprojname = target:name() .. ".csproj"
-    return path.join(csprojdir, csprojname)
-end
+    local csprojfile = path.join(csprojdir, target:name() .. ".csproj")
+    local dependfile = target:dependfile(csprojfile)
 
-function generate_csproj_file(target)
-    if not _is_csharp_target(target) then
-        return nil
+    -- collect source files and dep csproj paths as depend values
+    local sourcefiles = target:sourcefiles()
+    local depcsproj = {}
+    for _, dep in ipairs(target:orderdeps()) do
+        local depcsproj_path = dep:data("csharp.csproj")
+        if depcsproj_path then
+            table.insert(depcsproj, depcsproj_path)
+        end
     end
-    local csprojfile = _generated_csproj_path(target)
-    generate_csproj(target, csprojfile)
-    target:data_set("csharp.csproj", csprojfile)
-    return csprojfile
-end
 
+    -- generate csproj incrementally
+    depend.on_changed(function ()
+        csproj_generator(target, csprojfile)
+    end, {dependfile = dependfile, files = sourcefiles, values = depcsproj})
+
+    target:data_set("csharp.csproj", csprojfile)
+end
