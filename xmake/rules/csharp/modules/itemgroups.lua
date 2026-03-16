@@ -41,11 +41,9 @@ end
 function _collect_project_references(context)
     local references = {}
     for _, dep in ipairs(context.target:orderdeps()) do
-        if context.opt.is_csharp_target and context.opt.is_csharp_target(dep) then
-            local depcsproj = context.opt.generate_csproj_file and context.opt.generate_csproj_file(dep)
-            if depcsproj then
-                table.insert(references, _normalize_relative(context.csprojdir, depcsproj))
-            end
+        local depcsproj = dep:data("csharp.csproj")
+        if depcsproj then
+            table.insert(references, _normalize_relative(context.csprojdir, depcsproj))
         end
     end
     table.sort(references)

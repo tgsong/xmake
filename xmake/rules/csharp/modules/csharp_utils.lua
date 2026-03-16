@@ -59,15 +59,12 @@ function _map_rid_arch(arch)
     return nil
 end
 
-function generate_csproj_file(target, opt)
+function generate_csproj_file(target)
     if not _is_csharp_target(target) then
         return nil
     end
     local csprojfile = _generated_csproj_path(target)
-    generate_csproj(target, csprojfile, table.join(opt or {}, {
-        is_csharp_target = _is_csharp_target,
-        generate_csproj_file = generate_csproj_file
-    }))
+    generate_csproj(target, csprojfile)
     target:data_set("csharp.csproj", csprojfile)
     return csprojfile
 end
