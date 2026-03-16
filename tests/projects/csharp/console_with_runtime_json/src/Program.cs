@@ -1,8 +1,7 @@
 using System.Text.Json;
 
 var runtimeFile = Path.Combine(AppContext.BaseDirectory, "runtime.json");
-if (!File.Exists(runtimeFile))
-{
+if (!File.Exists(runtimeFile)) {
     Console.WriteLine("runtime.json missing");
     return;
 }
@@ -14,4 +13,3 @@ var runtime = doc.RootElement.TryGetProperty("runtime", out var value)
     : "unknown";
 
 Console.WriteLine($"runtime={runtime}");
-
