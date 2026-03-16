@@ -68,7 +68,7 @@ function nf_warning(self, level)
 end
 
 -- get the .csproj file from source files
-function _get_csprojfile(sourcefiles, opt)
+function _get_csprojfile(opt)
     local target = opt and opt.target
     if target then
         local csprojfile = target:data("csharp.csproj")
@@ -100,7 +100,7 @@ function buildargv(self, sourcefiles, targetkind, targetfile, flags, opt)
     local argv = {"build"}
 
     -- add .csproj file
-    local csprojfile = _get_csprojfile(sourcefiles, opt)
+    local csprojfile = _get_csprojfile(opt)
     if csprojfile then
         table.insert(argv, csprojfile)
     end
