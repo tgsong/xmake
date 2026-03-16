@@ -21,7 +21,7 @@
 -- imports
 import("core.base.option")
 import("core.project.config")
-import("csproj_generator")
+import("csproj_generator", {alias = "generate_csproj"})
 
 function _is_csharp_target(target)
     if target:rule("csharp") then
