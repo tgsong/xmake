@@ -68,6 +68,7 @@ function generate_csproj_file(target, opt)
         is_csharp_target = _is_csharp_target,
         generate_csproj_file = generate_csproj_file
     }))
+    target:data_set("csharp.csproj", csprojfile)
     return csprojfile
 end
 
