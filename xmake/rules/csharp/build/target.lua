@@ -25,11 +25,11 @@ import("core.project.depend")
 import("utils.progress")
 import(".modules.csharp_utils")
 
--- find or generate .csproj file
+-- generate .csproj file
 function _get_csprojfile(target)
     local csprojfile = target:data("csharp.csproj")
     if not csprojfile then
-        csprojfile = csharp_utils.find_or_generate_csproj(target)
+        csprojfile = csharp_utils.generate_csproj_file(target)
         target:data_set("csharp.csproj", csprojfile)
     end
     return csprojfile

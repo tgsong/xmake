@@ -59,69 +59,15 @@ function _map_rid_arch(arch)
     return nil
 end
 
-function find_csproj(target)
-    local csproj = target:data("csharp.csproj")
-    if csproj then
-        return csproj
-    end
-    for _, sourcefile in ipairs(target:sourcefiles()) do
-        if path.extension(sourcefile):lower() == ".csproj" then
-            local csprojabs = path.is_absolute(sourcefile) and sourcefile or path.absolute(sourcefile, os.projectdir())
-            if os.isfile(csprojabs) then
-                return csprojabs
-            end
-        end
-    end
-    return nil
-end
-
-function find_or_generate_csproj(target, opt)
-    opt = opt or {}
-    local csproj = find_csproj(target)
-    local generated = target:data("csharp.csproj.generated")
-    local generated_with_deps = target:data("csharp.csproj.generated.with_deps")
-
-    -- prefer existing source .csproj directly
-    if csproj and not generated then
-        return csproj
-    end
-
-    -- generated .csproj in memory cache
-    if csproj and generated then
-        if opt.skip_deps or generated_with_deps then
-            return csproj
-        end
-    end
-
+function generate_csproj_file(target, opt)
     if not _is_csharp_target(target) then
         return nil
     end
-
-    local csprojfile = csproj or _generated_csproj_path(target)
-    local generated_now = false
-
-    -- in load phase (skip_deps), reuse existing generated file to avoid
-    -- touching mtime and causing unnecessary rebuilds.
-    if not (opt.skip_deps and os.isfile(csprojfile)) then
-        generate_csproj(target, csprojfile, table.join(opt, {
-            is_csharp_target = _is_csharp_target,
-            find_or_generate_csproj = find_or_generate_csproj
-        }))
-        generated_now = true
-    end
-
-    target:data_set("csharp.csproj", csprojfile)
-    target:data_set("csharp.csproj.generated", true)
-    if opt.skip_deps then
-        -- keep this conservative in load phase: build/install phase will
-        -- generate a deps-enabled project if needed, and content checks avoid
-        -- unnecessary rewrites.
-        if generated_now or generated_with_deps == nil then
-            target:data_set("csharp.csproj.generated.with_deps", false)
-        end
-    else
-        target:data_set("csharp.csproj.generated.with_deps", true)
-    end
+    local csprojfile = _generated_csproj_path(target)
+    generate_csproj(target, csprojfile, table.join(opt or {}, {
+        is_csharp_target = _is_csharp_target,
+        generate_csproj_file = generate_csproj_file
+    }))
     return csprojfile
 end
 
