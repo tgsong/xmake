@@ -39,13 +39,9 @@ function _collect_cs_sourcefiles(context)
 end
 
 function _collect_project_references(context)
-    if context.opt.skip_deps then
-        return {}
-    end
     local references = {}
-    for _, depname in ipairs(table.wrap(context.target:get("deps"))) do
-        local dep = context.target:dep(depname)
-        if dep and context.opt.is_csharp_target and context.opt.is_csharp_target(dep) then
+    for _, dep in ipairs(context.target:orderdeps()) do
+        if context.opt.is_csharp_target and context.opt.is_csharp_target(dep) then
             local depcsproj = context.opt.generate_csproj_file and context.opt.generate_csproj_file(dep)
             if depcsproj then
                 table.insert(references, _normalize_relative(context.csprojdir, depcsproj))
