@@ -29,7 +29,7 @@ platform("macosx")
     set_formats("symbol", "$(name).dSYM")
 
     set_installdir("/usr/local")
-    set_toolchains("envs", "xcode", "clang", "gcc", "yasm", "nasm", "cuda", "rust", "go", "gfortran", "zig", "fpc", "nim")
+    set_toolchains("envs", "xcode", "clang", "gcc", "yasm", "nasm", "cuda", "rust", "go", "gfortran", "zig", "fpc", "nim", "dotnet")
 
     set_menu {
                 config =

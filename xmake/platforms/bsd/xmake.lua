@@ -30,7 +30,7 @@ platform("bsd")
 
     set_installdir("/usr/local")
 
-    set_toolchains("envs", "gcc", "clang", "yasm", "nasm", "fasm", "cuda", "go", "rust", "gfortran", "zig")
+    set_toolchains("envs", "gcc", "clang", "yasm", "nasm", "fasm", "cuda", "go", "rust", "gfortran", "zig", "dotnet")
 
     set_menu {
                 config =

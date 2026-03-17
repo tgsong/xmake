@@ -36,7 +36,7 @@ platform("linux")
     --
     -- TODO Perhaps we should handle it better, or remove the cross toolchain.
     set_toolchains("envs", "gcc", "clang",
-        "cross", "yasm", "nasm", "fasm", "cuda", "go", "rust", "swift", "gfortran", "zig", "fpc", "nim")
+        "cross", "yasm", "nasm", "fasm", "cuda", "go", "rust", "swift", "gfortran", "zig", "fpc", "nim", "dotnet")
 
     set_menu {
                 config =
