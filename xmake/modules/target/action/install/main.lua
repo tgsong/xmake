@@ -49,8 +49,6 @@ function _get_target_includedir(target, opt)
     return path.join(opt.installdir, opt.includedir)
 end
 
-
-
 -- copy file with symlinks
 function _copy_file_with_symlinks(srcfile, outputdir)
     if os.islink(srcfile) then

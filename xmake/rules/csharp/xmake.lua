@@ -116,6 +116,8 @@ rule("csharp.build")
     set_sourcekinds("cs")
     on_config("config")
     on_build("build")
+    on_install("install")
+    on_installcmd("installcmd")
 
 rule("csharp")
     add_deps("csharp.build")
