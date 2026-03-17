@@ -19,16 +19,13 @@
 --
 
 -- imports
-import("core.project.config")
 import("core.project.depend")
-import("modules.csproj_generator", {rootdir = os.scriptdir()})
+import("modules.csproj_generator", {rootdir = os.scriptdir(), alias = "generate_csproj"})
 
 function main(target)
 
     -- compute csproj path
-    local targetkey = target:fullname():replace("::", path.sep())
-    local csprojdir = path.join(config.directory(), "rules", "csharp", targetkey, target:plat(), target:arch())
-    local csprojfile = path.join(csprojdir, target:name() .. ".csproj")
+    local csprojfile = path.join(target:autogendir(), "rules", "csharp", target:name() .. ".csproj")
     local dependfile = target:dependfile(csprojfile)
 
     -- collect source files and dep csproj paths as depend values
@@ -43,7 +40,7 @@ function main(target)
 
     -- generate csproj incrementally
     depend.on_changed(function ()
-        csproj_generator(target, csprojfile)
+        generate_csproj(target, csprojfile)
     end, {dependfile = dependfile, files = sourcefiles, values = depcsproj})
 
     target:data_set("csharp.csproj", csprojfile)

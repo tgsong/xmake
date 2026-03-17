@@ -37,7 +37,7 @@ function _format_attributes(attrs)
         return ""
     end
     local keys = {}
-    for key, value in pairs(attrs) do
+    for key, value in table.orderpairs(attrs) do
         if value ~= nil and value ~= "" then
             table.insert(keys, key)
         end
@@ -132,7 +132,7 @@ function _normalize_item_entry(item, default_xml)
     local attrs = item.attrs
     if type(attrs) ~= "table" then
         attrs = {}
-        for key, value in pairs(item) do
+        for key, value in table.orderpairs(item) do
             if type(key) == "string" and key ~= "xml" and key ~= "value" and key ~= "attrs" then
                 attrs[key] = value
             end
@@ -214,15 +214,8 @@ function _add_custom_properties_from_item(entries, item)
         _add_custom_property(entries, tostring(item.name), item.value)
         return
     end
-    local keys = {}
-    for k in pairs(item) do
-        if type(k) == "string" then
-            table.insert(keys, k)
-        end
-    end
-    table.sort(keys)
-    for _, key in ipairs(keys) do
-        _add_custom_property(entries, key, item[key])
+    for k, v in table.orderpairs(item) do
+        _add_custom_property(entries, k, v)
     end
 end
 
@@ -234,37 +227,37 @@ function _collect_custom_property_entries(target)
     return entries
 end
 
-function _render_property_group(lines, entries)
+function _render_property_group(file, entries)
     if #entries == 0 then
         return
     end
-    table.insert(lines, "  <PropertyGroup>")
+    file:print("  <PropertyGroup>")
     for _, entry in ipairs(entries) do
-        table.insert(lines, string.format("    <%s>%s</%s>", entry.xml, _xml_escape(entry.value), entry.xml))
+        file:print("    <%s>%s</%s>", entry.xml, _xml_escape(entry.value), entry.xml)
     end
-    table.insert(lines, "  </PropertyGroup>")
+    file:print("  </PropertyGroup>")
 end
 
-function _render_item_groups(lines, item_groups)
+function _render_item_groups(file, item_groups)
     for _, group in ipairs(item_groups) do
         if #group.items > 0 then
-            table.insert(lines, "  <ItemGroup>")
+            file:print("  <ItemGroup>")
             for _, item in ipairs(group.items) do
                 local attrs = _format_attributes(item.attrs)
                 if item.value ~= nil and item.value ~= "" then
-                    table.insert(lines, string.format("    <%s%s>%s</%s>", item.xml, attrs, _xml_escape(item.value), item.xml))
+                    file:print("    <%s%s>%s</%s>", item.xml, attrs, _xml_escape(item.value), item.xml)
                 else
-                    table.insert(lines, string.format("    <%s%s />", item.xml, attrs))
+                    file:print("    <%s%s />", item.xml, attrs)
                 end
             end
-            table.insert(lines, "  </ItemGroup>")
+            file:print("  </ItemGroup>")
         end
     end
 end
 
 function main(target, csprojfile, opt)
     opt = opt or {}
-    
+
     local csprojdir = path.directory(csprojfile)
     local context = {
         target = target,
@@ -282,21 +275,16 @@ function main(target, csprojfile, opt)
     table.join2(property_entries, custom_property_entries)
 
     local item_groups = _collect_item_groups(context, item_registry_entries)
-    local lines = {}
 
-    table.insert(lines, string.format("<Project%s>", _format_attributes(project_attributes)))
-    _render_property_group(lines, property_entries)
-    _render_item_groups(lines, item_groups)
-    table.insert(lines, "</Project>")
-
-    local content = table.concat(lines, "\n") .. "\n"
+    local tmpfile = os.tmpfile() .. ".csproj"
+    local file = io.open(tmpfile, "w")
+    file:print("<Project%s>", _format_attributes(project_attributes))
+    _render_property_group(file, property_entries)
+    _render_item_groups(file, item_groups)
+    file:print("</Project>")
+    file:close()
 
     os.mkdir(csprojdir)
-    local oldcontent = nil
-    if os.isfile(csprojfile) then
-        oldcontent = io.readfile(csprojfile)
-    end
-    if oldcontent ~= content then
-        io.writefile(csprojfile, content)
-    end
+    os.cp(tmpfile, csprojfile, {copy_if_different = true})
+    os.rm(tmpfile)
 end

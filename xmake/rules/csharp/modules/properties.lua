@@ -22,8 +22,6 @@ function _has_target_frameworks(context)
     return #table.wrap(context.target:values("csharp.target_frameworks")) > 0
 end
 
-local _default_target_framework_cached = {}
-
 function _first(value)
     if type(value) == "table" then
         return value[1]
@@ -39,7 +37,8 @@ end
 function _get_default_target_framework(context)
     local dotnet = _first(context.target:get("toolset.cs")) or "dotnet"
     dotnet = tostring(dotnet)
-    local cached = _default_target_framework_cached[dotnet]
+    _g.default_target_frameworks = _g.default_target_frameworks or {}
+    local cached = _g.default_target_frameworks[dotnet]
     if cached ~= nil then
         return cached
     end
@@ -66,7 +65,7 @@ function _get_default_target_framework(context)
     end
 
     local target_framework = major and ("net" .. tostring(major) .. ".0") or "net8.0"
-    _default_target_framework_cached[dotnet] = target_framework
+    _g.default_target_frameworks[dotnet] = target_framework
     return target_framework
 end
 

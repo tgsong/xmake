@@ -100,7 +100,7 @@ function _collect_nuget_references(context)
     end
 
     local references = {}
-    for pkgname, version in pairs(versions) do
+    for pkgname, version in table.orderpairs(versions) do
         table.insert(references, {name = pkgname, version = version or nil})
     end
     table.sort(references, function (a, b) return a.name < b.name end)
