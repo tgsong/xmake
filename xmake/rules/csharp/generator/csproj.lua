@@ -15,7 +15,7 @@
 -- Copyright (C) 2015-present, Xmake Open Source Community.
 --
 -- @author      JassJam
--- @file        csproj_generator.lua
+-- @file        csproj.lua
 --
 
 -- imports

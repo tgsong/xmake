@@ -15,7 +15,7 @@
 -- Copyright (C) 2015-present, Xmake Open Source Community.
 --
 -- @author      JassJam
--- @file        csproj_itemsgroups.lua
+-- @file        itemgroups.lua
 --
 
 -- normalize path to relative and use forward slashes
