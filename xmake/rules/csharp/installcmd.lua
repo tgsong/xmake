@@ -48,8 +48,9 @@ function main(target, batchcmds, opt)
     end
 
     -- get output directory based on target kind
+    -- on windows, shared libraries (dll) should also go to bindir
     local outputdir
-    if target:is_binary() then
+    if target:is_binary() or (target:is_shared() and target:is_plat("windows", "mingw")) then
         outputdir = package:installdir("bin")
     else
         outputdir = package:installdir("lib")
@@ -62,7 +63,7 @@ function main(target, batchcmds, opt)
     if csprojfile then
         table.insert(argv, csprojfile)
     end
-    table.join2(argv, {"--nologo", "--no-build",
+    table.join2(argv, {"--nologo",
         "--configuration", _get_configuration(),
         "--output", publishdir})
     local dotnet = _get_dotnet(target)
