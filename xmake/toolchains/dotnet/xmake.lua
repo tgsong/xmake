@@ -50,6 +50,9 @@ toolchain("dotnet")
         end
         toolchain:config_set("bindir", sdkinfo.bindir)
         toolchain:config_set("sdkdir", sdkinfo.sdkdir)
+        if sdkinfo.sdkver then
+            toolchain:config_set("sdkver", sdkinfo.sdkver)
+        end
         return true
     end)
 

@@ -36,40 +36,17 @@ function _get_target_value(target, name)
     return _first(target:values(name))
 end
 
--- detect default target framework from dotnet sdk version, e.g. "net8.0"
+-- get default target framework from dotnet toolchain sdk version, e.g. "net8.0"
 function _get_default_target_framework(context)
-    local dotnet = _first(context.target:get("toolset.cs")) or "dotnet"
-    dotnet = tostring(dotnet)
-    _g.default_target_frameworks = _g.default_target_frameworks or {}
-    local cached = _g.default_target_frameworks[dotnet]
-    if cached ~= nil then
-        return cached
-    end
-
-    local major = nil
-    local sdks = try { function ()
-        return os.iorunv(dotnet, {"--list-sdks"})
-    end }
-    if sdks then
-        for line in sdks:gmatch("[^\r\n]+") do
-            local line_major = tonumber(line:match("^%s*(%d+)%.%d+%.%d+"))
-            if line_major and (not major or line_major > major) then
-                major = line_major
-            end
+    local major
+    local toolchain = context.target:toolchain("dotnet")
+    if toolchain then
+        local sdkver = toolchain:config("sdkver")
+        if sdkver then
+            major = tonumber(tostring(sdkver):match("^(%d+)"))
         end
     end
-    if not major then
-        local version = try { function ()
-            return os.iorunv(dotnet, {"--version"})
-        end }
-        if version then
-            major = tonumber(version:match("^%s*(%d+)"))
-        end
-    end
-
-    local target_framework = major and ("net" .. tostring(major) .. ".0") or "net8.0"
-    _g.default_target_frameworks[dotnet] = target_framework
-    return target_framework
+    return "net" .. tostring(major or 8) .. ".0"
 end
 
 -- resolve target framework from user config or auto-detect from dotnet sdk
