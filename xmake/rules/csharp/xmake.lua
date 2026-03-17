@@ -114,6 +114,13 @@
 --
 rule("csharp.build")
     set_sourcekinds("cs")
+    on_load(function (target)
+        -- dotnet always outputs .dll for libraries, and no prefix
+        if target:is_shared() or target:is_static() then
+            target:set("prefixname", "")
+            target:set("extension", ".dll")
+        end
+    end)
     on_config("config")
     on_build("build")
     on_install("install")
