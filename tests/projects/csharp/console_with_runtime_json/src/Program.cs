@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-var runtimeFile = Path.Combine(AppContext.BaseDirectory, "runtime.json");
+var runtimeFile = Path.Combine(Directory.GetCurrentDirectory(), "runtime.json");
 if (!File.Exists(runtimeFile)) {
     Console.WriteLine("runtime.json missing");
     return;
