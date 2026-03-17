@@ -15,16 +15,13 @@
 -- Copyright (C) 2015-present, Xmake Open Source Community.
 --
 -- @author      JassJam
--- @file        itemsgroups.lua
+-- @file        csproj_itemsgroups.lua
 --
 
 -- normalize path to relative and use forward slashes
 function _normalize_relative(fromdir, targetpath)
     local relpath = path.relative(targetpath, fromdir) or targetpath
-    if os.host() == "windows" then
-        relpath = relpath:gsub("\\", "/")
-    end
-    return relpath
+    return path.unix(relpath)
 end
 
 -- collect .cs source files as relative paths to csprojdir

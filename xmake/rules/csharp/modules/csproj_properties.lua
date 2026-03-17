@@ -15,7 +15,7 @@
 -- Copyright (C) 2015-present, Xmake Open Source Community.
 --
 -- @author      JassJam
--- @file        properties.lua
+-- @file        csproj_properties.lua
 --
 
 -- check if target has multi-target frameworks set
