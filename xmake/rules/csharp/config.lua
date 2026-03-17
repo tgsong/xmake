@@ -20,7 +20,7 @@
 
 -- imports
 import("core.project.depend")
-import("modules.csproj_generator", {rootdir = os.scriptdir(), alias = "generate_csproj"})
+import("generator.csproj", {rootdir = os.scriptdir(), alias = "generate_csproj"})
 
 function main(target)
 

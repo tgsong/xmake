@@ -19,8 +19,8 @@
 --
 
 -- imports
-import("csproj_properties")
-import("csproj_itemgroups")
+import("properties")
+import("itemgroups")
 
 -- escape special xml characters
 function _xml_escape(value)
@@ -232,8 +232,8 @@ function main(target, csprojfile, opt)
     }
 
     -- collect project properties
-    local property_registry_entries = csproj_properties()
-    local item_registry_entries = csproj_itemgroups()
+    local property_registry_entries = properties()
+    local item_registry_entries = itemgroups()
 
     local project_attributes = _collect_project_attributes(target, context, property_registry_entries)
     local property_entries = _collect_property_entries(target, context, property_registry_entries)
