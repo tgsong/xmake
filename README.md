@@ -230,6 +230,7 @@ muslcc        The musl-based cross-compilation toolchain
 fpc           Free Pascal Programming Language Compiler
 wasi          WASI-enabled WebAssembly C/C++ toolchain
 nim           Nim Programming Language Compiler
+dotnet        .NET SDK Toolchain
 circle        A new C++20 compiler
 armcc         ARM Compiler Version 5 of Keil MDK
 armclang      ARM Compiler Version 6 of Keil MDK
@@ -269,6 +270,7 @@ kotlin-native Kotlin Native Programming Language Compiler
 * MASM32
 * Cppfront
 * Kotlin
+* C#
 
 ## Features
 
