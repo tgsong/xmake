@@ -22,6 +22,7 @@
 import("properties", {alias = "csharp_properties"})
 import("itemgroups", {alias = "csharp_itemgroups"})
 
+-- escape special xml characters
 function _xml_escape(value)
     value = tostring(value or "")
     value = value:gsub("&", "&amp;")
@@ -32,6 +33,7 @@ function _xml_escape(value)
     return value
 end
 
+-- format key-value pairs as xml attributes string, e.g. ` Sdk="Microsoft.NET.Sdk"`
 function _format_attributes(attrs)
     if type(attrs) ~= "table" then
         return ""
@@ -53,6 +55,7 @@ function _format_attributes(attrs)
     return table.concat(chunks)
 end
 
+-- get single csharp value from target:values(), with default fallback
 function _get_csharp_value(target, name, defaultval)
     local val = target:values(name)
     if type(val) == "table" then
@@ -64,6 +67,7 @@ function _get_csharp_value(target, name, defaultval)
     return val
 end
 
+-- resolve a registry entry value, supports custom resolve function, list type and single value
 function _resolve_registry_value(entry, target, context)
     if entry.resolve then
         return entry.resolve(context)
@@ -89,6 +93,7 @@ function _resolve_registry_value(entry, target, context)
     return _get_csharp_value(target, entry.lua_key, entry.default)
 end
 
+-- collect <Project> element attributes, e.g. Sdk="Microsoft.NET.Sdk"
 function _collect_project_attributes(target, context, registry_entries)
     local attrs = {}
     for _, entry in ipairs(registry_entries) do
@@ -104,6 +109,7 @@ function _collect_project_attributes(target, context, registry_entries)
     return attrs
 end
 
+-- collect <PropertyGroup> entries from registered csharp.* properties
 function _collect_property_entries(target, context, registry_entries)
     local entries = {}
     for _, entry in ipairs(registry_entries) do
@@ -119,6 +125,7 @@ function _collect_property_entries(target, context, registry_entries)
     return entries
 end
 
+-- normalize item entry to {xml, attrs, value} format
 function _normalize_item_entry(item, default_xml)
     if type(item) == "string" then
         return {xml = default_xml, attrs = {Include = item}}
@@ -141,6 +148,7 @@ function _normalize_item_entry(item, default_xml)
     return {xml = xml, attrs = attrs, value = item.value}
 end
 
+-- collect <ItemGroup> entries (Compile, ProjectReference, PackageReference, ..)
 function _collect_item_groups(context, registry_entries)
     local groups = {}
     local groupmap = {}
@@ -168,10 +176,12 @@ function _collect_item_groups(context, registry_entries)
     return groups
 end
 
+-- check if a property name is valid for xml element
 function _is_valid_property_name(name)
     return type(name) == "string" and name:match("^[A-Za-z_][A-Za-z0-9_.-]*$") ~= nil
 end
 
+-- add a custom property entry, supports string and table(semicolon-joined) values
 function _add_custom_property(entries, name, value)
     if not _is_valid_property_name(name) then
         return
@@ -199,6 +209,8 @@ function _add_custom_property(entries, name, value)
     table.insert(entries, {xml = name, value = value})
 end
 
+-- parse custom property from csharp.properties value item
+-- supports string format "Name=Value" and table format {name = .., value = ..}
 function _add_custom_properties_from_item(entries, item)
     if type(item) == "string" then
         local name, value = item:match("^%s*([^=]+)%s*=(.*)$")
@@ -219,6 +231,7 @@ function _add_custom_properties_from_item(entries, item)
     end
 end
 
+-- collect custom properties from target:values("csharp.properties")
 function _collect_custom_property_entries(target)
     local entries = {}
     for _, item in ipairs(table.wrap(target:values("csharp.properties"))) do
@@ -227,6 +240,7 @@ function _collect_custom_property_entries(target)
     return entries
 end
 
+-- render <PropertyGroup> section to file
 function _render_property_group(file, entries)
     if #entries == 0 then
         return
@@ -238,6 +252,7 @@ function _render_property_group(file, entries)
     file:print("  </PropertyGroup>")
 end
 
+-- render <ItemGroup> sections to file
 function _render_item_groups(file, item_groups)
     for _, group in ipairs(item_groups) do
         if #group.items > 0 then
@@ -255,6 +270,7 @@ function _render_item_groups(file, item_groups)
     end
 end
 
+-- generate .csproj file for the target, write to tmpfile first then copy if different
 function main(target, csprojfile, opt)
     opt = opt or {}
 

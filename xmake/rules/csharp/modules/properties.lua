@@ -18,10 +18,12 @@
 -- @file        properties.lua
 --
 
+-- check if target has multi-target frameworks set
 function _has_target_frameworks(context)
     return #table.wrap(context.target:values("csharp.target_frameworks")) > 0
 end
 
+-- get the first element if value is a table
 function _first(value)
     if type(value) == "table" then
         return value[1]
@@ -29,11 +31,12 @@ function _first(value)
     return value
 end
 
+-- get single value from target:values()
 function _get_target_value(target, name)
     return _first(target:values(name))
 end
 
-
+-- detect default target framework from dotnet sdk version, e.g. "net8.0"
 function _get_default_target_framework(context)
     local dotnet = _first(context.target:get("toolset.cs")) or "dotnet"
     dotnet = tostring(dotnet)
@@ -69,6 +72,7 @@ function _get_default_target_framework(context)
     return target_framework
 end
 
+-- resolve target framework from user config or auto-detect from dotnet sdk
 function _resolve_target_framework(context)
     local target_framework = _get_target_value(context.target, "csharp.target_framework")
     if target_framework ~= nil and #tostring(target_framework) > 0 then
@@ -77,6 +81,7 @@ function _resolve_target_framework(context)
     return _get_default_target_framework(context)
 end
 
+-- resolve assembly name from target basename
 function _resolve_assembly_name(context)
     local basename = context.target:basename()
     if basename ~= nil and #tostring(basename) > 0 then
@@ -85,6 +90,7 @@ function _resolve_assembly_name(context)
 end
 
 
+-- register a single-value csharp.* property entry
 function _register_property(register, suffix, xml, default, extra)
     local entry = table.join({
         kind = "property",
@@ -95,6 +101,7 @@ function _register_property(register, suffix, xml, default, extra)
     register(entry)
 end
 
+-- register a list-value csharp.* property entry (semicolon-joined)
 function _register_list_property(register, suffix, xml, extra)
     local entry = table.join({
         kind = "property",
@@ -106,6 +113,7 @@ function _register_list_property(register, suffix, xml, extra)
     register(entry)
 end
 
+-- register all csharp property and project attribute entries for csproj generation
 function main()
     local entries = {}
     function register(entry)

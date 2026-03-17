@@ -18,6 +18,7 @@
 -- @file        itemsgroups.lua
 --
 
+-- normalize path to relative and use forward slashes
 function _normalize_relative(fromdir, targetpath)
     local relpath = path.relative(targetpath, fromdir) or targetpath
     if os.host() == "windows" then
@@ -26,6 +27,7 @@ function _normalize_relative(fromdir, targetpath)
     return relpath
 end
 
+-- collect .cs source files as relative paths to csprojdir
 function _collect_cs_sourcefiles(context)
     local csfiles = {}
     for _, sourcefile in ipairs(context.target:sourcefiles()) do
@@ -38,6 +40,7 @@ function _collect_cs_sourcefiles(context)
     return table.unique(csfiles)
 end
 
+-- collect ProjectReference paths from dependency targets
 function _collect_project_references(context)
     local references = {}
     for _, dep in ipairs(context.target:orderdeps()) do
@@ -50,6 +53,7 @@ function _collect_project_references(context)
     return table.unique(references)
 end
 
+-- extract nuget package name and version from package require string
 function _get_nuget_info(pkg)
     local requirestr = pkg:requirestr() or ""
     local splitinfo = requirestr:trim():split("%s+")
@@ -84,6 +88,7 @@ function _get_nuget_info(pkg)
     return pkgname, version
 end
 
+-- collect PackageReference entries from nuget packages
 function _collect_nuget_references(context)
     local versions = {}
     for _, pkg in ipairs(context.target:orderpkgs()) do
@@ -107,6 +112,7 @@ function _collect_nuget_references(context)
     return references
 end
 
+-- register all item group entries (Compile, ProjectReference, PackageReference)
 function main()
     local entries = {}
     local function register(entry)
