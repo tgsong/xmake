@@ -109,7 +109,8 @@
 --   csharp.generate_target_framework_attribute          - GenerateTargetFrameworkAttribute
 --
 -- Custom Properties (for arbitrary csproj properties not listed above):
---   csharp.properties                                   - e.g. set_values("csharp.properties", "MyProp=value")
+--   csharp.properties                                   - add custom <PropertyGroup> entries, format: "Name=Value"
+--                                                         e.g. set_values("csharp.properties", "MyProp=value", "AnotherProp=value2")
 --
 rule("csharp.build")
     set_sourcekinds("cs")

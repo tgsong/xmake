@@ -176,66 +176,15 @@ function _collect_item_groups(context, registry_entries)
     return groups
 end
 
--- check if a property name is valid for xml element
-function _is_valid_property_name(name)
-    return type(name) == "string" and name:match("^[A-Za-z_][A-Za-z0-9_.-]*$") ~= nil
-end
-
--- add a custom property entry, supports string and table(semicolon-joined) values
-function _add_custom_property(entries, name, value)
-    if not _is_valid_property_name(name) then
-        return
-    end
-    if value == nil then
-        return
-    end
-    if type(value) == "table" then
-        local values = {}
-        for _, v in ipairs(value) do
-            if v ~= nil and v ~= "" then
-                table.insert(values, tostring(v))
-            end
-        end
-        if #values == 0 then
-            return
-        end
-        value = table.concat(values, ";")
-    else
-        value = tostring(value)
-    end
-    if #value == 0 then
-        return
-    end
-    table.insert(entries, {xml = name, value = value})
-end
-
--- parse custom property from csharp.properties value item
--- supports string format "Name=Value" and table format {name = .., value = ..}
-function _add_custom_properties_from_item(entries, item)
-    if type(item) == "string" then
-        local name, value = item:match("^%s*([^=]+)%s*=(.*)$")
-        if name then
-            _add_custom_property(entries, name:trim(), value)
-        end
-        return
-    end
-    if type(item) ~= "table" then
-        return
-    end
-    if item.name then
-        _add_custom_property(entries, tostring(item.name), item.value)
-        return
-    end
-    for k, v in table.orderpairs(item) do
-        _add_custom_property(entries, k, v)
-    end
-end
-
 -- collect custom properties from target:values("csharp.properties")
+-- value format: "Name=Value", e.g. set_values("csharp.properties", "MyProp=value")
 function _collect_custom_property_entries(target)
     local entries = {}
     for _, item in ipairs(table.wrap(target:values("csharp.properties"))) do
-        _add_custom_properties_from_item(entries, item)
+        local name, value = tostring(item):match("^%s*([^=]+)%s*=(.*)$")
+        if name and #value > 0 then
+            table.insert(entries, {xml = name:trim(), value = value})
+        end
     end
     return entries
 end
@@ -282,6 +231,7 @@ function main(target, csprojfile, opt)
         opt = opt
     }
 
+    -- collect project properties
     local property_registry_entries = csharp_properties()
     local item_registry_entries = csharp_itemgroups()
 
@@ -292,6 +242,7 @@ function main(target, csprojfile, opt)
 
     local item_groups = _collect_item_groups(context, item_registry_entries)
 
+    -- generate csproj
     local tmpfile = os.tmpfile() .. ".csproj"
     local file = io.open(tmpfile, "w")
     file:print("<Project%s>", _format_attributes(project_attributes))
