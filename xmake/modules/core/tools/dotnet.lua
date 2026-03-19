@@ -97,7 +97,10 @@ end
 
 -- make the build arguments list
 function buildargv(self, sourcefiles, targetkind, targetfile, flags, opt)
-    local argv = {"build"}
+    -- use `dotnet publish` for NativeAOT, otherwise `dotnet build`
+    local target = opt and opt.target
+    local publish_aot = target and target:values("csharp.publish_aot")
+    local argv = {publish_aot and "publish" or "build"}
 
     -- add .csproj file
     local csprojfile = _get_csprojfile(opt)
@@ -123,4 +126,11 @@ function build(self, sourcefiles, targetkind, targetfile, flags, opt)
     os.mkdir(path.directory(targetfile))
     local program, argv = buildargv(self, sourcefiles, targetkind, targetfile, flags, opt)
     os.runv(program, argv, {envs = self:runenvs()})
+
+    -- fix install_name for NativeAOT shared library on macOS
+    local target = opt and opt.target
+    local publish_aot = target and target:values("csharp.publish_aot")
+    if publish_aot and targetkind == "shared" and self:is_plat("macosx", "iphoneos", "watchos") then
+        os.runv("install_name_tool", {"-id", "@rpath/" .. path.filename(targetfile), targetfile})
+    end
 end
