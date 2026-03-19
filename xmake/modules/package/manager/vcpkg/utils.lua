@@ -19,14 +19,26 @@
 --
 
 -- check if a package (with optional features) is installed for the given triplet
--- e.g. is_installed(vcpkg, "curl", "x64-windows-static-md")
---      is_installed(vcpkg, "curl[mbedtls]", "x64-windows-static-md")
+-- e.g. is_installed(vcpkg, "curl", "x64-windows-static-md", opt)
+--      is_installed(vcpkg, "curl[mbedtls]", "x64-windows-static-md", opt)
 --
 -- @see https://github.com/xmake-io/xmake/issues/7388
 --
 
-function is_installed(vcpkg, name, triplet, manifest_mode, opt)
+function need_manifest(opt)
+    local require_version = opt.require_version
+    if require_version ~= nil and require_version ~= "latest" then
+        return true
+    end
+    local configs = opt.configs
+    if configs and (configs.features or configs.default_features == false or configs.baseline) then
+        return true
+    end
+end
+
+function is_installed(vcpkg, name, triplet, opt)
     local argv = {"list", name .. ":" .. triplet, "--x-full-desc"}
+    local manifest_mode = need_manifest(opt)
 
     -- pass feature flags to depend-info when in manifest mode, otherwise depend-info will not show the complete dependency tree with features
     if manifest_mode then
@@ -53,9 +65,9 @@ end
 --
 -- @see https://github.com/xmake-io/xmake/issues/7388
 --
-function has_installed_features(vcpkg, name, triplet, required_features, manifest_mode, opt)
+function has_installed_features(vcpkg, name, triplet, required_features, opt)
     for _, feature in ipairs(required_features) do
-        if not is_installed(vcpkg, name .. "[" .. feature .. "]", triplet, manifest_mode, opt) then
+        if not is_installed(vcpkg, name .. "[" .. feature .. "]", triplet, opt) then
             return false
         end
     end

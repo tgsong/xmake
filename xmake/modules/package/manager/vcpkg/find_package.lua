@@ -29,18 +29,6 @@ import("package.manager.vcpkg.configurations")
 import("package.manager.vcpkg.utils", {alias = "vcpkg_utils"})
 import("package.manager.pkgconfig.find_package", {alias = "find_package_from_pkgconfig"})
 
--- need manifest mode?
-function _need_manifest(opt)
-    local require_version = opt.require_version
-    if require_version ~= nil and require_version ~= "latest" then
-        return true
-    end
-    local configs = opt.configs
-    if configs and (configs.features or configs.default_features == false or configs.baseline) then
-        return true
-    end
-end
-
 -- extract required features from both package name and configs.features.
 local function _required_features(name, configs)
     local features = {}
@@ -174,7 +162,7 @@ function _find_package(vcpkg, vcpkgdir, name, opt)
     local configs = opt.configs or {}
 
     -- is need manifest mode?
-    local manifest_mode = _need_manifest(opt)
+    local manifest_mode = vcpkg_utils.need_manifest(opt)
 
     -- manifest mode requires installdir to run vcpkg commands in the context of the manifest
     if manifest_mode and not opt.installdir then
@@ -212,7 +200,7 @@ function _find_package(vcpkg, vcpkgdir, name, opt)
 
     -- check that required features are installed
     -- @see https://github.com/xmake-io/xmake/issues/7388
-    if required_features and not vcpkg_utils.has_installed_features(vcpkg, name, triplet, required_features, manifest_mode, opt) then
+    if required_features and not vcpkg_utils.has_installed_features(vcpkg, name, triplet, required_features, opt) then
         return
     end
 
