@@ -48,6 +48,16 @@ function nf_optimize(self, level)
     return maps[level]
 end
 
+-- make the linkdir flag
+-- ldc2 on windows uses msvc link.exe which requires /libpath: (not -libpath:)
+function nf_linkdir(self, dir)
+    if self:is_plat("windows") then
+        return {"-L/libpath:" .. dir}
+    else
+        return {"-L-L" .. dir}
+    end
+end
+
 -- make the symbol flag
 function nf_symbol(self, level)
     local kind = self:kind()
