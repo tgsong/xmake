@@ -24,9 +24,17 @@
 --
 -- @see https://github.com/xmake-io/xmake/issues/7388
 --
-function is_installed(vcpkg, name, triplet)
+
+function is_installed(vcpkg, name, triplet, manifest_mode, opt)
+    local argv = {"list", name .. ":" .. triplet, "--x-full-desc"}
+
+    -- pass feature flags to depend-info when in manifest mode, otherwise depend-info will not show the complete dependency tree with features
+    if manifest_mode then
+        table.insert(argv, 1, "--feature-flags=versions")
+    end
+
     local listinfo = try { function ()
-        return os.iorunv(vcpkg, {"list", name .. ":" .. triplet, "--x-full-desc"})
+        return os.iorunv(vcpkg, argv, manifest_mode and {curdir = opt.installdir} or nil)
     end}
     if listinfo then
         local exact_prefix = name .. ":" .. triplet
@@ -45,9 +53,9 @@ end
 --
 -- @see https://github.com/xmake-io/xmake/issues/7388
 --
-function has_installed_features(vcpkg, name, triplet, required_features)
+function has_installed_features(vcpkg, name, triplet, required_features, manifest_mode, opt)
     for _, feature in ipairs(required_features) do
-        if not is_installed(vcpkg, name .. "[" .. feature .. "]", triplet) then
+        if not is_installed(vcpkg, name .. "[" .. feature .. "]", triplet, manifest_mode, opt) then
             return false
         end
     end
