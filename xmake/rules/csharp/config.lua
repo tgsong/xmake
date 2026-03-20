@@ -46,11 +46,13 @@ function main(target)
     target:data_set("csharp.csproj", csprojfile)
 
     -- for NativeAOT shared library, export targetfile directly for C/C++ consumers
-    -- dotnet outputs without lib prefix, so we use syslinks with full path
+    -- dotnet outputs without lib prefix, so we use ldflags with full path
     local publish_aot = target:values("csharp.publish_aot")
     if publish_aot and target:is_shared() then
         target:data_set("inherit.links.deplink", false)
-        target:add("ldflags", target:targetfile(), {interface = true, force = true})
+        -- on Windows, MSVC linker needs import library (.lib), not .dll
+        local linkfile = target:artifactfile("implib") or target:targetfile()
+        target:add("ldflags", linkfile, {interface = true, force = true})
     end
 
     -- add native shared library search paths for P/Invoke
