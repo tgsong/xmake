@@ -162,6 +162,13 @@ function main()
     _register_property(register, "include_native_libraries_for_self_extract", "IncludeNativeLibrariesForSelfExtract")
     _register_property(register, "enable_compression_in_single_file", "EnableCompressionInSingleFile")
     _register_property(register, "publish_aot", "PublishAot")
+    -- auto-set NativeLib=Shared when PublishAot is enabled for shared library
+    register({kind = "property", xml = "NativeLib", resolve = function (context)
+        local publish_aot = _get_target_value(context.target, "csharp.publish_aot")
+        if publish_aot and context.target:is_shared() then
+            return "Shared"
+        end
+    end})
     _register_property(register, "strip_symbols", "StripSymbols")
     _register_property(register, "enable_trim_analyzer", "EnableTrimAnalyzer")
     _register_property(register, "json_serializer_is_reflection_enabled_by_default", "JsonSerializerIsReflectionEnabledByDefault")
