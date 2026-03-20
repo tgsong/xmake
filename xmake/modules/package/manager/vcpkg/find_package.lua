@@ -30,7 +30,7 @@ import("package.manager.vcpkg.utils", {alias = "vcpkg_utils"})
 import("package.manager.pkgconfig.find_package", {alias = "find_package_from_pkgconfig"})
 
 -- extract required features from both package name and configs.features.
-local function _required_features(name, configs)
+function _required_features(name, configs)
     local features = {}
     local features_str = name:match("%[(.-)%]")
     if features_str then
