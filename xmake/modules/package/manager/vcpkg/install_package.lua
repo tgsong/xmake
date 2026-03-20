@@ -26,18 +26,6 @@ import("lib.detect.find_tool")
 import("package.manager.vcpkg.configurations")
 import("package.manager.vcpkg.utils", {alias = "vcpkg_utils"})
 
--- need manifest mode?
-function _need_manifest(opt)
-    local require_version = opt.require_version
-    if require_version ~= nil and require_version ~= "latest" then
-        return true
-    end
-    local configs = opt.configs
-    if configs and (configs.features or configs.default_features == false or configs.baseline) then
-        return true
-    end
-end
-
 -- install for classic mode
 function _install_for_classic(vcpkg, name, opt)
 
@@ -62,8 +50,8 @@ function _install_for_classic(vcpkg, name, opt)
     -- @see https://github.com/xmake-io/xmake/issues/7388
     local basename = name:gsub("%[.-%]", "")
     if basename ~= name then
-        if not vcpkg_utils.is_installed(vcpkg, name, triplet) then
-            if vcpkg_utils.is_installed(vcpkg, basename, triplet) then
+        if not vcpkg_utils.is_installed(vcpkg, name, triplet, opt) then
+            if vcpkg_utils.is_installed(vcpkg, basename, triplet, opt) then
                 local confirm = utils.confirm({default = true,
                     description = format("%s:%s is already installed (possibly with different features). Installing %s will require a rebuild of it and its dependencies. Continue?", basename, triplet, name)})
                 if confirm then
@@ -168,7 +156,7 @@ function main(name, opt)
 
     -- do install
     opt = opt or {}
-    if _need_manifest(opt) then
+    if vcpkg_utils.need_manifest(opt) then
         _install_for_manifest(vcpkg.program, name, opt)
     else
         _install_for_classic(vcpkg.program, name, opt)

@@ -29,6 +29,30 @@ import("package.manager.vcpkg.configurations")
 import("package.manager.vcpkg.utils", {alias = "vcpkg_utils"})
 import("package.manager.pkgconfig.find_package", {alias = "find_package_from_pkgconfig"})
 
+-- extract required features from both package name and configs.features.
+function _required_features(name, configs)
+    local features = {}
+    local features_str = name:match("%[(.-)%]")
+    if features_str then
+        for _, feature in ipairs(features_str:split(",", {plain = true})) do
+            feature = feature:trim()
+            if #feature > 0 then
+                table.insert(features, feature)
+            end
+        end
+    end
+    for _, feature in ipairs(table.wrap(configs and configs.features)) do
+        feature = tostring(feature):trim()
+        if #feature > 0 then
+            table.insert(features, feature)
+        end
+    end
+    features = table.unique(features)
+    if #features > 0 then
+        return features
+    end
+end
+
 -- we iterate over each pkgconfig file to extract the required data
 function _find_package_from_pkgconfig(pkgconfig_files, opt)
     opt = opt or {}
@@ -137,12 +161,16 @@ function _find_package(vcpkg, vcpkgdir, name, opt)
     -- get configs
     local configs = opt.configs or {}
 
-    -- extract required features before stripping, e.g. curl[openssl,mbedtls] -> {"openssl", "mbedtls"}
-    local required_features
-    local features_str = name:match("%[(.-)%]")
-    if features_str then
-        required_features = features_str:split(",", {plain = true})
+    -- is need manifest mode?
+    local manifest_mode = vcpkg_utils.need_manifest(opt)
+
+    -- manifest mode requires installdir to run vcpkg commands in the context of the manifest
+    if manifest_mode and not opt.installdir then
+        raise("installdir is required for manifest mode!")
     end
+
+    -- extract required features from both package name and configs.features.
+    local required_features = _required_features(name, configs)
 
     -- fix name, e.g. ffmpeg[x264] as ffmpeg
     -- @see https://github.com/xmake-io/xmake/issues/925
@@ -158,10 +186,11 @@ function _find_package(vcpkg, vcpkgdir, name, opt)
 
     -- get the vcpkg info directories
     local infodirs = {}
-	if opt.installdir then
+	if manifest_mode then
         table.join2(infodirs, path.join(opt.installdir, "vcpkg_installed", "vcpkg", "info"))
+    else
+        table.join2(infodirs, path.join(vcpkgdir, "installed", "vcpkg", "info"))
 	end
-    table.join2(infodirs, path.join(vcpkgdir, "installed", "vcpkg", "info"))
 
     -- find the package info file, e.g. zlib_1.2.11-3_x86-windows[-static].list
     local infofile = find_file(format("%s_*_%s.list", name, triplet), infodirs)
@@ -171,7 +200,7 @@ function _find_package(vcpkg, vcpkgdir, name, opt)
 
     -- check that required features are installed
     -- @see https://github.com/xmake-io/xmake/issues/7388
-    if required_features and not vcpkg_utils.has_installed_features(vcpkg, name, triplet, required_features) then
+    if required_features and not vcpkg_utils.has_installed_features(vcpkg, name, triplet, required_features, opt) then
         return
     end
 
@@ -184,7 +213,14 @@ function _find_package(vcpkg, vcpkgdir, name, opt)
         depend_name = name .. "[" .. table.concat(required_features, ",") .. "]"
     end
     local result = nil
-    local _, dependinfo = try { function () return os.iorunv(vcpkg, {"depend-info", depend_name, "--sort=reverse", "--triplet=" .. triplet}) end }
+    local argv = {"depend-info", depend_name, "--sort=reverse", "--triplet=" .. triplet}
+
+    -- pass feature flags to depend-info when in manifest mode, otherwise depend-info will not show the complete dependency tree with features
+    if manifest_mode then
+        table.insert(argv, 1, "--feature-flags=versions")
+    end
+
+    local _, dependinfo = try { function () return os.iorunv(vcpkg, argv, manifest_mode and {curdir = opt.installdir} or nil) end }
     if dependinfo then
         for _, line in ipairs(dependinfo:split("\n", {plain = true})) do
             if not line:startswith("vcpkg-") then
