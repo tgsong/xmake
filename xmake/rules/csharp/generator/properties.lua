@@ -67,6 +67,8 @@ function _resolve_assembly_name(context)
 end
 
 
+-- resolve runtime identifier from user config or auto-detect from target plat/arch
+-- e.g. "osx-x64", "osx-arm64", "linux-x64", "win-x64"
 -- register a single-value csharp.* property entry
 function _register_property(register, suffix, xml, default, extra)
     local entry = table.join({

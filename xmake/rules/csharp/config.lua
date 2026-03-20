@@ -44,4 +44,17 @@ function main(target)
     end, {dependfile = dependfile, files = sourcefiles, values = depcsproj})
 
     target:data_set("csharp.csproj", csprojfile)
+
+    -- add native shared library search paths for P/Invoke
+    for _, dep in ipairs(target:orderdeps()) do
+        if dep:is_shared() and not dep:rule("csharp.build") then
+            if is_host("windows") then
+                target:add("runenvs", "PATH", dep:targetdir())
+            elseif is_host("macosx") then
+                target:add("runenvs", "DYLD_LIBRARY_PATH", dep:targetdir())
+            else
+                target:add("runenvs", "LD_LIBRARY_PATH", dep:targetdir())
+            end
+        end
+    end
 end
