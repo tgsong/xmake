@@ -2,6 +2,51 @@
 
 ## master (unreleased)
 
+### New features
+
+* [#7398](https://github.com/xmake-io/xmake/pull/7398): Add C# language and dotnet toolchain support
+* [#7410](https://github.com/xmake-io/xmake/pull/7410): Add C# and C/C++ interop support via P/Invoke
+* [#7360](https://github.com/xmake-io/xmake/pull/7360): Support custom templates
+* [#7367](https://github.com/xmake-io/xmake/pull/7367): Add `xmake create --list` and remote template distribution
+* [#7313](https://github.com/xmake-io/xmake/pull/7313): Add `build.release.strip` policy
+* [#7333](https://github.com/xmake-io/xmake/pull/7333): Add `winos.file_signature` function
+* [#7336](https://github.com/xmake-io/xmake/pull/7336): Add support for running wasi target
+* [#7346](https://github.com/xmake-io/xmake/pull/7346): Add nnd debugger support
+* [#7366](https://github.com/xmake-io/xmake/pull/7366): Add tarxz pack format
+
+### Changes
+
+* [#7309](https://github.com/xmake-io/xmake/pull/7309): Keep package source
+* [#7310](https://github.com/xmake-io/xmake/pull/7310): Improve check tips
+* [#7311](https://github.com/xmake-io/xmake/pull/7311): Improve Xcode toolchain
+* [#7312](https://github.com/xmake-io/xmake/pull/7312): Improve binutils to support wasm
+* [#7320](https://github.com/xmake-io/xmake/pull/7320): Add haiku ci
+* [#7329](https://github.com/xmake-io/xmake/pull/7329): Improve qt deploy for macapp
+* [#7349](https://github.com/xmake-io/xmake/pull/7349): Strip embed-dir on clang/gcc for C++ modules
+* [#7368](https://github.com/xmake-io/xmake/pull/7368): Move templates to repository
+* [#7383](https://github.com/xmake-io/xmake/pull/7383): Split zig toolchain to zig/zigcc
+* [#7384](https://github.com/xmake-io/xmake/pull/7384): Improve find_hdk
+* [#7387](https://github.com/xmake-io/xmake/pull/7387): Show target name in progress
+* [#7391](https://github.com/xmake-io/xmake/pull/7391): Improve to find package with vcpkg features
+* [#7392](https://github.com/xmake-io/xmake/pull/7392): Fix zig for shared libraries
+* [#7396](https://github.com/xmake-io/xmake/pull/7396): Improve vcpkg
+* [#7399](https://github.com/xmake-io/xmake/pull/7399): Extend formatting to C++ modules
+* [#7409](https://github.com/xmake-io/xmake/pull/7409): Improve ldc on windows
+
+### Bugs fixed
+
+* [#7299](https://github.com/xmake-io/xmake/pull/7299): Fix dependency handling for vcpkg
+* [#7316](https://github.com/xmake-io/xmake/pull/7316): Fix components typo
+* [#7318](https://github.com/xmake-io/xmake/pull/7318): Update tbox to fix tolower/toupper
+* [#7339](https://github.com/xmake-io/xmake/pull/7339): Update tbox to fix start process on win7
+* [#7344](https://github.com/xmake-io/xmake/pull/7344): Fix swig jar package module
+* [#7345](https://github.com/xmake-io/xmake/pull/7345): Fix check clang info
+* [#7341](https://github.com/xmake-io/xmake/pull/7341): Fix WASM QT 6.9
+* [#7356](https://github.com/xmake-io/xmake/pull/7356): Fix issue #7354
+* [#7371](https://github.com/xmake-io/xmake/pull/7371): Fix test verbose output
+* [#7386](https://github.com/xmake-io/xmake/pull/7386): Fix install script incompatibility with coreutils 9.10
+* [#7393](https://github.com/xmake-io/xmake/pull/7393): Fix build target validation
+
 ## v3.0.7
 
 ### New features
@@ -2306,6 +2351,51 @@
 # 更新日志
 
 ## master (开发中)
+
+### 新特性
+
+* [#7398](https://github.com/xmake-io/xmake/pull/7398): 添加 C# 语言和 dotnet 工具链支持
+* [#7410](https://github.com/xmake-io/xmake/pull/7410): 添加 C# 和 C/C++ 通过 P/Invoke 互操作支持
+* [#7360](https://github.com/xmake-io/xmake/pull/7360): 支持自定义模板
+* [#7367](https://github.com/xmake-io/xmake/pull/7367): 添加 `xmake create --list` 和远程模板分发
+* [#7313](https://github.com/xmake-io/xmake/pull/7313): 添加 `build.release.strip` 策略
+* [#7333](https://github.com/xmake-io/xmake/pull/7333): 添加 `winos.file_signature` 函数
+* [#7336](https://github.com/xmake-io/xmake/pull/7336): 添加运行 wasi 目标支持
+* [#7346](https://github.com/xmake-io/xmake/pull/7346): 添加 nnd 调试器支持
+* [#7366](https://github.com/xmake-io/xmake/pull/7366): 添加 tarxz 打包格式
+
+### 改进
+
+* [#7309](https://github.com/xmake-io/xmake/pull/7309): 保持包源信息
+* [#7310](https://github.com/xmake-io/xmake/pull/7310): 改进检测提示
+* [#7311](https://github.com/xmake-io/xmake/pull/7311): 改进 Xcode 工具链
+* [#7312](https://github.com/xmake-io/xmake/pull/7312): 改进 binutils 支持 wasm
+* [#7320](https://github.com/xmake-io/xmake/pull/7320): 添加 haiku ci
+* [#7329](https://github.com/xmake-io/xmake/pull/7329): 改进 qt deploy 对 macapp 的支持
+* [#7349](https://github.com/xmake-io/xmake/pull/7349): 改进 C++ 模块的 clang/gcc embed-dir 处理
+* [#7368](https://github.com/xmake-io/xmake/pull/7368): 迁移模板到仓库
+* [#7383](https://github.com/xmake-io/xmake/pull/7383): 拆分 zig 工具链为 zig/zigcc
+* [#7384](https://github.com/xmake-io/xmake/pull/7384): 改进 find_hdk
+* [#7387](https://github.com/xmake-io/xmake/pull/7387): 在进度中显示目标名称
+* [#7391](https://github.com/xmake-io/xmake/pull/7391): 改进通过 vcpkg features 查找包
+* [#7392](https://github.com/xmake-io/xmake/pull/7392): 修复 zig 共享库
+* [#7396](https://github.com/xmake-io/xmake/pull/7396): 改进 vcpkg
+* [#7399](https://github.com/xmake-io/xmake/pull/7399): 扩展格式化到 C++ 模块
+* [#7409](https://github.com/xmake-io/xmake/pull/7409): 改进 Windows 上的 ldc
+
+### Bugs 修复
+
+* [#7299](https://github.com/xmake-io/xmake/pull/7299): 修复 vcpkg 依赖处理
+* [#7316](https://github.com/xmake-io/xmake/pull/7316): 修复 components 拼写错误
+* [#7318](https://github.com/xmake-io/xmake/pull/7318): 更新 tbox 修复 tolower/toupper
+* [#7339](https://github.com/xmake-io/xmake/pull/7339): 更新 tbox 修复 win7 启动进程问题
+* [#7344](https://github.com/xmake-io/xmake/pull/7344): 修复 swig jar 包模块
+* [#7345](https://github.com/xmake-io/xmake/pull/7345): 修复检测 clang 信息
+* [#7341](https://github.com/xmake-io/xmake/pull/7341): 修复 WASM QT 6.9
+* [#7356](https://github.com/xmake-io/xmake/pull/7356): 修复 issue #7354
+* [#7371](https://github.com/xmake-io/xmake/pull/7371): 修复测试详细输出
+* [#7386](https://github.com/xmake-io/xmake/pull/7386): 修复安装脚本与 coreutils 9.10 的不兼容
+* [#7393](https://github.com/xmake-io/xmake/pull/7393): 修复构建目标验证
 
 ## v3.0.7
 
