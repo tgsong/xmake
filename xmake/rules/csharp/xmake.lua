@@ -115,14 +115,10 @@
 rule("csharp.build")
     set_sourcekinds("cs")
     on_load(function (target)
+        -- dotnet always outputs .dll for libraries, and no prefix
         if target:is_shared() or target:is_static() then
-            -- dotnet always outputs without lib prefix
             target:set("prefixname", "")
-            -- managed libraries use .dll, NativeAOT uses native format (.dylib/.so/.dll)
-            local publish_aot = target:values("csharp.publish_aot")
-            if not publish_aot then
-                target:set("extension", ".dll")
-            end
+            target:set("extension", ".dll")
         end
     end)
     on_config("config")

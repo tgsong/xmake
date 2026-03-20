@@ -69,25 +69,6 @@ end
 
 -- resolve runtime identifier from user config or auto-detect from target plat/arch
 -- e.g. "osx-x64", "osx-arm64", "linux-x64", "win-x64"
-function _resolve_runtime_identifier(context)
-    local rid = _get_target_value(context.target, "csharp.runtime_identifier")
-    if rid then
-        return rid
-    end
-    -- auto-detect RID when publish_aot is enabled
-    local publish_aot = _get_target_value(context.target, "csharp.publish_aot")
-    if not publish_aot then
-        return nil
-    end
-    local target = context.target
-    local plat = target:plat()
-    local arch = target:arch()
-    local rid_arch = ({x86_64 = "x64", i386 = "x86", x64 = "x64", x86 = "x86",
-                       arm64 = "arm64", ["arm64-v8a"] = "arm64", armv7 = "arm"})[arch] or arch
-    local rid_os = ({macosx = "osx", linux = "linux", windows = "win", mingw = "win"})[plat] or plat
-    return rid_os .. "-" .. rid_arch
-end
-
 -- register a single-value csharp.* property entry
 function _register_property(register, suffix, xml, default, extra)
     local entry = table.join({
@@ -149,7 +130,7 @@ function main()
     _register_property(register, "generate_documentation_file", "GenerateDocumentationFile")
     _register_property(register, "documentation_file", "DocumentationFile")
 
-    register({kind = "property", xml = "RuntimeIdentifier", resolve = _resolve_runtime_identifier})
+    _register_property(register, "runtime_identifier", "RuntimeIdentifier")
     _register_list_property(register, "runtime_identifiers", "RuntimeIdentifiers")
     _register_property(register, "self_contained", "SelfContained")
     _register_property(register, "use_app_host", "UseAppHost")
@@ -162,13 +143,6 @@ function main()
     _register_property(register, "include_native_libraries_for_self_extract", "IncludeNativeLibrariesForSelfExtract")
     _register_property(register, "enable_compression_in_single_file", "EnableCompressionInSingleFile")
     _register_property(register, "publish_aot", "PublishAot")
-    -- auto-set NativeLib=Shared when PublishAot is enabled for shared library
-    register({kind = "property", xml = "NativeLib", resolve = function (context)
-        local publish_aot = _get_target_value(context.target, "csharp.publish_aot")
-        if publish_aot and context.target:is_shared() then
-            return "Shared"
-        end
-    end})
     _register_property(register, "strip_symbols", "StripSymbols")
     _register_property(register, "enable_trim_analyzer", "EnableTrimAnalyzer")
     _register_property(register, "json_serializer_is_reflection_enabled_by_default", "JsonSerializerIsReflectionEnabledByDefault")
