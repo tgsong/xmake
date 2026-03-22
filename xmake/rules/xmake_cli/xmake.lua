@@ -24,16 +24,12 @@ rule("xmake.cli")
     on_load(function (target)
         target:set("kind", "binary")
         assert(target:pkg("libxmake"), 'please add_packages("libxmake") to target(%s) first!', target:name())
-
-        local headerdir = path.join(target:autogendir(), "rules", "xmake.cli", "include")
-        if not os.isdir(headerdir) then
-            os.mkdir(headerdir)
-        end
-        target:add("includedirs", headerdir)
     end)
 
     before_buildcmd_files(function (target, batchcmds, sourcebatch, opt)
         import("private.core.base.match_copyfiles")
+        import("rules.utils.bin2obj.utils", {alias = "bin2obj_utils", rootdir = os.programdir()})
+
         local sourcefiles = sourcebatch.sourcefiles
         local archivefile = path.join(target:autogendir(), "rules", "xmake.cli", "luafiles.xmz")
         local dependfile = archivefile .. ".d"
@@ -51,11 +47,8 @@ rule("xmake.cli")
         end
         batchcmds:vrunv(os.programfile(), argv, {envs = {XMAKE_SKIP_HISTORY = "y"}})
 
-        local headerdir = path.join(target:autogendir(), "rules", "xmake.cli", "include")
-        local headerfile = path.join(headerdir, "luafiles.xmz.h")
-        target:add("includedirs", headerdir)
-        argv = {"--nozeroend", "-i", path(archivefile), "-o", path(headerfile)}
-        batchcmds:vlua("utils.binary.bin2c", argv)
+        -- convert archive to object file via bin2obj
+        bin2obj_utils.generate_objectfile(target, batchcmds, archivefile)
 
         batchcmds:add_depfiles(sourcefiles)
         batchcmds:set_depmtime(os.mtime(dependfile))
