@@ -75,7 +75,7 @@ function main(target, batchcmds, opt)
         windeployqt.run_deploy(target, deploydir, installfiles)
 
         -- copy all deployed files and directories from deploydir to root install directory via batchcmds
-        local installdir = package:installdir()
+        batchcmds:mkdir(installdir)
         batchcmds:cp(path.join(deploydir, "*"), installdir, {rootdir = deploydir})
 
         -- install other shared libraries (e.g. from packages)
