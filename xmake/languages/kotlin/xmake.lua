@@ -93,15 +93,15 @@ language("kotlin")
     set_menu {
                 config =
                 {
-                    {category = "Cross Complation Configuration/Compiler Configuration"       }
+                    {category = "Cross Compilation Configuration/Compiler Configuration"       }
                 ,   {nil, "kc",         "kv", nil,         "The Rust Compiler"                }
 
-                ,   {category = "Cross Complation Configuration/Linker Configuration"         }
+                ,   {category = "Cross Compilation Configuration/Linker Configuration"         }
                 ,   {nil, "kcld",      "kv", nil,          "The Rust Linker"                  }
                 ,   {nil, "kcar",      "kv", nil,          "The Rust Static Library Archiver" }
                 ,   {nil, "kcsh",      "kv", nil,          "The Rust Shared Library Linker"   }
 
-                ,   {category = "Cross Complation Configuration/Builtin Flags Configuration"  }
+                ,   {category = "Cross Compilation Configuration/Builtin Flags Configuration"  }
                 ,   {nil, "linkdirs",   "kv", nil,         "The Link Search Directories"      }
                 }
             }

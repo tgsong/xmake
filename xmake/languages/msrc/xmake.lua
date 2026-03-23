@@ -44,13 +44,13 @@ language("msrc")
     set_menu {
                 config =
                 {
-                    {category = "Cross Complation Configuration/Compiler Configuration"       }
+                    {category = "Cross Compilation Configuration/Compiler Configuration"       }
                 ,   {nil, "mrc",        "kv", nil,          "The Microsoft Resource Compiler" }
 
-                ,   {category = "Cross Complation Configuration/Compiler Flags Configuration" }
+                ,   {category = "Cross Compilation Configuration/Compiler Flags Configuration" }
                 ,   {nil, "mrcflags",   "kv", nil,          "The Microsoft Resource Flags"    }
 
-                ,   {category = "Cross Complation Configuration/Builti Flags Configuration"   }
+                ,   {category = "Cross Compilation Configuration/Builti Flags Configuration"   }
                 ,   {nil, "includedirs","kv", nil,          "The Include Search Directories"  }
                 }
             }

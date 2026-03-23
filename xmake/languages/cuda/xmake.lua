@@ -98,16 +98,16 @@ language("cuda")
     set_menu {
                 config =
                 {
-                    {category = "Cross Complation Configuration/Compiler Configuration"         }
+                    {category = "Cross Compilation Configuration/Compiler Configuration"         }
                 ,   {nil, "cu",         "kv", nil,          "The Cuda Compiler"                 }
                 ,   {nil, "cu-ccbin",   "kv", nil,          "The Cuda Host C++ Compiler"        }
                 ,   {nil, "culd",      "kv", nil,          "The Cuda Linker"                   }
 
-                ,   {category = "Cross Complation Configuration/Compiler Flags Configuration"   }
+                ,   {category = "Cross Compilation Configuration/Compiler Flags Configuration"   }
                 ,   {nil, "cuflags",    "kv", nil,          "The Cuda Compiler Flags"           }
                 ,   {nil, "culdflags",  "kv", nil,          "The Cuda Linker Flags"             }
 
-                ,   {category = "Cross Complation Configuration/Builtin Flags Configuration"    }
+                ,   {category = "Cross Compilation Configuration/Builtin Flags Configuration"    }
                 ,   {nil, "links",      "kv", nil,          "The Link Libraries"                }
                 ,   {nil, "syslinks",   "kv", nil,          "The System Link Libraries"         }
                 ,   {nil, "linkdirs",   "kv", nil,          "The Link Search Directories"       }

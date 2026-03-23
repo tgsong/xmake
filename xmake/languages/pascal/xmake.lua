@@ -108,14 +108,14 @@ language("pascal")
     set_menu {
                 config =
                 {
-                    {category = "Cross Complation Configuration/Compiler Configuration"          }
+                    {category = "Cross Compilation Configuration/Compiler Configuration"          }
                 ,   {nil, "pc",         "kv", nil,          "The Pascal Compiler"                }
 
-                ,   {category = "Cross Complation Configuration/Linker Configuration"            }
+                ,   {category = "Cross Compilation Configuration/Linker Configuration"            }
                 ,   {nil, "pcld",       "kv", nil,          "The Pascal Linker"                  }
                 ,   {nil, "pcsh",       "kv", nil,          "The Pascal Shared Library Linker"   }
 
-                ,   {category = "Cross Complation Configuration/Builtin Flags Configuration"     }
+                ,   {category = "Cross Compilation Configuration/Builtin Flags Configuration"     }
                 ,   {nil, "links",      "kv", nil,          "The Link Libraries"                 }
                 ,   {nil, "syslinks",   "kv", nil,          "The System Link Libraries"          }
                 ,   {nil, "linkdirs",   "kv", nil,          "The Link Search Directories"        }

@@ -56,17 +56,17 @@ language("csharp")
     set_menu {
                 config =
                 {
-                    {category = "Cross Complation Configuration/Compiler Configuration"       }
+                    {category = "Cross Compilation Configuration/Compiler Configuration"       }
                 ,   {nil, "cs",         "kv", nil,          "The C# Compiler"                 }
 
-                ,   {category = "Cross Complation Configuration/Linker Configuration"         }
+                ,   {category = "Cross Compilation Configuration/Linker Configuration"         }
                 ,   {nil, "ld",         "kv", nil,          "The Linker"                      }
                 ,   {nil, "sh",         "kv", nil,          "The Shared Library Linker"       }
 
-                ,   {category = "Cross Complation Configuration/Compiler Flags Configuration" }
+                ,   {category = "Cross Compilation Configuration/Compiler Flags Configuration" }
                 ,   {nil, "csflags",    "kv", nil,          "The C# Compiler Flags"           }
 
-                ,   {category = "Cross Complation Configuration/Linker Flags Configuration"   }
+                ,   {category = "Cross Compilation Configuration/Linker Flags Configuration"   }
                 ,   {nil, "ldflags",    "kv", nil,          "The Binary Linker Flags"         }
                 ,   {nil, "shflags",    "kv", nil,          "The Shared Library Linker Flags" }
                 }

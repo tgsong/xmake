@@ -97,15 +97,15 @@ language("rust")
     set_menu {
                 config =
                 {
-                    {category = "Cross Complation Configuration/Compiler Configuration"        }
+                    {category = "Cross Compilation Configuration/Compiler Configuration"        }
                 ,   {nil, "rc",         "kv", nil,          "The Rust Compiler"                }
 
-                ,   {category = "Cross Complation Configuration/Linker Configuration"          }
+                ,   {category = "Cross Compilation Configuration/Linker Configuration"          }
                 ,   {nil, "rcld",      "kv", nil,          "The Rust Linker"                  }
                 ,   {nil, "rcar",      "kv", nil,          "The Rust Static Library Archiver" }
                 ,   {nil, "rcsh",      "kv", nil,          "The Rust Shared Library Linker"   }
 
-                ,   {category = "Cross Complation Configuration/Builtin Flags Configuration"   }
+                ,   {category = "Cross Compilation Configuration/Builtin Flags Configuration"   }
                 ,   {nil, "linkdirs",   "kv", nil,          "The Link Search Directories"      }
                 }
             }

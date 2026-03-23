@@ -266,7 +266,7 @@ function compile(self, sourcefile, objectfile, dependinfo, flags, opt)
                 -- generate the dependent includes
                 if depfile and os.isfile(depfile) then
                     if dependinfo then
-                        -- it use makefile/gcc compatiable format
+                        -- it use makefile/gcc compatible format
                         dependinfo.depfiles_format = "gcc"
                         dependinfo.depfiles = io.readfile(depfile, {continuation = "\\"})
                     end

@@ -87,7 +87,7 @@ function project._api_is_arch(interp, ...)
     return config.is_arch(...)
 end
 
--- the current platform and architecture is cross-complation?
+-- the current platform and architecture is cross-compilation?
 function project._api_is_cross(interp)
     return config.is_cross()
 end

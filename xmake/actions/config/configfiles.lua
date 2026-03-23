@@ -181,7 +181,7 @@ function _preprocess_define_value(name, value, opt)
             if extraconf.quote == false then
                 quote = false
             end
-            -- escape path seperator when with quote, @see https://github.com/xmake-io/xmake/issues/1872
+            -- escape path separator when with quote, @see https://github.com/xmake-io/xmake/issues/1872
             if quote and extraconf.escape then
                 escape = true
             end

@@ -1903,7 +1903,7 @@ function _instance:filerules(sourcefile)
         end
     end
 
-    -- we will use overrided rules first, e.g. add_rules("xxx", {override = true})
+    -- we will use overridden rules first, e.g. add_rules("xxx", {override = true})
     return #rules_override > 0 and rules_override or rules
 end
 

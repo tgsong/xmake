@@ -200,7 +200,7 @@ function _get_configs(artifacts_dir)
         end
     end
 
-    -- add host for cross-complation
+    -- add host for cross-compilation
     if _is_cross_compilation() then
         if is_plat("iphoneos", "macosx") then
             local triples =

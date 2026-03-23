@@ -99,15 +99,15 @@ language("swift")
     set_menu {
                 config =
                 {
-                    {category = "Cross Complation Configuration/Compiler Configuration"                              }
+                    {category = "Cross Compilation Configuration/Compiler Configuration"                              }
                 ,   { nil, "sc",            "kv", nil,          "The Swift Compiler"                                 }
 
-                ,   {category = "Cross Complation Configuration/Linker Configuration"                                }
+                ,   {category = "Cross Compilation Configuration/Linker Configuration"                                }
                 ,   { nil, "scld",         "kv", nil,          "The Swift Linker"                                   }
                 ,   { nil, "scsh",         "kv", nil,          "The Swift Shared Library Linker"                    }
                 ,   { nil, "scar",         "kv", nil,          "The Swift Static Library Archiver"                  }
 
-                ,   { category = "Cross Complation Configuration/Builtin Flags Configuration"                        }
+                ,   { category = "Cross Compilation Configuration/Builtin Flags Configuration"                        }
                 ,   { nil, "links",         "kv", nil,          "The Link Libraries"                                 }
                 ,   { nil, "syslinks",      "kv", nil,          "The System Link Libraries"                          }
                 ,   { nil, "linkdirs",      "kv", nil,          "The Link Search Directories"                        }

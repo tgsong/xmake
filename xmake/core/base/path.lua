@@ -299,7 +299,7 @@ function path.split(p)
     return p:split("[/\\]")
 end
 
--- get the path seperator
+-- get the path separator
 function path.sep()
     local sep = path._SEP
     if not sep then
@@ -309,7 +309,7 @@ function path.sep()
     return sep
 end
 
--- get the path seperator of environment variable
+-- get the path separator of environment variable
 function path.envsep()
     local envsep = path._ENVSEP
     if not envsep then
@@ -379,7 +379,7 @@ function path.joinenv(paths, envsep)
     end
 end
 
--- the last character is the path seperator?
+-- the last character is the path separator?
 function path.islastsep(p)
     p = tostring(p)
     local sep = p:sub(#p, #p)

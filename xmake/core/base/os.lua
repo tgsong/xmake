@@ -1537,7 +1537,7 @@ function os.addenv(name, ...)
     end
 end
 
--- set values to environment variable with the given seperator
+-- set values to environment variable with the given separator
 function os.setenvp(name, values, sep)
     sep = sep or path.envsep()
     local ok = os._setenv(name, table.concat(table.wrap(values), sep))
@@ -1547,7 +1547,7 @@ function os.setenvp(name, values, sep)
     return ok
 end
 
--- add values to environment variable with the given seperator
+-- add values to environment variable with the given separator
 function os.addenvp(name, values, sep)
     sep = sep or path.envsep()
     values = table.wrap(values)

@@ -607,7 +607,7 @@ function buildenvs(package, opt)
     -- fix PKG_CONFIG_PATH for windows/msys2
     -- @see https://github.com/xmake-io/xmake-repo/issues/3442
     if package:is_plat("windows") then
-        -- pkg-config can only support for unix path and env seperator on msys/cygwin
+        -- pkg-config can only support for unix path and env separator on msys/cygwin
         PKG_CONFIG_PATH = _translate_cygwin_paths(PKG_CONFIG_PATH)
         envs.PKG_CONFIG_PATH = path.joinenv(PKG_CONFIG_PATH, ":")
     else

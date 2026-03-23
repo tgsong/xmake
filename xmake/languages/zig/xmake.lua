@@ -73,15 +73,15 @@ language("zig")
 
     set_menu {
                 config = {
-                    {category = "Cross Complation Configuration/Compiler Configuration"          }
+                    {category = "Cross Compilation Configuration/Compiler Configuration"          }
                 ,   {nil, "zc",         "kv", nil,          "The Zig Compiler"                   }
 
-                ,   {category = "Cross Complation Configuration/Linker Configuration"            }
+                ,   {category = "Cross Compilation Configuration/Linker Configuration"            }
                 ,   {nil, "zcld",       "kv", nil,          "The Zig Linker"                     }
                 ,   {nil, "zcar",       "kv", nil,          "The Zig Static Library Archiver"    }
                 ,   {nil, "zcsh",       "kv", nil,          "The Zig Shared Library Linker"      }
 
-                ,   {category = "Cross Complation Configuration/Builtin Flags Configuration"     }
+                ,   {category = "Cross Compilation Configuration/Builtin Flags Configuration"     }
                 ,   {nil, "links",      "kv", nil,          "The Link Libraries"                 }
                 ,   {nil, "syslinks",   "kv", nil,          "The System Link Libraries"          }
                 ,   {nil, "linkdirs",   "kv", nil,          "The Link Search Directories"        }
