@@ -16,6 +16,7 @@
 
 ### Changes
 
+* [#7416](https://github.com/xmake-io/xmake/pull/7416): Switch xmake.cli rule from bin2c to bin2obj
 * [#7309](https://github.com/xmake-io/xmake/pull/7309): Keep package source
 * [#7310](https://github.com/xmake-io/xmake/pull/7310): Improve check tips
 * [#7311](https://github.com/xmake-io/xmake/pull/7311): Improve Xcode toolchain
@@ -2366,6 +2367,7 @@
 
 ### 改进
 
+* [#7416](https://github.com/xmake-io/xmake/pull/7416): xmake.cli 规则从 bin2c 切换到 bin2obj
 * [#7309](https://github.com/xmake-io/xmake/pull/7309): 保持包源信息
 * [#7310](https://github.com/xmake-io/xmake/pull/7310): 改进检测提示
 * [#7311](https://github.com/xmake-io/xmake/pull/7311): 改进 Xcode 工具链
