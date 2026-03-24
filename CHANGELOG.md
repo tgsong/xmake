@@ -2,6 +2,8 @@
 
 ## master (unreleased)
 
+## v3.0.8
+
 ### New features
 
 * [#7398](https://github.com/xmake-io/xmake/pull/7398): Add C# language and dotnet toolchain support
@@ -2352,6 +2354,8 @@
 # 更新日志
 
 ## master (开发中)
+
+## v3.0.8
 
 ### 新特性
 
