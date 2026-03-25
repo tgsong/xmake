@@ -39,11 +39,7 @@ function _check_from_arglist(flags, opt)
         global_detectcache:set2(key, flagskey, allflags)
         global_detectcache:save()
     end
-    local flag = flags[1]:gsub("/", "-")
-    if flag:startswith("-D") or flag:startswith("-I") then
-        return true
-    end
-    return allflags[flag]
+    return allflags[flags[1]:gsub("/", "-")]
 end
 
 -- get extension
