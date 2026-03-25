@@ -44,18 +44,9 @@ function main(flags)
     if known_flags:has(flag) then
         return true
     end
-    -- check flags with known prefixes that always accept values (all MSVC versions)
-    if flag:startswith("-D") or
-       flag:startswith("-U") or
-       flag:startswith("-I") or
-       flag:startswith("-Fo") or
-       flag:startswith("-Fe") or
-       flag:startswith("-Fd") or
-       flag:startswith("-Fi") or
-       flag:startswith("-Fp") or
-       flag:startswith("-FI") or
-       flag:startswith("-wd") or
-       flag:startswith("-we") or
+    -- check flags with known prefixes (all MSVC versions)
+    if flag:startswith("-wd") or   -- e.g. /wd4251
+       flag:startswith("-we") or   -- e.g. /we4062
        flag:startswith("-wo") then
         return true
     end
