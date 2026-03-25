@@ -577,6 +577,12 @@ function os.cp(srcpath, dstpath, opt)
 end
 
 -- move files or directories
+--
+-- @param srcpath   the source file/directory path, pattern is supported, e.g. "src/**.h"
+-- @param dstpath   the destination file/directory path
+-- @param opt       the options, e.g. {rootdir = "src"}
+-- @return          true on success, or false and error info
+--
 function os.mv(srcpath, dstpath, opt)
 
     -- check arguments
@@ -602,6 +608,11 @@ function os.mv(srcpath, dstpath, opt)
 end
 
 -- remove files or directories
+--
+-- @param filepath   the file/directory path, pattern is supported, e.g. "src/**.o"
+-- @param opt        the options, e.g. {emptydirs = true}
+-- @return           true on success, or false and error info
+--
 function os.rm(filepath, opt)
     opt = opt or {}
 
@@ -658,6 +669,10 @@ function os.ln(srcpath, dstpath, opt)
 end
 
 -- change to directory
+--
+-- @param dir       the directory path
+-- @return          the previous directory
+--
 function os.cd(dir)
     assert(dir)
 
@@ -711,6 +726,10 @@ function os.touch(filepath, opt)
 end
 
 -- create directories
+--
+-- @param dir       the directory path, will create parent directories automatically
+-- @return          true on success, or false and error info
+--
 function os.mkdir(dir)
 
     -- check arguments
@@ -732,6 +751,11 @@ function os.mkdir(dir)
 end
 
 -- remove directories
+--
+-- @param dir       the directory path
+-- @param opt       the options, e.g. {emptydirs = true}
+-- @return          true on success, or false and error info
+--
 function os.rmdir(dir, opt)
 
     -- check arguments
@@ -758,6 +782,9 @@ function os.rmdir(dir, opt)
 end
 
 -- get the current directory
+--
+-- @return          the current working directory
+--
 function os.curdir()
     local curdir = os._CURDIR
     if curdir == nil then
@@ -768,6 +795,10 @@ function os.curdir()
 end
 
 -- get the temporary directory
+--
+-- @param opt       the options, e.g. {ramdisk = false}
+-- @return          the temporary directory path
+--
 function os.tmpdir(opt)
 
     -- is in fakeroot? @note: uid always be 0 in root and fakeroot
@@ -866,6 +897,11 @@ function os.run(cmd)
 end
 
 -- run command with arguments list
+--
+-- @param program   the program path or name
+-- @param argv      the arguments list
+-- @param opt       the options, e.g. {envs = {}, curdir = "", detach = false}
+--
 function os.runv(program, argv, opt)
 
     -- init options
@@ -1101,6 +1137,12 @@ function os.iorun(cmd)
 end
 
 -- run command with arguments and return output and error data
+--
+-- @param program   the program path or name
+-- @param argv      the arguments list
+-- @param opt       the options, e.g. {envs = {}, curdir = "", stdin = ""}
+-- @return          the stdout data, the stderr data
+--
 function os.iorunv(program, argv, opt)
 
     -- make temporary output and error file
@@ -1264,6 +1306,10 @@ function os.is_subarch(...)
 end
 
 -- get the system null device
+--
+-- @param input     use as input device if true, otherwise as output device
+-- @return          the null device path, e.g. "/dev/null" or "nul"
+--
 function os.nuldev(input)
 
     if input then
