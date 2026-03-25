@@ -203,6 +203,9 @@ function completer:_complete_option_v(options, current, completing)
     end
     -- transform values array to candidates array
     local function _transform_values(values)
+        if not values then
+            return {}
+        end
         local candidates = {}
         if #values > 0 and type(values[1]) == "string" then
             for _, v in ipairs(values) do

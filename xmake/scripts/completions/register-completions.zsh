@@ -1,3 +1,5 @@
+#compdef xmake xrepo
+#
 # A cross-platform build utility based on Lua
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,22 +21,18 @@
 #
 
 # zsh parameter completion for xmake
-_xmake_zsh_complete()
-{
-  local words
-  read -Ac words
-  local completions=("$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.utils.complete 0 nospace "$words")")
-  reply=( "${(ps:\n:)completions}" )
+_xmake_zsh_complete() {
+    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y XMAKE_COLORTERM=nocolor xmake lua private.utils.complete 0 nospace "$words" 2>/dev/null)}")
+    compadd -Q -S '' -- ${completions[@]}
 }
-compctl -f -S "" -K _xmake_zsh_complete xmake
 
 # zsh parameter completion for xrepo
-_xrepo_zsh_complete()
-{
-  local words
-  read -Ac words
-  local completions=("$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.xrepo.complete 0 nospace "$words")")
-  reply=( "${(ps:\n:)completions}" )
+_xrepo_zsh_complete() {
+    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y XMAKE_COLORTERM=nocolor xmake lua private.xrepo.complete 0 nospace "$words" 2>/dev/null)}")
+    compadd -Q -S '' -- ${completions[@]}
 }
-compctl -f -S "" -K _xrepo_zsh_complete xrepo
 
+case "$service" in
+    xmake) _xmake_zsh_complete ;;
+    xrepo) _xrepo_zsh_complete ;;
+esac

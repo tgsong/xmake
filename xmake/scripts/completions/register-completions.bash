@@ -23,7 +23,7 @@ _xmake_bash_complete()
 {
   local word=${COMP_WORDS[COMP_CWORD]}
   local completions
-  completions="$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.utils.complete "${COMP_POINT}" "nospace-nokey" "${COMP_LINE}")"
+  completions="$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y XMAKE_COLORTERM=nocolor xmake lua private.utils.complete "${COMP_POINT}" "nospace-nokey" "${COMP_LINE}" 2>/dev/null)"
   if [ $? -ne 0 ]; then
     completions=""
   fi
@@ -36,7 +36,7 @@ _xrepo_bash_complete()
 {
   local word=${COMP_WORDS[COMP_CWORD]}
   local completions
-  completions="$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.xrepo.complete "${COMP_POINT}" "nospace-nokey" "${COMP_LINE}")"
+  completions="$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y XMAKE_COLORTERM=nocolor xmake lua private.xrepo.complete "${COMP_POINT}" "nospace-nokey" "${COMP_LINE}" 2>/dev/null)"
   if [ $? -ne 0 ]; then
     completions=""
   fi
