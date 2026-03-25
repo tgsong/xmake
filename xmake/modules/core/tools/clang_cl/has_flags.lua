@@ -21,6 +21,46 @@
 -- imports
 import("core.cache.detectcache")
 import("core.language.language")
+import("core.base.hashset")
+
+-- attempt to check it from known flags
+function _check_from_knownargs(flags, opt)
+    local flag = flags[1]:gsub("/", "-")
+    local known_flags = _g.known_flags
+    if known_flags == nil then
+        known_flags = hashset.from({
+            "-Ox", "-O1", "-O2", "-Od",
+            "-MT", "-MD", "-MTd", "-MDd",
+            "-EHsc", "-EHa", "-EHs",
+            "-W0", "-W1", "-W2", "-W3", "-W4", "-Wall", "-WX",
+            "-Z7", "-Zi", "-ZI",
+            "-c", "-nologo", "-FS", "-FC", "-Gm-",
+            "-GR", "-GR-", "-GS", "-GS-",
+            "-Gy", "-Gy-", "-GL",
+            "-Gd", "-Gr", "-Gz", "-Gv",
+            "-TC", "-TP",
+            "-utf-8", "-bigobj", "-MP",
+            "-showIncludes"
+        })
+        _g.known_flags = known_flags
+    end
+    if known_flags:has(flag) then
+        return true
+    end
+    -- check flags with known prefixes that always accept values (all versions)
+    if flag:startswith("-D") or
+       flag:startswith("-U") or
+       flag:startswith("-I") or
+       flag:startswith("-Fo") or
+       flag:startswith("-Fe") or
+       flag:startswith("-Fd") or
+       flag:startswith("-FI") or
+       flag:startswith("-wd") or
+       flag:startswith("-we") or
+       flag:startswith("-wo") then
+        return true
+    end
+end
 
 -- attempt to check it from the argument list
 function _check_from_arglist(flags, opt)
@@ -88,6 +128,12 @@ end
 -- @return      true or false
 --
 function main(flags, opt)
+
+    -- attempt to check it from known flags
+    opt = opt or {}
+    if _check_from_knownargs(flags, opt) then
+        return true
+    end
 
     -- attempt to check it from the argument list
     if _check_from_arglist(flags, opt) then
