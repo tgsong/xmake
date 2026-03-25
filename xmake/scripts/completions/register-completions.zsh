@@ -18,23 +18,36 @@
 # @homepage    register-completions.zsh
 #
 
-# zsh parameter completion for xmake
-_xmake_zsh_complete()
-{
-  local words
-  read -Ac words
-  local completions=("$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.utils.complete 0 nospace "$words")")
-  reply=( "${(ps:\n:)completions}" )
+# zsh parameter completion for xmake (using compsys)
+_xmake_zsh_complete() {
+    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.utils.complete 0 nospace "$words")}")
+    compadd -Q -S '' -- ${completions[@]}
 }
-compctl -f -S "" -K _xmake_zsh_complete xmake
 
-# zsh parameter completion for xrepo
-_xrepo_zsh_complete()
-{
-  local words
-  read -Ac words
-  local completions=("$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.xrepo.complete 0 nospace "$words")")
-  reply=( "${(ps:\n:)completions}" )
+# zsh parameter completion for xrepo (using compsys)
+_xrepo_zsh_complete() {
+    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.xrepo.complete 0 nospace "$words")}")
+    compadd -Q -S '' -- ${completions[@]}
 }
-compctl -f -S "" -K _xrepo_zsh_complete xrepo
 
+# register completions using compdef (modern zsh completion system)
+if (( $+functions[compdef] )); then
+    compdef _xmake_zsh_complete xmake
+    compdef _xrepo_zsh_complete xrepo
+else
+    # fallback to compctl for older zsh without compsys
+    _xmake_zsh_complete_legacy() {
+        local words
+        read -Ac words
+        local completions=("$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.utils.complete 0 nospace "$words")")
+        reply=( "${(ps:\n:)completions}" )
+    }
+    _xrepo_zsh_complete_legacy() {
+        local words
+        read -Ac words
+        local completions=("$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.xrepo.complete 0 nospace "$words")")
+        reply=( "${(ps:\n:)completions}" )
+    }
+    compctl -f -S "" -K _xmake_zsh_complete_legacy xmake
+    compctl -f -S "" -K _xrepo_zsh_complete_legacy xrepo
+fi
