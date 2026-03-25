@@ -22,13 +22,13 @@
 
 # zsh parameter completion for xmake
 _xmake_zsh_complete() {
-    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.utils.complete 0 nospace "$words")}")
+    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y XMAKE_COLORTERM=nocolor xmake lua private.utils.complete 0 nospace "$words" 2>/dev/null)}")
     compadd -Q -S '' -- ${completions[@]}
 }
 
 # zsh parameter completion for xrepo
 _xrepo_zsh_complete() {
-    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y xmake lua private.xrepo.complete 0 nospace "$words")}")
+    local completions=("${(@f)$(XMAKE_SKIP_HISTORY=1 XMAKE_ROOT=y XMAKE_COLORTERM=nocolor xmake lua private.xrepo.complete 0 nospace "$words" 2>/dev/null)}")
     compadd -Q -S '' -- ${completions[@]}
 }
 
