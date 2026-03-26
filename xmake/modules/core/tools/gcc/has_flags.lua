@@ -50,27 +50,18 @@ function _check_from_knownargs(flags, opt, islinker)
     local flag = flags[1]
     local known_flags = _g.known_flags
     if known_flags == nil then
-        known_flags = hashset.from({
-            "-O", "-O0", "-O1", "-O2", "-O3", "-Os",
-            "-g", "-g0", "-g1", "-g2", "-g3",
-            "-c", "-S", "-E", "-v",
-            "-pipe", "-pthread", "-shared", "-static",
-            "-fPIC", "-fPIE", "-fpic", "-fpie",
-            "-fno-exceptions", "-fexceptions",
-            "-fno-rtti", "-frtti",
-            "-fomit-frame-pointer", "-fno-omit-frame-pointer",
-            "-ffunction-sections", "-fdata-sections",
-            "-fno-strict-aliasing", "-fstrict-aliasing",
-            "-fstack-protector", "-fno-stack-protector",
-            "-fno-common",
-            "-MMD", "-MD", "-MP",
-            "-Wall", "-Wextra", "-Werror", "-pedantic",
-            "-w"
-        })
+        known_flags = hashset.from({"-O", "-O0", "-O1", "-O2", "-O3", "-Os", "-g"})
         _g.known_flags = known_flags
     end
     if known_flags:has(flag) then
         return true
+    end
+    if not islinker then
+        if flag:startswith("-D") or
+           flag:startswith("-U") or
+           flag:startswith("-I") then
+            return true
+        end
     end
 end
 
