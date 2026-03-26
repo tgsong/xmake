@@ -175,7 +175,14 @@ function _instance:__gc()
     end
 end
 
--- new a bloom filter, e.g. {probability = 0.001, hash_count = 3, item_maxn = 1000000}
+-- create a new bloom filter
+--
+-- @param opt   the options
+--              - probability:  false positive rate (default: 0.001), supports 0.1 ~ 0.000001
+--              - hash_count:   the hash function count (default: 3)
+--              - item_maxn:    the maximum item count (default: 1000000)
+-- @return      the bloom filter instance, or nil and error info
+--
 function bloom_filter.new(opt)
     opt = opt or {}
     local probability = opt.probability or 0.001

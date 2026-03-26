@@ -69,7 +69,11 @@ function config._is_value(value, ...)
     return false
 end
 
--- get the current given configuration
+-- get the current given configuration value
+--
+-- @param name  the configuration name, e.g. "plat", "arch", "mode"
+-- @return      the configuration value
+--
 function config.get(name)
     local value = nil
     if config._CONFIGS then
@@ -105,17 +109,26 @@ function config.set(name, value, opt)
     end
 end
 
--- get the current platform
+-- get the current platform, e.g. "windows", "linux", "macosx"
+--
+-- @return      the platform name
+--
 function config.plat()
     return config.get("plat")
 end
 
--- get the current architecture
+-- get the current architecture, e.g. "x86_64", "arm64"
+--
+-- @return      the architecture name
+--
 function config.arch()
     return config.get("arch")
 end
 
--- get the current mode
+-- get the current build mode, e.g. "debug", "release"
+--
+-- @return      the mode name
+--
 function config.mode()
     return config.get("mode")
 end
@@ -189,6 +202,9 @@ function config.cachedir()
 end
 
 -- get the configure directory on the current host/arch platform
+--
+-- @return      the configuration cache directory, e.g. ".xmake/macosx/x86_64"
+--
 function config.directory()
     if config._DIRECTORY == nil then
         local rootdir = os.getenv("XMAKE_CONFIGDIR")
