@@ -744,23 +744,40 @@ function socket.open(socktype, family)
 end
 
 -- open tcp socket
+--
+-- @param opt   the options, e.g. {family = socket.IPV6}
+-- @return      the socket instance, or nil and error info
+--
 function socket.tcp(opt)
     opt = opt or {}
     return socket.open(socket.TCP, opt.family or socket.IPV4)
 end
 
 -- open udp socket
+--
+-- @param opt   the options, e.g. {family = socket.IPV6}
+-- @return      the socket instance, or nil and error info
+--
 function socket.udp(opt)
     opt = opt or {}
     return socket.open(socket.UDP, opt.family or socket.IPV4)
 end
 
--- open unix socket
+-- open unix domain socket
+--
+-- @return      the socket instance, or nil and error info
+--
 function socket.unix(opt)
     return socket.open(socket.TCP, socket.UNIX)
 end
 
 -- open and bind tcp socket
+--
+-- @param addr  the bind address, e.g. "0.0.0.0", "127.0.0.1"
+-- @param port  the bind port
+-- @param opt   the options (optional)
+-- @return      the bound socket, or nil and error info
+--
 function socket.bind(addr, port, opt)
     local sock, errors = socket.tcp(opt)
     if not sock then
@@ -775,6 +792,11 @@ function socket.bind(addr, port, opt)
 end
 
 -- open and bind tcp socket from the unix address
+--
+-- @param addr  the unix socket path
+-- @param opt   the options (optional)
+-- @return      the bound socket, or nil and error info
+--
 function socket.bind_unix(addr, opt)
     local sock, errors = socket.unix(opt)
     if not sock then
@@ -789,6 +811,12 @@ function socket.bind_unix(addr, opt)
 end
 
 -- open and connect tcp socket
+--
+-- @param addr  the server address
+-- @param port  the server port
+-- @param opt   the options (optional)
+-- @return      the connected socket, or nil and error info
+--
 function socket.connect(addr, port, opt)
     local sock, errors = socket.tcp(opt)
     if not sock then
@@ -803,6 +831,11 @@ function socket.connect(addr, port, opt)
 end
 
 -- open and connect tcp socket from the unix address
+--
+-- @param addr  the unix socket path
+-- @param opt   the options (optional)
+-- @return      the connected socket, or nil and error info
+--
 function socket.connect_unix(addr, opt)
     local sock, errors = socket.unix(opt)
     if not sock then

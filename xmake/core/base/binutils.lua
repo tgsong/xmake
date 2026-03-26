@@ -36,7 +36,12 @@ binutils._rpath_clean = binutils._rpath_clean or binutils.rpath_clean
 binutils._extractlib = binutils._extractlib or binutils.extractlib
 binutils._format = binutils._format or binutils.format
 
--- generate c/c++ code from the binary file
+-- generate c/c++ header with binary data from the binary file
+--
+-- @param binaryfile    the input binary file path
+-- @param outputfile    the output header file path
+-- @param opt           the options, e.g. {nozeroend = true}
+--
 function binutils.bin2c(binaryfile, outputfile, opt)
     opt = opt or {}
     if binutils._bin2c then
@@ -95,7 +100,11 @@ function binutils.bin2obj(binaryfile, outputfile, opt)
     end
 end
 
--- get binary file format (auto-detect format: coff, elf, macho, ar, pe, unknown)
+-- get binary file format (auto-detect: coff, elf, macho, ar, pe, unknown)
+--
+-- @param binaryfile    the binary file path
+-- @return              the format string
+--
 function binutils.format(binaryfile)
     if binutils._format then
         return binutils._format(binaryfile)
@@ -105,7 +114,11 @@ function binutils.format(binaryfile)
 end
 
 
--- read symbols from object file (auto-detect format: COFF, ELF, or Mach-O)
+-- read symbols from object file (auto-detect: COFF, ELF, or Mach-O)
+--
+-- @param binaryfile    the binary file path
+-- @return              the symbols table, or nil and error info
+--
 function binutils.readsyms(binaryfile)
     if binutils._readsyms then
         return binutils._readsyms(binaryfile)
@@ -114,7 +127,11 @@ function binutils.readsyms(binaryfile)
     end
 end
 
--- get dependent libraries from binary file (auto-detect format: COFF, ELF, or Mach-O)
+-- get dependent libraries from binary file (auto-detect: COFF, ELF, or Mach-O)
+--
+-- @param binaryfile    the binary file path
+-- @return              the dependent libraries table, or nil and error info
+--
 function binutils.deplibs(binaryfile)
     if binutils._deplibs then
         return binutils._deplibs(binaryfile)
@@ -123,7 +140,11 @@ function binutils.deplibs(binaryfile)
     end
 end
 
--- get rpath list from binary file (auto-detect format: ELF or Mach-O)
+-- get rpath list from binary file (auto-detect: ELF or Mach-O)
+--
+-- @param binaryfile    the binary file path
+-- @return              the rpath list table, or nil and error info
+--
 function binutils.rpath_list(binaryfile)
     if binutils._rpath_list then
         return binutils._rpath_list(binaryfile)
@@ -134,7 +155,11 @@ end
 
 -- insert rpath to binary file (auto-detect format: ELF or Mach-O)
 
--- clean rpaths from binary file (auto-detect format: ELF or Mach-O)
+-- clean rpaths from binary file (auto-detect: ELF or Mach-O)
+--
+-- @param binaryfile    the binary file path
+-- @return              true on success, or false and error info
+--
 function binutils.rpath_clean(binaryfile)
     if binutils._rpath_clean then
         return binutils._rpath_clean(binaryfile)

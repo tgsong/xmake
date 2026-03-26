@@ -355,7 +355,10 @@ function tty._find_shell_from_parent()
     end
 end
 
--- get shell name
+-- get shell name, e.g. "bash", "zsh", "powershell", "cmd", "nu"
+--
+-- @return      the shell name string
+--
 function tty.shell()
     local shell = tty._SHELL
     if shell == nil then
@@ -464,7 +467,10 @@ function tty.term()
     return tty._TERM
 end
 
--- has emoji?
+-- does the terminal support emoji?
+--
+-- @return      true if supported
+--
 function tty.has_emoji()
     local has_emoji = tty._HAS_EMOJI
     if has_emoji == nil then

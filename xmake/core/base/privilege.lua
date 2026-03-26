@@ -24,7 +24,10 @@ local privilege = privilege or {}
 -- load modules
 local os = require("base/os")
 
--- store privilege
+-- store current privilege by dropping root to original user
+--
+-- @return      true if privilege was stored, false if not root
+--
 function privilege.store()
 
     -- check if root
@@ -73,10 +76,17 @@ function privilege.store()
 end
 
 -- check if has stored privilege
+--
+-- @return      true if privilege was previously stored
+--
 function privilege.has()
     return privilege._HAS_PRIVILEGE or false
 end
 
+-- restore root privilege temporarily
+--
+-- @return      true if privilege was restored
+--
 function privilege.get()
 
     -- has?

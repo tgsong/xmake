@@ -66,17 +66,10 @@ function linuxos._uname_r()
     return uname_r or nil
 end
 
--- get system name
+-- get linux distribution name
 --
--- e.g.
---  - ubuntu
---  - debian
---  - archlinux
---  - rhel
---  - centos
---  - fedora
---  - opensuse
---  - ...
+-- @return      the distribution name string, e.g. "ubuntu", "debian", "archlinux", "fedora"
+--
 function linuxos.name()
     local name = linuxos._NAME
     if name == nil then
@@ -138,7 +131,10 @@ function linuxos.name()
     return name
 end
 
--- get system version
+-- get linux distribution version
+--
+-- @return      the semver version object
+--
 function linuxos.version()
     local version = linuxos._VERSION
     if version == nil then
@@ -198,6 +194,9 @@ function linuxos.version()
 end
 
 -- get linux kernel version
+--
+-- @return      the semver version object
+--
 function linuxos.kernelver()
     local version = linuxos._KERNELVER
     if version == nil then
