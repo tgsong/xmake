@@ -89,7 +89,11 @@ if xmake._ARCH:startswith("arm") then
     end
 end
 
--- join all objects and tables
+-- join all objects and tables into a new table
+--
+-- @param ...   the tables or values to join
+-- @return      the new joined table
+--
 function table.join(...)
     local result = {}
     for _, t in ipairs({...}) do
@@ -105,7 +109,12 @@ function table.join(...)
     return result
 end
 
--- join all objects and tables to self
+-- join all objects and tables to self (in-place)
+--
+-- @param self  the destination table
+-- @param ...   the tables or values to append
+-- @return      the destination table
+--
 function table.join2(self, ...)
     for _, t in ipairs({...}) do
         if type(t) == "table" and not t.__wrap_locked__ then
@@ -189,6 +198,10 @@ function table.copy2(self, copied)
 end
 
 -- inherit interfaces and create a new instance
+--
+-- @param ...   the base classes to inherit from
+-- @return      the new instance with inherited interfaces
+--
 function table.inherit(...)
     local classes = {...}
     local instance = {}
@@ -240,6 +253,13 @@ function table.inherit2(self, ...)
 end
 
 -- slice table array
+--
+-- @param self  the source array
+-- @param first the start index (default: 1)
+-- @param last  the end index (default: #self)
+-- @param step  the step (default: 1)
+-- @return      the sliced array
+--
 function table.slice(self, first, last, step)
     local sliced = {}
     for i = first or 1, last or #self, step or 1 do
@@ -258,8 +278,12 @@ function table.is_dictionary(dict)
     return type(dict) == "table" and dict[1] == nil
 end
 
--- does contain the given values in table?
--- contains arg1 or arg2 ...
+-- does the table contain any of the given values?
+--
+-- @param t     the table
+-- @param ...   the values to check (returns true if any is found)
+-- @return      true if any value is found
+--
 function table.contains(t, arg1, arg2, ...)
     local found = false
     if arg2 == nil then -- only one value
@@ -325,7 +349,11 @@ function table.to_array(iterator, state, var)
     return result, count
 end
 
--- unwrap array if be only one value
+-- unwrap array, return the value directly if only one element
+--
+-- @param array the array table
+-- @return      the single value, or the original array if multiple elements
+--
 function table.unwrap(array)
     if type(array) == "table" and not array.__wrap_locked__ then
         if #array == 1 then
@@ -335,7 +363,11 @@ function table.unwrap(array)
     return array
 end
 
--- wrap value to array
+-- wrap value to array, ensure the result is always a table
+--
+-- @param value the value (nil returns {}, table returns as-is, other wraps in {})
+-- @return      the array table
+--
 function table.wrap(value)
     if nil == value then
         return {}
@@ -365,7 +397,12 @@ function table.wrap_unlock(value)
     return value
 end
 
--- remove repeat from the given array
+-- remove duplicate values from the given array
+--
+-- @param array     the array table
+-- @param barrier   keep order with barrier? (optional)
+-- @return          the deduplicated array
+--
 function table.unique(array, barrier)
     if table.is_array(array) then
         if table.getn(array) ~= 1 then
@@ -430,6 +467,10 @@ end
 table.unpack = table.unpack or unpack
 
 -- get keys of a table
+--
+-- @param tbl   the table
+-- @return      the keys array
+--
 function table.keys(tbl)
     local keyset = {}
     local n = 0
@@ -440,7 +481,12 @@ function table.keys(tbl)
     return keyset, n
 end
 
--- get order keys of a table
+-- get sorted keys of a table
+--
+-- @param tbl       the table
+-- @param callback  the sort comparator function (optional)
+-- @return          the sorted keys array
+--
 function table.orderkeys(tbl, callback)
     local callback = type(callback) == "function" and callback or nil
     local keys = table.keys(tbl)
@@ -475,6 +521,10 @@ function table.orderpairs(t, callback)
 end
 
 -- get values of a table
+--
+-- @param tbl   the table
+-- @return      the values array
+--
 function table.values(tbl)
     local valueset = {}
     local n = 0
@@ -514,6 +564,11 @@ function table.reverse(arr)
 end
 
 -- remove values if predicate is matched
+--
+-- @param tbl   the table
+-- @param pred  the predicate function, e.g. function(v, k) return v == "xxx" end
+-- @return      the modified table
+--
 function table.remove_if(tbl, pred)
     if table.is_array(tbl) then
         for i = #tbl, 1, -1 do
@@ -537,6 +592,11 @@ function table.empty(tbl)
 end
 
 -- return indices or keys for the given value
+--
+-- @param tbl   the table
+-- @param value the value to find
+-- @return      the index/key, or nil if not found
+--
 function table.find(tbl, value)
     local result
     if table.is_array(tbl) then

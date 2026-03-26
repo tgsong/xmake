@@ -252,6 +252,10 @@ function hashset:clone()
 end
 
 -- construct from list of items
+--
+-- @param ...   the items to insert
+-- @return      the new hashset
+--
 function hashset.of(...)
     local result = hashset.new()
     local data = table.pack(...)
@@ -262,6 +266,10 @@ function hashset.of(...)
 end
 
 -- construct from an array
+--
+-- @param array the array of items to insert
+-- @return      the new hashset
+--
 function hashset.from(array)
     local result = hashset.new()
     for i = 1, #array do
@@ -270,7 +278,10 @@ function hashset.from(array)
     return result
 end
 
--- new hashset
+-- create a new empty hashset
+--
+-- @return      the new hashset
+--
 function hashset.new()
     return hashset {{}, 0}
 end

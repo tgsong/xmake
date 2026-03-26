@@ -191,7 +191,11 @@ function _instance.__concat(op1, op2)
     end
 end
 
--- new an instance
+-- create a new semver instance
+--
+-- @param version   the version string, e.g. "1.2.3", ">=1.0 <2.0"
+-- @return          the semver instance, or nil and error info
+--
 function semver.new(version)
 
     -- parse version first
@@ -207,6 +211,12 @@ function semver.new(version)
 end
 
 -- try to match valid version from string
+--
+-- @param str       the input string
+-- @param pos       the start position (optional, default is 1)
+-- @param pattern   the match patterns (optional)
+-- @return          the semver instance, or nil if not found
+--
 function semver.match(str, pos, pattern)
     local patterns = pattern or {"%d+[.]%d+[-+.%w]*", "%d+[.]%d+[.]%d+", "%d+[.]%d+"}
     for _, pattern in ipairs(table.wrap(patterns)) do

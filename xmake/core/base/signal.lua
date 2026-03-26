@@ -28,16 +28,26 @@ local os = require("base/os")
 signal.SIGINT = 2
 
 -- register signal handler
+--
+-- @param signo     the signal number, e.g. signal.SIGINT
+-- @param handler   the handler function
+--
 function signal.register(signo, handler)
     os.signal(signo, handler)
 end
 
--- reset signal, SIGDFL
+-- reset signal to default handler (SIGDFL)
+--
+-- @param signo     the signal number
+--
 function signal.reset(signo)
     os.signal(signo, 1)
 end
 
--- ignore signal, SIGIGN
+-- ignore signal (SIGIGN)
+--
+-- @param signo     the signal number
+--
 function signal.ignore(signo)
     os.signal(signo, 2)
 end
