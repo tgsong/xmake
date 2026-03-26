@@ -72,12 +72,6 @@ function _check_from_knownargs(flags, opt, islinker)
     if known_flags:has(flag) then
         return true
     end
-    -- check flags with known prefixes
-    if not islinker then
-        if flag:startswith("-Wno-") then   -- -Wno-xxx is always silently accepted
-            return true
-        end
-    end
 end
 
 -- attempt to check it from the argument list
