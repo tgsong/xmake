@@ -21,25 +21,7 @@
 -- imports
 import("core.language.language")
 import("core.cache.global_detectcache")
-import("core.base.hashset")
-
--- attempt to check it from known flags
-function _check_from_knownargs(flags, opt)
-    local flag = flags[1]:gsub("/", "-")
-    local known_flags = _g.known_flags
-    if known_flags == nil then
-        known_flags = hashset.from({"-Ox", "-O1", "-O2", "-Od", "-MT", "-MD", "-MTd", "-MDd", "-EHsc"})
-        _g.known_flags = known_flags
-    end
-    if known_flags:has(flag) then
-        return true
-    end
-    if flag:startswith("-D") or
-       flag:startswith("-U") or
-       flag:startswith("-I") then
-        return true
-    end
-end
+import("core.tools.cl.check_knownargs")
 
 -- attempt to check it from the argument list
 function _check_from_arglist(flags, opt)
@@ -57,11 +39,7 @@ function _check_from_arglist(flags, opt)
         global_detectcache:set2(key, flagskey, allflags)
         global_detectcache:save()
     end
-    local flag = flags[1]:gsub("/", "-")
-    if flag:startswith("-D") or flag:startswith("-I") then
-        return true
-    end
-    return allflags[flag]
+    return allflags[flags[1]:gsub("/", "-")]
 end
 
 -- get extension
@@ -114,7 +92,7 @@ function main(flags, opt)
     -- attempt to check it from the argument list
     opt = opt or {}
     if not opt.tryrun then
-        if _check_from_knownargs(flags, opt) then
+        if check_knownargs(flags) then
             return true
         end
         if _check_from_arglist(flags, opt) then

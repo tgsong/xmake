@@ -21,36 +21,26 @@
 -- imports
 import("core.cache.detectcache")
 import("core.language.language")
+import("core.tools.cl.check_knownargs")
 
 -- attempt to check it from the argument list
 function _check_from_arglist(flags, opt)
-
-    -- only one flag?
     if #flags > 1 then
         return
     end
-
-    -- make cache key
     local key = "core.tools.clang_cl.has_flags"
-
-    -- make allflags key
     local flagskey = opt.program .. "_" .. (opt.programver or "")
-
-    -- get all allflags from argument list
     local allflags = detectcache:get2(key, flagskey)
     if not allflags then
-
-        -- get argument list
         allflags = {}
-        local arglist = os.iorunv(opt.program, {"-?"})
+        local arglist = os.iorunv(opt.program, {"-?"}, {envs = opt.envs})
         if arglist then
             for arg in arglist:gmatch("(/[%-%a%d]+)%s+") do
                 allflags[arg:gsub("/", "-")] = true
             end
         end
-
-        -- save cache
         detectcache:set2(key, flagskey, allflags)
+        detectcache:save()
     end
     return allflags[flags[1]:gsub("/", "-")]
 end
@@ -88,6 +78,12 @@ end
 -- @return      true or false
 --
 function main(flags, opt)
+
+    -- attempt to check it from known flags
+    opt = opt or {}
+    if check_knownargs(flags) then
+        return true
+    end
 
     -- attempt to check it from the argument list
     if _check_from_arglist(flags, opt) then
