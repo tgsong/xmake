@@ -48,6 +48,16 @@ function nf_define(self, macro)
     return {"-D" .. macro}
 end
 
+-- make the includedir flag (for @cImport)
+function nf_includedir(self, dir)
+    return {"-I", dir}
+end
+
+-- make the sysincludedir flag (for @cImport)
+function nf_sysincludedir(self, dir)
+    return nf_includedir(self, dir)
+end
+
 -- make the optimize flag
 function nf_optimize(self, level)
     local maps =

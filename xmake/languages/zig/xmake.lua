@@ -36,6 +36,9 @@ language("zig")
         ,   "target.warnings"
         ,   "target.optimize:check"
         ,   "target.vectorexts:check"
+        ,   "target.includedirs"
+        ,   "target.sysincludedirs"
+        ,   "target.defines"
         }
     ,   binary = {
             "config.linkdirs"
