@@ -818,6 +818,9 @@ function project.rcfiles()
 end
 
 -- get the project directory
+--
+-- @return      the project root directory path
+--
 function project.directory()
     return os.projectdir()
 end
@@ -862,6 +865,9 @@ function project.extraconf(name, item, key)
 end
 
 -- get the project name
+--
+-- @return      the project name string defined by set_project()
+--
 function project.name()
     local name = project.get("project")
     -- TODO multi project names? we only get the first name now.
@@ -987,7 +993,12 @@ function project.is_loaded()
     return project._memcache():get("targets_loaded")
 end
 
--- get the given target
+-- get the given target by name
+--
+-- @param name  the target name
+-- @param opt   the options (optional)
+-- @return      the target instance, or nil if not found
+--
 function project.target(name, opt)
     opt = opt or {}
     local targets = project.targets()
@@ -1009,7 +1020,10 @@ function project.target_add(t)
     end
 end
 
--- get targets
+-- get all targets
+--
+-- @return      the targets table {name = target_instance, ...}
+--
 function project.targets()
     local loading = false
     local targets = project._memcache():get("targets")
@@ -1079,6 +1093,9 @@ function project.required_package(name)
 end
 
 -- get required packages
+--
+-- @return      the required packages table {name = package_instance, ...}
+--
 function project.required_packages()
     local requires = project._memcache():get("requires")
     if not requires then

@@ -217,7 +217,10 @@ function list:ritems()
     return iter, self, nil
 end
 
--- new list
+-- create a new doubly-linked list
+--
+-- @return      the list instance
+--
 function list.new()
     return list()
 end

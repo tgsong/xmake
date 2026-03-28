@@ -117,6 +117,11 @@ function compiler._load_tool(sourcekind, target)
 end
 
 -- load the compiler from the given source kind
+--
+-- @param sourcekind    the source kind, e.g. "cc", "cxx", "mm", "mxx", "as", "gc", "dc", "rc", "sc", "cs"
+-- @param target        the target or options table, e.g. {target = target}
+-- @return              the compiler instance, or nil and error info
+--
 function compiler.load(sourcekind, target)
     if not sourcekind then
         return nil, "unknown source kind!"
@@ -204,6 +209,11 @@ function compiler.load(sourcekind, target)
 end
 
 -- build the source files (compile and link)
+--
+-- @param sourcefiles   the source file paths
+-- @param targetfile    the target file path
+-- @param opt           the options, e.g. {target = target, configs = {}}
+--
 function compiler:build(sourcefiles, targetfile, opt)
     opt = opt or {}
 
@@ -265,6 +275,11 @@ function compiler:buildcmd(sourcefiles, targetfile, opt)
 end
 
 -- compile the source files
+--
+-- @param sourcefiles   the source file paths
+-- @param objectfile    the output object file path
+-- @param opt           the options, e.g. {target = target, compflags = {}, dependinfo = {}}
+--
 function compiler:compile(sourcefiles, objectfile, opt)
     opt = opt or {}
 

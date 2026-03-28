@@ -722,7 +722,12 @@ function toolchain.add_directories(...)
     toolchain._DIRS = table.unique(dirs)
 end
 
--- load toolchain
+-- load toolchain by name
+--
+-- @param name  the toolchain name, e.g. "gcc", "clang", "msvc", "dotnet"
+-- @param opt   the options, e.g. {plat = "linux", arch = "x86_64"}
+-- @return      the toolchain instance, or nil and error info
+--
 function toolchain.load(name, opt)
     opt = opt or {}
 

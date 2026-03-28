@@ -51,6 +51,11 @@ function _get_depfiles_parser(depfiles_format)
 end
 
 -- load dependent info from the given file (.d)
+--
+-- @param dependfile    the depend file path
+-- @param opt           the options, e.g. {target = target}
+-- @return              the depend info table, or nil if not found
+--
 function load(dependfile, opt)
     if os.isfile(dependfile) then
         -- may be the depend file has been incomplete when if the compilation process is abnormally interrupted
@@ -83,6 +88,10 @@ function _is_show_diagnosis_info()
 end
 
 -- save dependent info to file
+--
+-- @param dependinfo    the depend info table {files = {}, values = {}}
+-- @param dependfile    the depend file path
+--
 function save(dependinfo, dependfile)
     io.save(dependfile, dependinfo)
 end

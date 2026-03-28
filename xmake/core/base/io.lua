@@ -476,6 +476,11 @@ function _filelock:__gc()
 end
 
 -- read all lines from file
+--
+-- @param filepath  the file path
+-- @param opt       the options, e.g. {encoding = "utf8", continuation = "\\"}
+-- @return          the lines iterator
+--
 function io.lines(filepath, opt)
     opt = opt or {}
     if opt.close_on_finished == nil then
@@ -489,6 +494,11 @@ function io.lines(filepath, opt)
 end
 
 -- read all data from file
+--
+-- @param filepath  the file path
+-- @param opt       the options, e.g. {encoding = "utf8"}
+-- @return          the file content string
+--
 function io.readfile(filepath, opt)
     opt = opt or {}
     local file, errors = io.open(tostring(filepath), "r", opt)
@@ -525,6 +535,12 @@ function io.flush()
 end
 
 -- write data to file
+--
+-- @param filepath  the file path
+-- @param data      the data string
+-- @param opt       the options, e.g. {encoding = "utf8"}
+-- @return          true on success, or false and error info
+--
 function io.writefile(filepath, data, opt)
     opt = opt or {}
     local file, errors = io.open(tostring(filepath), "w", opt)
@@ -583,6 +599,10 @@ function io.open(filepath, mode, opt)
 end
 
 -- open a filelock
+--
+-- @param filepath  the lock file path
+-- @return          the filelock object
+--
 function io.openlock(filepath)
     filepath = tostring(filepath)
     local lock = io.filelock_open(filepath)
@@ -625,7 +645,13 @@ function io.convert(inputfile, outputfile, opt)
     return io.writefile(outputfile, content, {encoding = to})
 end
 
--- save object the the given filepath
+-- save object to the given filepath
+--
+-- @param filepath  the file path
+-- @param object    the object to serialize (table, string, number, boolean)
+-- @param opt       the options, e.g. {orderkeys = true}
+-- @return          true on success, or false and error info
+--
 function io.save(filepath, object, opt)
     opt = opt or {}
     assert(filepath and object)
@@ -659,6 +685,11 @@ function io.save(filepath, object, opt)
 end
 
 -- load object from the given file
+--
+-- @param filepath  the file path
+-- @param opt       the options, e.g. {encoding = "utf8"}
+-- @return          the deserialized object, or nil and error info
+--
 function io.load(filepath, opt)
     assert(filepath)
 
@@ -674,6 +705,13 @@ function io.load(filepath, opt)
 end
 
 -- gsub the given file and return replaced data
+--
+-- @param filepath  the file path
+-- @param pattern   the lua pattern string
+-- @param replace   the replacement string or function
+-- @param opt       the options, e.g. {encoding = "utf8"}
+-- @return          the replaced data string, the replacement count
+--
 function io.gsub(filepath, pattern, replace, opt)
 
     -- read all data from file
@@ -699,6 +737,13 @@ function io.gsub(filepath, pattern, replace, opt)
 end
 
 -- replace text of the given file and return new file data
+--
+-- @param filepath  the file path
+-- @param pattern   the plain text or lua pattern to search
+-- @param replace   the replacement string
+-- @param opt       the options, e.g. {plain = true, encoding = "utf8"}
+-- @return          the replaced data string, the replacement count
+--
 function io.replace(filepath, pattern, replace, opt)
     opt = opt or {}
     local data, errors = io.readfile(filepath, opt)
@@ -745,6 +790,12 @@ function io.insert(filepath, lineidx, text, opt)
 end
 
 -- cat the given file
+--
+-- @param filepath  the file path
+-- @param linecount the line count to read (optional, read all if nil)
+-- @param opt       the options, e.g. {encoding = "utf8"}
+-- @return          the file content string
+--
 function io.cat(filepath, linecount, opt)
     opt = opt or {}
     local file = io.open(filepath, "r", opt)

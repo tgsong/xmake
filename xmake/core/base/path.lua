@@ -165,8 +165,12 @@ function _instance:__todisplay()
     return "<path: " .. (self:empty() and "empty" or self:str()) .. ">"
 end
 
--- get unix-style path, it is usually used on windows
+-- get unix-style path (forward slashes), it is usually used on windows
+--
+-- @param p     the path
+-- @return      the unix-style path with forward slashes
 -- @see https://github.com/xmake-io/xmake/issues/4731
+--
 function path.unix(p)
     return (tostring(p):gsub(path.sep(), "/"))
 end
@@ -202,6 +206,11 @@ function path.normalize(p)
 end
 
 -- get the directory of the path
+--
+-- @param p     the path
+-- @param sep   the path separator (optional, auto-detect if nil)
+-- @return      the directory part, e.g. path.directory("/tmp/file.txt") => "/tmp"
+--
 function path.directory(p, sep)
     p = tostring(p)
     if path._directory then
@@ -225,6 +234,11 @@ function path.directory(p, sep)
 end
 
 -- get absolute path
+--
+-- @param p         the path
+-- @param rootdir   the root directory (optional, default is os.curdir())
+-- @return          the absolute path
+--
 function path.absolute(p, rootdir)
     if rootdir then
         rootdir = tostring(rootdir)
@@ -233,6 +247,11 @@ function path.absolute(p, rootdir)
 end
 
 -- get relative path
+--
+-- @param p         the path
+-- @param rootdir   the root directory (optional, default is os.curdir())
+-- @return          the relative path
+--
 function path.relative(p, rootdir)
     if rootdir then
         rootdir = tostring(rootdir)
@@ -241,6 +260,11 @@ function path.relative(p, rootdir)
 end
 
 -- get the filename of the path
+--
+-- @param p     the path
+-- @param sep   the path separator (optional)
+-- @return      the filename with extension, e.g. path.filename("/tmp/file.txt") => "file.txt"
+--
 function path.filename(p, sep)
     p = tostring(p)
     local i =  0
@@ -257,7 +281,11 @@ function path.filename(p, sep)
     end
 end
 
--- get the basename of the path
+-- get the basename of the path (filename without extension)
+--
+-- @param p     the path
+-- @return      the basename, e.g. path.basename("/tmp/file.txt") => "file"
+--
 function path.basename(p)
     p = tostring(p)
     local name = path.filename(p)
@@ -269,7 +297,13 @@ function path.basename(p)
     end
 end
 
--- get the file extension of the path: .xxx
+-- get the file extension of the path
+--
+-- @param p     the path
+-- @param level the extension level (optional, default is 1)
+-- @return      the extension, e.g. path.extension("file.txt") => ".txt"
+--              path.extension("file.tar.gz", 2) => ".tar.gz"
+--
 function path.extension(p, level)
     p = tostring(p)
     local i = p:lastof(".", true)
@@ -288,12 +322,21 @@ function path.extension(p, level)
 end
 
 -- join path
+--
+-- @param p     the first path component
+-- @param ...   the remaining path components
+-- @return      the joined path
+--
 function path.join(p, ...)
     p = tostring(p)
     return path.translate(p .. path.sep() .. table.concat({...}, path.sep()))
 end
 
 -- split path by the separator
+--
+-- @param p     the path
+-- @return      the path components table
+--
 function path.split(p)
     p = tostring(p)
     return p:split("[/\\]")
@@ -319,8 +362,11 @@ function path.envsep()
     return envsep
 end
 
--- split environment variable with `path.envsep()`,
--- also handles more speical cases such as posix flags and windows quoted paths
+-- split environment variable with `path.envsep()`
+--
+-- @param env_path  the environment variable value, e.g. "/usr/bin:/usr/local/bin"
+-- @return          the paths table
+--
 function path.splitenv(env_path)
     local result = {}
     if xmake._HOST == "windows" then
@@ -356,8 +402,12 @@ function path.splitenv(env_path)
     return result
 end
 
--- concat environment variable with `path.envsep()`,
--- also handles more speical cases such as posix flags and windows quoted paths
+-- concat environment variable with `path.envsep()`
+--
+-- @param paths     the paths table
+-- @param envsep    the separator (optional, default is path.envsep())
+-- @return          the joined environment variable string
+--
 function path.joinenv(paths, envsep)
     if not paths or #paths == 0 then
         return ""

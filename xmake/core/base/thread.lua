@@ -968,11 +968,18 @@ function thread.new(callback, opt)
 end
 
 -- get the running thread name
+--
+-- @return      the current thread name
+--
 function thread.running()
     return thread._RUNNING
 end
 
--- open a mutex
+-- create a mutex for thread synchronization
+--
+-- @param name  the mutex name for debugging
+-- @return      the mutex instance, or nil and error info
+--
 function thread.mutex(name)
     local mutex = thread.mutex_init()
     if mutex then
@@ -982,7 +989,11 @@ function thread.mutex(name)
     end
 end
 
--- open a event
+-- create an event for thread signaling
+--
+-- @param name  the event name for debugging
+-- @return      the event instance, or nil and error info
+--
 function thread.event(name)
     local event = thread.event_init()
     if event then
@@ -992,7 +1003,12 @@ function thread.event(name)
     end
 end
 
--- open a semaphore
+-- create a semaphore for thread synchronization
+--
+-- @param name  the semaphore name for debugging
+-- @param value the initial value (default: 0)
+-- @return      the semaphore instance, or nil and error info
+--
 function thread.semaphore(name, value)
     local semaphore = thread.semaphore_init(value or 0)
     if semaphore then
@@ -1002,7 +1018,11 @@ function thread.semaphore(name, value)
     end
 end
 
--- open a queue
+-- create a thread-safe queue
+--
+-- @param name  the queue name for debugging
+-- @return      the queue instance, or nil and error info
+--
 function thread.queue(name)
     local queue = thread.queue_init()
     if queue then
@@ -1012,7 +1032,11 @@ function thread.queue(name)
     end
 end
 
--- open a sharedata
+-- create a thread-safe shared data container
+--
+-- @param name  the sharedata name for debugging
+-- @return      the sharedata instance, or nil and error info
+--
 function thread.sharedata(name)
     local sharedata = thread.sharedata_init()
     if sharedata then

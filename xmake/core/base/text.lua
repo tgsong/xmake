@@ -160,7 +160,13 @@ function text._lastwbr(str, width, wordbreak)
     end
 end
 
--- break lines
+-- break text into lines at the given width with word wrapping
+--
+-- @param str   the text string or lines array
+-- @param width the maximum line width in characters
+-- @param opt   the options (optional)
+-- @return      the wrapped lines array
+--
 function text.wordwrap(str, width, opt)
 
     opt = opt or {}

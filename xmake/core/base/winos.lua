@@ -33,6 +33,10 @@ winos._registry_keys   = winos._registry_keys or winos.registry_keys
 winos._registry_values = winos._registry_values or winos.registry_values
 winos._processes       = winos._processes or winos.processes
 
+-- get the ANSI code page
+--
+-- @return      the code page number
+--
 function winos.ansi_cp()
     if not winos._ANSI_CP then
          winos._ANSI_CP = winos._ansi_cp()
@@ -40,6 +44,10 @@ function winos.ansi_cp()
     return winos._ANSI_CP
 end
 
+-- get the OEM code page
+--
+-- @return      the code page number
+--
 function winos.oem_cp()
     if not winos._OEM_CP then
          winos._OEM_CP = winos._oem_cp()
@@ -114,7 +122,10 @@ function winos._version_le(self, version)
     end
 end
 
--- get system version
+-- get windows system version
+--
+-- @return      the version object, e.g. winos.version():major(), winos.version():eq("win10")
+--
 function winos.version()
     local winver = winos._VERSION
     if winver == nil then
@@ -156,6 +167,11 @@ function winos.version()
 end
 
 -- get command arguments on windows to solve 8192 character command line length limit
+--
+-- @param argv  the arguments list
+-- @param opt   the options, e.g. {program = "cl.exe", wrapflag = "@"}
+-- @return      the program, the new arguments list (may use @file)
+--
 function winos.cmdargv(argv, opt)
 
     -- too long arguments?

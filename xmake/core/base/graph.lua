@@ -549,7 +549,11 @@ function graph:_partial_topo_sort_recompute_dirty()
     self._partial_topo_dirty = false
 end
 
--- new graph
+-- create a new graph
+--
+-- @param directed  create a directed graph if true, undirected if false
+-- @return          the graph instance
+--
 function graph.new(directed)
     local gh = graph {directed}
     gh:clear()

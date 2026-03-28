@@ -153,17 +153,30 @@ function _instance:_ensure_opened()
     return true
 end
 
--- add watchdir
+-- add a directory to watch
+--
+-- @param watchdir  the directory path to watch
+-- @param opt       the options, e.g. {recursion = true}
+-- @return          true on success, or false and error info
+--
 function fwatcher.add(watchdir, opt)
     return _instance:add(watchdir, opt)
 end
 
--- remove watchdir
+-- remove a directory from watch
+--
+-- @param watchdir  the directory path to remove
+-- @return          true on success, or false and error info
+--
 function fwatcher.remove(watchdir)
     return _instance:remove(watchdir)
 end
 
--- wait event
+-- wait for file system event
+--
+-- @param timeout   the timeout in milliseconds, -1 for infinite
+-- @return          the event, or nil on timeout
+--
 function fwatcher.wait(timeout)
     return _instance:wait(timeout)
 end

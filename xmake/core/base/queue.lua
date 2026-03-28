@@ -116,7 +116,10 @@ function queue:clone()
     return q
 end
 
--- new queue
+-- create a new FIFO queue
+--
+-- @return      the queue instance
+--
 function queue.new()
     return queue()
 end

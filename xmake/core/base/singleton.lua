@@ -45,6 +45,10 @@ local singleton = singleton or {}
 --     return instance
 -- end
 --
+-- @param key   the singleton key (string or function)
+-- @param init  the initializer function (optional)
+-- @return      the singleton instance, inited (true if already initialized)
+--
 function singleton.get(key, init)
 
     -- get key

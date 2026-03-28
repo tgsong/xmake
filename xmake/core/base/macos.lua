@@ -25,7 +25,10 @@ local macos = macos or {}
 local os     = require("base/os")
 local semver = require("base/semver")
 
--- get system version
+-- get macOS system version
+--
+-- @return      the semver version object, e.g. macos.version():ge("14.0")
+--
 function macos.version()
 
     -- get it from cache first

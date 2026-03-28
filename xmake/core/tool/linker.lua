@@ -115,6 +115,12 @@ function linker._load_tool(targetkind, sourcekinds, target)
 end
 
 -- load the linker from the given target kind
+--
+-- @param targetkind    the target kind, e.g. "binary", "shared", "static"
+-- @param sourcekinds   the source kinds table, e.g. {"cc", "cxx"}
+-- @param target        the target instance
+-- @return              the linker instance, or nil and error info
+--
 function linker.load(targetkind, sourcekinds, target)
     assert(sourcekinds)
 
@@ -227,6 +233,11 @@ function linker.load(targetkind, sourcekinds, target)
 end
 
 -- link the target file
+--
+-- @param objectfiles   the object file paths
+-- @param targetfile    the target file path
+-- @param opt           the options, e.g. {target = target, linkflags = {}}
+--
 function linker:link(objectfiles, targetfile, opt)
     opt = opt or {}
     local linkflags = opt.linkflags or self:linkflags(opt)

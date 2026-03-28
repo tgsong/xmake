@@ -25,6 +25,10 @@ local memory = memory or {}
 local os = require("base/os")
 
 -- get memory info
+--
+-- @param name  the specific info name (optional), e.g. "totalsize", "availsize", "usagerate"
+-- @return      the memory info table or specific value (sizes in bytes, usagerate in 0.0 ~ 1.0)
+--
 function memory.info(name)
     local meminfo = memory._MEMINFO
     local memtime = memory._MEMTIME
