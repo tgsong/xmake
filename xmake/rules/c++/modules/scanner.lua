@@ -556,7 +556,7 @@ function _schedule_module_dependencies_scan(target, jobgraph, sourcebatch)
                         local changed = memcache:get2(target:fullname(), "modules.changed")
                         if changed then
                             modules = modules or {}
-                            local moduleinfo = support.load_moduleinfo(target, sourcefile)
+                            local moduleinfo = assert(support.load_moduleinfo(target, sourcefile))
                             local module, headerunitsinfo = _parse_moduleinfo(target, moduleinfo)
                             modules[module.sourcefile] = module
                             for _, headerunitinfo in ipairs(headerunitsinfo) do
