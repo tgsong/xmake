@@ -385,7 +385,7 @@ function _patch_sourcebatch(target, sourcebatch)
                 local strict = target:policy("build.c++.modules.reuse.strict") or
                                target:policy("build.c++.modules.tryreuse.discriminate_on_defines")
                 local dep = target:dep(fileconfig.from_dep)
-                assert(dep, "dep target <%s> for <%s> not found", fileconfig.from_dep, target:fullname())
+                assert(dep, "dep target(%s) for target(%s) not found", fileconfig.from_dep, target:fullname())
                 local can_reuse = nocheck or _are_flags_compatible(target, dep, sourcefile, {strict = strict})
                 if can_reuse then
                     local _reused, from = support.is_reused(dep, sourcefile)
@@ -883,7 +883,15 @@ end
 
 function get_modules(target)
     local modules = support.localcache():get2(target:fullname(), "c++.modules")
-    assert(modules, "no modules! (" .. target:fullname() .. ")")
+    if not modules then
+        local targets = support.memcache():get("targets")
+        assert(targets, "module scanner did not run, maybe a custom `on_prepare()` script overrides the modules one.")
+
+        local target_fullname = target:fullname()
+        assert(targets[target_fullname], "module scanner did not run for target(%s), maybe a custom `on_prepare()` script overrides the modules one.", target_fullname)
+        assert(targets[target_fullname].finished_parsing, "target(%s): tried getting modules before scanner finished parsing.", target_fullname)
+        assert(false, "target(%s): no modules found!", target_fullname)
+    end
     return modules
 end
 
