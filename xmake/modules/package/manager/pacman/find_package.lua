@@ -50,6 +50,7 @@ function _find_package_from_list(list, name, pacman, opt)
     -- iterate over each file path inside the pacman package
     local result = {}
     for _, line in ipairs(list:split('\n', {plain = true})) do -- on msys cygpath should be used to convert local path to windows path
+        local line = line
         line = line:trim():split('%s+')[2]
         if line:find("/include/", 1, true) and (line:endswith(".h") or line:endswith(".hpp")) then
             if not line:startswith("/usr/include/") then
@@ -133,6 +134,7 @@ function _find_libfiles_from_list(list, name, pacman, opt)
     -- iterate over each file path inside the pacman package
     local libfiles
     for _, line in ipairs(list:split('\n', {plain = true})) do -- on msys cygpath should be used to convert local path to windows path
+        local line = line
         line = line:trim():split('%s+')[2]
         if line:endswith(".dll.a") then -- only for mingw
             local apath = path.join(pathtomsys, line)
@@ -185,6 +187,7 @@ function main(name, opt)
     local linkdirs = {}
     local pkgconfig_files = {}
     for _, line in ipairs(list:split('\n', {plain = true})) do
+        local line = line
         line = line:trim():split('%s+')[2]
         if line:find("/pkgconfig/", 1, true) and line:endswith(".pc") then
             table.insert(pkgconfig_files, line)

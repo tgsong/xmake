@@ -117,10 +117,12 @@ module_exit(hello_exit);
         if result then
             -- we can also split ';' for the muliple commands
             for _, line in ipairs(result:split("[\n;]")) do
+                local line = line
                 line = line:trim()
                 if line:endswith("stub.c") then
                     local include_cflag = false
                     for _, cflag in ipairs(line:split("%s+")) do
+                        local cflag = cflag
                         local has_cflag = false
                         if cflag:startswith("-fplugin=") then
                             -- @see https://github.com/xmake-io/xmake/issues/3279
@@ -172,6 +174,7 @@ module_exit(hello_exit);
                 if ldflags then
                     local ko = ldflags:find("-T ", 1, true)
                     for _, ldflag in ipairs(os.argv(ldflags)) do
+                        local ldflag = ldflag
                         if ldflag:endswith(".lds") then
                             if not path.is_absolute(ldflag) then
                                 ldflag = path.absolute(ldflag, builddir or sdkdir)

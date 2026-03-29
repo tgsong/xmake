@@ -33,6 +33,7 @@ function _make_compflags(sourcefile, target, vcprojdir)
     -- replace -Idir or /Idir, -Fdsymbol.pdb or /Fdsymbol.pdb
     local flags = {}
     for _, flag in ipairs(compflags) do
+        local flag = flag
 
         -- replace -Idir or /Idir
         flag = flag:gsub("[%-|/]I(.*)", function (dir)
@@ -75,6 +76,7 @@ function _make_linkflags(target, vcprojdir)
     -- replace -libpath:dir or /libpath:dir, -pdb:symbol.pdb or /pdb:symbol.pdb
     local flags = {}
     for _, flag in ipairs(linkflags) do
+        local flag = flag
 
         -- replace -libpath:dir or /libpath:dir
         flag = flag:gsub("[%-|/]libpath:(.*)", function (dir)

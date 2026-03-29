@@ -276,6 +276,7 @@ end
 -- remove the given files or directories
 function _add_remove_files(makefile, filedirs, outputdir)
     for _, filedir in ipairs(filedirs) do
+        local filedir = filedir
         filedir = _get_relative_unix_path(filedir, outputdir)
         makefile:print("\t%s", _get_cmd_rm(filedir))
     end
@@ -554,6 +555,7 @@ function _add_build_target(makefile, target, targetflags, outputdir)
     local objectfiles = target:objectfiles()
     local objectfiles_translated = {}
     for _, objectfile in ipairs(objectfiles) do
+        local objectfile = objectfile
         objectfile = _get_relative_unix_path(objectfile, outputdir)
         table.insert(objectfiles_translated, objectfile)
         makefile:write(" " .. objectfile)

@@ -77,6 +77,7 @@ function _make_filter(filepath, target, vcxprojdir)
             local rootdir = extraconf.rootdir
             assert(rootdir, "please set root directory, e.g. add_filegroups(%s, {rootdir = 'xxx'})", filegroup)
             for _, rootdir in ipairs(table.wrap(rootdir)) do
+                local rootdir = rootdir
                 if not path.is_absolute(rootdir) then
                     rootdir = path.absolute(rootdir, scriptdir)
                 end
@@ -84,6 +85,7 @@ function _make_filter(filepath, target, vcxprojdir)
                 local files = extraconf.files or "**"
                 local mode = extraconf.mode
                 for _, filepattern in ipairs(files) do
+                    local filepattern = filepattern
                     filepattern = path.pattern(path.absolute(path.join(rootdir, filepattern)))
                     if filepath:match(filepattern) then
                         if mode == "plain" then

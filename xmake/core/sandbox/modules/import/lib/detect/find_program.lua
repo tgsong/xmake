@@ -108,6 +108,7 @@ function sandbox_lib_detect_find_program._find_from_paths(name, paths, opt)
     -- attempt to check it from the given directories
     if not path.is_absolute(name) then
         for _, _path in ipairs(table.wrap(paths)) do
+            local _path = _path
 
             -- format path for builtin variables
             if type(_path) == "function" then
@@ -269,6 +270,7 @@ function sandbox_lib_detect_find_program._find(name, paths, opt)
         local ok, wherepaths = os.iorunv("where.exe", {program_name})
         if ok and wherepaths then
             for _, program_path in ipairs(wherepaths:split("\n")) do
+                local program_path = program_path
                 program_path = program_path:trim()
                 if #program_path > 0 then
                     local program_path_real = sandbox_lib_detect_find_program._check(program_path, opt)

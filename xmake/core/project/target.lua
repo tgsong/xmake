@@ -1410,6 +1410,7 @@ function _instance:pkgenvs()
             local envs = pkg:envs()
             if envs then
                 for name, values in table.orderpairs(envs) do
+                    local values = values
                     if type(values) == "table" then
                         values = path.joinenv(values)
                     end
@@ -1875,6 +1876,7 @@ function _instance:filerules(sourcefile)
             -- we can also get extensions from add_rules("xxx", {extensions = ".cpp"})
             local rule_extensions = self:extraconf("rules", r:name(), "extensions") or r:get("extensions")
             for _, extension in ipairs(table.wrap(rule_extensions)) do
+                local extension = extension
                 extension = extension:lower()
                 key2rules[extension] = key2rules[extension] or {}
                 table.insert(key2rules[extension], r)
@@ -1930,6 +1932,7 @@ function _instance:fileconfig(sourcefile, opt)
             local results = os.match(filepath)
             if #results > 0 then
                 for _, file in ipairs(results) do
+                    local file = file
                     if path.is_absolute(file) then
                         file = path.relative(file, os.projectdir())
                     end
@@ -2027,6 +2030,7 @@ function _instance:sourcefiles()
     local removed_count = 0
     local targetcache = memcache.cache("core.project.target")
     for _, file in ipairs(table.wrap(files)) do
+        local file = file
 
         -- mark as removed files?
         local removed = false
@@ -2074,6 +2078,7 @@ function _instance:sourcefiles()
 
         -- process source files
         for _, sourcefile in ipairs(results) do
+            local sourcefile = sourcefile
 
             -- convert to the relative path
             if path.is_absolute(sourcefile) then

@@ -520,6 +520,7 @@ function get_tests()
                     local scriptdir = target:scriptdir()
                     target_new:name_set(target:name() .. "_" .. name)
                     for _, file in ipairs(extra.files) do
+                        local file = file
                         file = path.absolute(file, scriptdir)
                         file = path.relative(file, os.projectdir())
                         target_new:add("files", file, {defines = extra.defines,
@@ -531,6 +532,7 @@ function get_tests()
                         project.target_add(target_new)
                     end
                     for _, file in ipairs(extra.remove_files) do
+                        local file = file
                         file = path.absolute(file, scriptdir)
                         file = path.relative(file, os.projectdir())
                         target_new:remove("files", file)
@@ -586,6 +588,7 @@ function main()
     if test_patterns then
         local tests_new = {}
         for _, pattern in ipairs(test_patterns) do
+            local pattern = pattern
             pattern = "^" .. path.pattern(pattern) .. "$"
             for name, testinfo in pairs(tests) do
                 if name:match(pattern) then

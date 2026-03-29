@@ -115,6 +115,7 @@ rule("utils.symbols.export_list")
             elseif exportkind == "apple" then
                 local file = io.open(exportfile_tmp, 'w')
                 for _, symbol in ipairs(exportsymbols) do
+                    local symbol = symbol
                     if not symbol:startswith("_") then
                         symbol = "_" .. symbol
                     end

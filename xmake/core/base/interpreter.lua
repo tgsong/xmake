@@ -117,6 +117,7 @@ end
 -- and we will only use the child values if be override mode
 function interpreter:_fetch_root_scope(root)
     for scope_kind_and_name, _ in pairs(root or {}) do
+        local scope_kind_and_name = scope_kind_and_name
 
         -- is scope_kind@@scope_name?
         scope_kind_and_name = scope_kind_and_name:split("@@", {plain = true})
@@ -340,6 +341,7 @@ function interpreter:_api_register_xxx_script(scope_kind, action, ...)
         if #patterns > 0 then
             local scripts = scope[name] or {}
             for _, pattern in ipairs(patterns) do
+                local pattern = pattern
 
                 -- check
                 assert(type(pattern) == "string")
@@ -460,6 +462,7 @@ function interpreter:_filter(values, level)
     if table.is_dictionary(values) then
         local results = {}
         for key, value in pairs(values) do
+            local key = key
             key = (type(key) == "string" and filter:handle(key) or key)
             if type(value) == "string" then
                 results[key] = filter:handle(value)
@@ -501,6 +504,7 @@ function interpreter:_handle(scope, deduplicate, enable_filter)
     -- remove repeat values and unwrap it
     local results = {}
     for name, values in pairs(scope) do
+        local values = values
 
         -- filter values
         --
@@ -1665,6 +1669,7 @@ function interpreter:api_define(apis)
     local definitions = self._API_DEFINITIONS or {}
     for apitype, apifuncs in pairs(apis) do
         for _, apifunc in ipairs(apifuncs) do
+            local apifunc = apifunc
 
             -- is {"apifunc", apiscript}?
             local apiscript = nil

@@ -667,6 +667,7 @@ function configure(package, configs, opt)
     -- pass configurations
     local argv = {}
     for name, value in pairs(_get_configs(package, configs)) do
+        local value = value
         value = tostring(value):trim()
         if value ~= "" then
             if type(name) == "number" then
@@ -721,6 +722,7 @@ function build(package, configs, opt)
     end
     if opt.makeconfigs then
         for name, value in pairs(opt.makeconfigs) do
+            local value = value
             value = tostring(value):trim()
             if value ~= "" then
                 if type(name) == "number" then
@@ -748,6 +750,7 @@ function install(package, configs, opt)
     end
     if opt.makeconfigs then
         for name, value in pairs(opt.makeconfigs) do
+            local value = value
             value = tostring(value):trim()
             if value ~= "" then
                 if type(name) == "number" then

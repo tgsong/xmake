@@ -137,6 +137,7 @@ end
 function _make_compcmd(compargv, sourcefile, objectfile, vcxprojdir)
     local argv = {}
     for i, v in ipairs(compargv) do
+        local v = v
         if i == 1 then
             v = path.filename(v) -- C:\xxx\ml.exe -> ml.exe
         end
@@ -163,6 +164,7 @@ function _make_compflags(sourcefile, targetinfo, vcxprojdir)
     -- translate path for -Idir or /Idir
     local flags = {}
     for _, flag in ipairs(targetinfo.compflags[sourcefile]) do
+        local flag = flag
         for _, pattern in ipairs({"[%-/](I)(.*)", "[%-/](external:I)(.*)"}) do
 
             -- -Idir or /Idir
@@ -186,6 +188,7 @@ function _make_linkflags(targetinfo, vcxprojdir)
     -- replace -libpath:dir or /libpath:dir
     local flags = {}
     for _, flag in ipairs(targetinfo.linkflags) do
+        local flag = flag
 
         -- replace -libpath:dir or /libpath:dir
         flag = flag:gsub(string.ipattern("[%-/]libpath:(.*)"), function (dir)
@@ -932,6 +935,7 @@ function _make_common_item(vcxprojfile, vsinfo, target, targetinfo)
         local cstandard
         local cxxstandard
         for _, lang in pairs(targetinfo.languages) do
+            local lang = lang
             lang = lang:replace("c++", "cxx", {plain = true})
             if cxxlangflags[lang] then
                 cxxstandard = cxxlangflags[lang]

@@ -59,6 +59,7 @@ function main(depsdata)
     local plain = {plain = true}
     line = line:replace("\\ ", space_placeholder, plain)
     for _, includefile in ipairs(line:split('\n', plain)) do
+        local includefile = includefile
         if is_host("windows") and includefile:match("^%w\\:") then
             includefile = includefile:replace("\\:", ":", plain)
         end

@@ -91,6 +91,7 @@ function _get_jobdeps(target, module, jobgraph, buildfilejob)
     local jobdeps = {}
     local moduletype = support.has_two_phase_compilation_support(target) and "bmi" or "onephase"
     for dep_name, dep in pairs(module.deps) do
+        local dep_name = dep_name
         if dep.headerunit then
             dep_name = dep_name .. dep.key
         end
@@ -347,6 +348,7 @@ function build_modules_for_batchjobs(target, batchjobs, built_modules, opt)
     local jobs
     local moduletype = has_two_phase_compilation_support and "bmi" or "onephase"
     for _, sourcefile in ipairs(_built_modules) do
+        local sourcefile = sourcefile
         jobs = jobs or {}
         local bmionly = support.is_bmionly(target, sourcefile)
         local module = mapper.get(target, sourcefile)
@@ -354,6 +356,7 @@ function build_modules_for_batchjobs(target, batchjobs, built_modules, opt)
         local buildfilejob = _get_module_buildfilejob_for(target, sourcefile, moduletype)
         local deps = {}
         for dep_name, dep in pairs(module.deps) do
+            local dep_name = dep_name
             if dep.headerunit then
                 dep_name = dep_name .. dep.key
             end
@@ -409,6 +412,7 @@ function build_objectfiles_for_batchjobs(target, batchjobs, built_modules, opt)
 
     local jobs
     for _, sourcefile in ipairs(_built_modules) do
+        local sourcefile = sourcefile
         if not support.is_bmionly(target, sourcefile) then
             jobs = jobs or {}
             local module = mapper.get(target, sourcefile)

@@ -185,6 +185,7 @@ function _make_targetinfo(mode, arch, target)
         end
     end
     for k, v in table.orderpairs(addrunenvs) do
+        local v = v
         -- https://github.com/xmake-io/xmake/issues/3391
         v = table.unique(v)
         if k:upper() == "PATH" then
@@ -194,6 +195,7 @@ function _make_targetinfo(mode, arch, target)
         end
     end
     for k, v in table.orderpairs(setrunenvs) do
+        local v = v
         if #v == 1 then
             v = v[1]
             if path.is_absolute(v) and v:startswith(project.directory()) then
@@ -342,6 +344,7 @@ function _make_filter(filepath, target, vcxprojdir)
             local rootdir = extraconf.rootdir
             assert(rootdir, "please set root directory, e.g. add_filegroups(%s, {rootdir = 'xxx'})", filegroup)
             for _, rootdir in ipairs(table.wrap(rootdir)) do
+                local rootdir = rootdir
                 if not path.is_absolute(rootdir) then
                     rootdir = path.absolute(rootdir, scriptdir)
                 end
@@ -349,6 +352,7 @@ function _make_filter(filepath, target, vcxprojdir)
                 local files = extraconf.files or "**"
                 local mode = extraconf.mode
                 for _, filepattern in ipairs(files) do
+                    local filepattern = filepattern
                     filepattern = path.pattern(path.absolute(path.join(rootdir, filepattern)))
                     if filepath:match(filepattern) then
                         if mode == "plain" then

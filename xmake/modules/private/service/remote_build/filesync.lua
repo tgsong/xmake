@@ -137,6 +137,7 @@ function filesync:_ignorefiles_load(ignorefiles)
         local gitroot = path.directory(gitignore_file)
         local gitignore = io.open(gitignore_file, "r")
         for line in gitignore:lines() do
+            local line = line
             line = line:trim()
             if #line > 0 and not line:startswith("#") then
                 local filepath = path.join(gitroot, line)

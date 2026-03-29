@@ -165,6 +165,7 @@ function builder:_add_flags_from_flagkind(flags, target, flagkind, opt)
     local targetflags = target:get(flagkind, opt)
     local extraconf   = target:extraconf(flagkind)
     for _, flag in ipairs(table.wrap(targetflags)) do
+        local flag = flag
         flag = target_utils.flag_belong_to_tool(flag, self, extraconf)
         if flag then
             if extraconf then
@@ -390,6 +391,7 @@ function builder:_add_items_from_target(items, name, opt)
         local result, sources = target:get_from(name, "*")
         if result then
             for idx, values in ipairs(result) do
+                local values = values
                 local source = sources[idx]
                 local extras = target:extraconf_from(name, source)
                 values = table.wrap(values)
@@ -691,6 +693,7 @@ function builder:_sort_links_of_items(items, opt)
     -- re-generate links to items list
     if sortlinks or makegroups then
         for _, link in ipairs(links) do
+            local link = link
             if link:startswith("framework::") then
                 link = link:sub(12)
                 table.insert(items, {name = "frameworks", values = table.wrap(link), check = false, multival = false, mapper = framework_mapper})

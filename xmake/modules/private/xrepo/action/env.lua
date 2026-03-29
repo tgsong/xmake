@@ -149,6 +149,7 @@ function _get_boundenvs(opt)
     if bind then
         local envfiles = _get_envfiles()
         for _, binditem in ipairs(bind:split(',', {plain = true})) do
+            local binditem = binditem
             binditem = binditem:trim()
             if envfiles[binditem] then
                 table.insert(files, envfiles[binditem])

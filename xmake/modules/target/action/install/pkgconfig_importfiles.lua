@@ -46,6 +46,7 @@ function main(target, opt)
     -- get libs
     local libs = ""
     for _, linkdir in ipairs(linkdirs) do
+        local linkdir = linkdir
         linkdir = path.unix(path.normalize(linkdir)):replace(installdir, "${exec_prefix}", {plain = true})
         if linkdir ~= "${exec_prefix}/lib" then
             libs = libs .. " -L" .. linkdir
@@ -62,6 +63,7 @@ function main(target, opt)
     -- get cflags
     local cflags = ""
     for _, includedir in ipairs(includedirs) do
+        local includedir = includedir
         includedir = path.unix(path.normalize(includedir)):replace(installdir, "${prefix}", {plain = true})
         if includedir ~= "${prefix}/include" then
             cflags = cflags .. " -I" .. includedir

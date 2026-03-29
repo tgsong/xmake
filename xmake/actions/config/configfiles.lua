@@ -300,6 +300,7 @@ function _generate_configfile(srcfile, dstfile, fileinfo, targets, preprocessors
 
             -- get variables from the target
             for name, value in pairs(target:get("configvar")) do
+                local value = value
                 if variables[name] == nil then
                     value = table.unwrap(value)
                     variables[name] = value
@@ -319,6 +320,7 @@ function _generate_configfile(srcfile, dstfile, fileinfo, targets, preprocessors
 
             -- get the builtin variables from the target
             for name, value in pairs(_get_builtinvars_target(target)) do
+                local value = value
                 if type(value) == "function" then
                     value = value()
                 end
@@ -329,6 +331,7 @@ function _generate_configfile(srcfile, dstfile, fileinfo, targets, preprocessors
         end
         -- get the global builtin variables
         for name, value in pairs(_get_builtinvars_global()) do
+            local value = value
             if type(value) == "function" then
                 value = value()
             end

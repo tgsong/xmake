@@ -62,6 +62,7 @@ function driver_umdf(target)
     -- set default driver entry if does not exist
     local entry = false
     for _, ldflag in ipairs(target:get("shflags")) do
+        local ldflag = ldflag
         ldflag = ldflag:lower()
         if ldflag:find("[/%-]entry:") then
             entry = true
@@ -111,6 +112,7 @@ function _kernel_driver_base(target, default_entrypoint)
     -- set default driver entry if does not exist
     local has_entry = false
     for _, ldflag in ipairs(target:get("ldflags")) do
+        local ldflag = ldflag
         if type(ldflag) == "string" then
             ldflag = ldflag:lower()
             if ldflag:find("[/%-]entry:") then

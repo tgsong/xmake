@@ -34,6 +34,7 @@ function main(names, opt)
         verbose = true
     end
     for _, name in ipairs(names) do
+        local name = name
         local kind
         local parts = name:split("::")
         if #parts == 2 then

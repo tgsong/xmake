@@ -180,6 +180,7 @@ function _add_qmakeprllibs(target, prlfile, qt)
         end
         if envs.QMAKE_PRL_LIBS_FOR_CMAKE then
             for _, lib in ipairs(envs.QMAKE_PRL_LIBS_FOR_CMAKE:split(';', {plain = true})) do
+                local lib = lib
                 if lib:startswith("-L") then
                     local libdir = lib:sub(3)
                     target:add("linkdirs", libdir)

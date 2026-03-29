@@ -35,6 +35,7 @@ local xmake     = require("base/xmake")
 function sandbox_lib_detect_find_file._expand_paths(paths)
     local results = {}
     for _, _path in ipairs(table.wrap(paths)) do
+        local _path = _path
         if type(_path) == "function" then
             local ok, result_or_errors = sandbox.load(_path)
             if ok then
@@ -50,6 +51,7 @@ function sandbox_lib_detect_find_file._expand_paths(paths)
             end
         end
         for _, _s_path in ipairs(table.wrap(_path)) do
+            local _s_path = _s_path
             _s_path = tostring(_s_path)
             if #_s_path > 0 then
                 table.insert(results, _s_path)
@@ -63,6 +65,7 @@ end
 function sandbox_lib_detect_find_file._normalize_suffixes(suffixes)
     local results = {}
     for _, suffix in ipairs(table.wrap(suffixes)) do
+        local suffix = suffix
         suffix = tostring(suffix)
         if #suffix > 0 then
             table.insert(results, suffix)

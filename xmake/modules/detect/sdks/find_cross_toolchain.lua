@@ -34,6 +34,7 @@ function _find_bindir(sdkdir, opt)
 
     -- attempt to find *-[gcc|clang|ld]
     for _, toolname in ipairs({"gcc", "clang", "ld"}) do
+        local toolname = toolname
         if is_host("windows") then
             toolname = toolname .. ".exe"
         end

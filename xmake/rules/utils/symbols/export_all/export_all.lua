@@ -90,6 +90,7 @@ function _get_allsymbols_by_dumpbin(target, dumpbin, opt)
         _get_sourcefiles_map(target, sourcefiles_map)
     end
     for _, objectfile in ipairs(target:objectfiles()) do
+        local objectfile = objectfile
         local objectsymbols = try { function () return os.iorunv(dumpbin, {"/symbols", "/nologo", objectfile}) end }
         if objectsymbols then
             local sourcefile = sourcefiles_map[objectfile]
@@ -125,6 +126,7 @@ function _get_allsymbols_by_objdump(target, objdump, opt)
         _get_sourcefiles_map(target, sourcefiles_map)
     end
     for _, objectfile in ipairs(target:objectfiles()) do
+        local objectfile = objectfile
         local objectsymbols = try { function () return os.iorunv(objdump, {"--syms", objectfile}) end }
         if objectsymbols then
             local sourcefile = sourcefiles_map[objectfile]

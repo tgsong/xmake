@@ -1156,6 +1156,7 @@ end
 function _instance:envs()
     local envs = {}
     for name, values in pairs(self:_rawenvs()) do
+        local values = values
         if self:_pathenvs():has(name) then
             local newvalues = {}
             for _, value in ipairs(values) do
@@ -1663,6 +1664,7 @@ function _instance:buildhash()
                 -- We cannot directly deserialize the table, so the result may be different each time
                 local configs_order = {}
                 for k, v in pairs(table.wrap(configs)) do
+                    local v = v
                     if type(v) == "table" then
                         v = string.serialize(v, {strip = true, indent = false, orderkeys = true})
                     end

@@ -388,6 +388,7 @@ function path.splitenv(env_path)
         -- see https://git.kernel.org/pub/scm/utils/dash/dash.git/tree/src/exec.c?h=v0.5.9.1&id=afe0e0152e4dc12d84be3c02d6d62b0456d68580#n173
         -- no escape sequences, so `:` and `%` is invalid in environment variable
         for _, v in ipairs(env_path:split(path.envsep(), { plain = true })) do
+            local v = v
             -- flag for shells, style `<path>%<flag>`
             local flag = v:find("%", 1, true)
             if flag then
@@ -416,6 +417,7 @@ function path.joinenv(paths, envsep)
     if xmake._HOST == "windows" then
         local tab = {}
         for _, v in ipairs(paths) do
+            local v = v
             if v ~= "" then
                 if v:find(envsep, 1, true) then
                     v = '"' .. v .. '"'

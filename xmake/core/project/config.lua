@@ -60,6 +60,7 @@ function config._is_value(value, ...)
 
     value = tostring(value)
     for _, v in ipairs(table.pack(...)) do
+        local v = v
         -- escape '-'
         v = tostring(v)
         if value == v or value:find("^" .. v:gsub("%-", "%%-") .. "$") then

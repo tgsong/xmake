@@ -92,6 +92,7 @@ function description_package_scope_apis()
     local result = {}
     for _, names in pairs(package.apis()) do
         for _, name in ipairs(names) do
+            local name = name
             if type(name) == "table" then
                 name = "package." .. name[1]
             end
@@ -145,6 +146,7 @@ function description_builtin_apis()
     -- add root project apis
     for _, names in pairs(project.apis()) do
         for _, name in ipairs(names) do
+            local name = name
             if type(name) == "table" then
                 name = name[1]
             end
@@ -287,6 +289,7 @@ function script_extension_module_apis()
     local result = {}
     local moduledirs = module.directories()
     for _, moduledir in ipairs(moduledirs) do
+        local moduledir = moduledir
         moduledir = path.absolute(moduledir)
         local modulefiles = os.files(path.join(moduledir, "**.lua|**/xmake.lua|private/**.lua|core/tools/**.lua|detect/tools/**.lua"))
         if modulefiles then

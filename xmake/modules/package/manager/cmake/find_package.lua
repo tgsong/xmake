@@ -203,6 +203,7 @@ function _find_package(cmake, name, opt)
                 io.write(linkdata .. "\n")
             end
             for _, line in ipairs(os.argv(linkdata)) do
+                local line = line
                 local is_ldflags = false
                 local is_library = false
                 for _, suffix in ipairs({".so", ".dylib", ".dylib", ".tbd", ".lib"}) do

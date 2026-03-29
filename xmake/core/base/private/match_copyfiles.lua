@@ -50,6 +50,7 @@ function match_copyfiles(instance, filetype, outputdir, opt)
     local srcfiles_removed = {}
     local removed_count = 0
     for _, copyfile in ipairs(table.wrap(copyfiles)) do
+        local copyfile = copyfile
 
         -- mark as removed files?
         local removed = false

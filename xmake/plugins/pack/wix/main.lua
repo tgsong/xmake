@@ -82,11 +82,13 @@ function _get_cp_kind_table(package, cmds, opt)
         -- match files and directories
         local srcitems = os.filedirs(cmd.srcpath)
         for _, srcitem in ipairs(srcitems) do
+            local srcitem = srcitem
             if os.isdir(srcitem) then
                 -- for directory, recursively collect all files in it
                 local rootdir = option.rootdir or srcitem
                 local files = os.files(path.join(srcitem, "**"))
                 for _, srcfile in ipairs(files) do
+                    local srcfile = srcfile
                     -- the destination is directory? append the relative path
                     local dstfile = cmd.dstpath
                     if option.rootdir then
@@ -300,6 +302,7 @@ function _pack_wix(wix, package)
         table.insert(specvars_names, name)
     end)
     for _, name in ipairs(specvars_names) do
+        local name = name
         name = name:trim()
         if specvars_values[name] == nil then
             local value = specvars[name]

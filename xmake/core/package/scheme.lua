@@ -172,6 +172,7 @@ function _instance:versions()
         -- https://github.com/xmake-io/xmake/issues/6953
         local versions = {}
         for version, _ in table.orderpairs(self:_versions_list()) do
+            local version = version
             -- remove the url alias prefix if exists
             local pos = version:find(':', 1, true)
             if pos then
@@ -191,6 +192,7 @@ function _instance:_versions_list()
         local versionfiles = self:get("versionfiles")
         if versionfiles then
             for _, versionfile in ipairs(table.wrap(versionfiles)) do
+                local versionfile = versionfile
                 if not path.is_absolute(versionfile) then
                     local subpath = versionfile
                     versionfile = path.join(self:scriptdir(), subpath)
@@ -337,6 +339,7 @@ function _instance:patches()
             else
                 -- match semver, e.g add_patches(">=1.0.0", url, sha256)
                 for range, patchinfo in pairs(patchinfos) do
+                    local patchinfo = patchinfo
                     if semver.satisfies(version_str, range) then
                         patches = patches or {}
                         patchinfo = table.wrap(patchinfo)
@@ -371,6 +374,7 @@ function _instance:resources()
             else
                 -- match semver, e.g add_resources(">=1.0.0", name, url, sha256)
                 for range, resourceinfo in pairs(resourceinfos) do
+                    local resourceinfo = resourceinfo
                     if semver.satisfies(version_str, range) then
                         resources = resources or {}
                         resourceinfo = table.wrap(resourceinfo)

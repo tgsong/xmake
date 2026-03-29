@@ -36,6 +36,7 @@ function has_tool(toolname, tools)
             trim_xx = true
         end
         for _, v in ipairs(tools) do
+            local v = v
             if trim_xx then
                 v = v:rtrim("xx")
             end
@@ -113,6 +114,7 @@ function translate_flags_in_tool(target, flagkind, flags)
     --
     local result = {}
     for _, flag in ipairs(flags) do
+        local flag = flag
         flag = flag_belong_to_tool(flag, toolinst, extraconf)
         if flag then
             table.insert(result, flag)

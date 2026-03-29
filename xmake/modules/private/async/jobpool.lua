@@ -269,6 +269,7 @@ function jobpool:_gentree(job, refs)
     -- strip tree
     local smalltree = hashset.new()
     for _, item in ipairs(tree) do
+        local item = item
         item = table.unwrap(item)
         if smalltree:size() < 16 or type(item) == "table" then
             smalltree:insert(item)

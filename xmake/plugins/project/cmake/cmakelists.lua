@@ -562,6 +562,7 @@ function _add_target_source_groups(cmakelists, target, outputdir)
             rootdir = string.format("${CMAKE_CURRENT_SOURCE_DIR}/%s", _get_relative_unix_path(rootdir, outputdir))
         end
         for _, filepattern in ipairs(files) do
+            local filepattern = filepattern
             if filepattern:find("**", 1, true) then
                 filepattern = filepattern:gsub("%*%*", "*")
                 table.insert(recurse_sources, _get_relative_unix_path(path.join(rootdir, filepattern), outputdir))
@@ -734,6 +735,7 @@ function _add_target_compile_options(cmakelists, target, outputdir)
         if #cflags > 0 or #cxflags > 0 or #cxxflags > 0 or #cuflags > 0 then
             cmakelists:print("target_compile_options(%s PRIVATE", target:name())
             for _, flag in ipairs(_translate_flags(cflags, outputdir)) do
+                local flag = flag
                 local prefix
                 prefix, flag = _split_flag_with_tool_prefix(flag)
                 if prefix == toolname then
@@ -745,6 +747,7 @@ function _add_target_compile_options(cmakelists, target, outputdir)
                 end
             end
             for _, flag in ipairs(_translate_flags(cxflags, outputdir)) do
+                local flag = flag
                 local prefix
                 prefix, flag = _split_flag_with_tool_prefix(flag)
                 if prefix == toolname then
@@ -757,6 +760,7 @@ function _add_target_compile_options(cmakelists, target, outputdir)
                 end
             end
             for _, flag in ipairs(_translate_flags(cxxflags, outputdir)) do
+                local flag = flag
                 local prefix
                 prefix, flag = _split_flag_with_tool_prefix(flag)
                 if prefix == toolname then
@@ -768,6 +772,7 @@ function _add_target_compile_options(cmakelists, target, outputdir)
                 end
             end
             for _, flag in ipairs(_translate_flags(cuflags, outputdir)) do
+                local flag = flag
                 local prefix
                 prefix, flag = _split_flag_with_tool_prefix(flag)
                 if prefix == toolname then
@@ -883,6 +888,7 @@ function _add_target_languages(cmakelists, target)
     local languages = target:get("languages")
     if languages then
         for _, lang in ipairs(languages) do
+            local lang = lang
             local has_ext = false
             -- c | c++ | gnu | gnu++
             local flag = lang:replace('xx', '++'):replace('latest', ''):gsub('%d', '')
@@ -1150,6 +1156,7 @@ function _add_target_link_options(cmakelists, target, outputdir)
                     cmakelists:print("target_link_libraries(%s PRIVATE", target:name())
                 end
                 for _, flag in ipairs(flags) do
+                    local flag = flag
                     local prefix
                     prefix, flag = _split_flag_with_tool_prefix(flag)
                     if prefix == toolname then

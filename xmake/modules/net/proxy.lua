@@ -157,6 +157,7 @@ function config(url)
         if host and proxy_hosts then
             host = host:lower()
             for _, proxy_host in ipairs(proxy_hosts) do
+                local proxy_host = proxy_host
                 proxy_host = proxy_host:lower()
                 if host == proxy_hosts or host:match(_host_pattern(proxy_host)) then
                     return _global_proxy()

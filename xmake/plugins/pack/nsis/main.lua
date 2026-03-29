@@ -99,6 +99,7 @@ function _get_command_strings(package, cmd, opt)
         -- match files and directories
         local srcitems = os.filedirs(srcpath)
         for _, srcitem in ipairs(srcitems) do
+            local srcitem = srcitem
             if os.isdir(srcitem) then
                 -- copy directory recursively
                 srcitem = path.normalize(srcitem)
@@ -283,6 +284,7 @@ function _pack_nsis(makensis, package)
         table.insert(specvars_names, name)
     end, {encoding = "ansi"})
     for _, name in ipairs(specvars_names) do
+        local name = name
         name = name:trim()
         if specvars_values[name] == nil then
             local value = specvars[name]

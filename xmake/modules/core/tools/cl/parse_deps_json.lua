@@ -134,6 +134,7 @@ function main(depsdata)
     local results = hashset.new()
     local projectdir = os.projectdir():lower() -- we need to generate lower string, because json values are all lower
     for _, includefile in ipairs(includes) do
+        local includefile = includefile
         includefile = _normailize_dep(includefile, projectdir)
         if includefile then
             results:insert(includefile)

@@ -103,6 +103,7 @@ function _thread:start()
     -- translate arguments (mutex, ...)
     local argv = {}
     for _, arg in ipairs(self._ARGV) do
+        local arg = arg
         if type(arg) == "table" then
             -- try to serialize thread object (mutex, event, semaphore, queue, sharedata)
             local serialized = thread._serialize_object(arg)
@@ -927,6 +928,7 @@ function thread._run_thread(callback_str, callinfo_str)
     if argv then
         local newargv = {}
         for _, arg in ipairs(argv) do
+            local arg = arg
             if type(arg) == "table" and arg.caddr then
                 -- try to deserialize thread object
                 local obj = thread._deserialize_object(arg)

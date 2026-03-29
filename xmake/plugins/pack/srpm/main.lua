@@ -102,6 +102,7 @@ function _get_customcmd(package, installcmds, cmd)
     elseif cmd.program then
         local argv = {}
         for _, arg in ipairs(cmd.argv) do
+            local arg = arg
             if path.instance_of(arg) then
                 arg = arg:clone():set(_translate_filepath(package, arg:rawstr())):str()
             elseif path.is_absolute(arg) then
@@ -218,6 +219,7 @@ function _pack_srpm(rpmbuild, package)
         table.insert(specvars_names, name)
     end)
     for _, name in ipairs(specvars_names) do
+        local name = name
         name = name:trim()
         if specvars_values[name] == nil then
             local value = specvars[name]

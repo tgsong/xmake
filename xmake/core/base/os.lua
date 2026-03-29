@@ -437,6 +437,7 @@ function os.match(pattern, mode, opt)
     if excludes then
         local _excludes = {}
         for _, exclude in ipairs(excludes) do
+            local exclude = exclude
             exclude = path.translate(exclude)
             exclude = path.pattern(exclude)
             table.insert(_excludes, exclude)
@@ -988,9 +989,9 @@ function os.execv(program, argv, opt)
                     filename = os._get_shell_path(opt) or "sh"
                     argv = table.join(shellfile, argv)
                 else
-                    line = line:sub(3)
+                    local shebang = line:sub(3)
                     local shellargv = {}
-                    local splitinfo = line:split("%s")
+                    local splitinfo = shebang:split("%s")
                     filename = splitinfo[1]
                     if #splitinfo > 1 then
                         shellargv = table.slice(splitinfo, 2)
@@ -1013,6 +1014,7 @@ function os.execv(program, argv, opt)
         local envars = os.getenvs()
         if setenvs then
             for k, v in pairs(setenvs) do
+                local v = v
                 if type(v) == "table" then
                     v = path.joinenv(v)
                 end
@@ -1021,6 +1023,7 @@ function os.execv(program, argv, opt)
         end
         if addenvs then
             for k, v in pairs(addenvs) do
+                local v = v
                 if type(v) == "table" then
                     v = path.joinenv(v)
                 end
@@ -1033,6 +1036,7 @@ function os.execv(program, argv, opt)
         end
         envs = {}
         for k, v in pairs(envars) do
+            local v = v
             -- we try to fix too long value before running process
             if type(v) == "string" and #v > 4096 and os.host() == "windows" then
                 v = os._deduplicate_pathenv(v)

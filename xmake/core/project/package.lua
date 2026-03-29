@@ -351,6 +351,7 @@ function _instance:rules()
         -- make rule instances
         rules = {}
         for rulename, ruleinfo in pairs(ruleinfos) do
+            local rulename = rulename
             rulename = "@" .. self:name() .. "/" .. rulename
             local instance = rule.new(rulename, ruleinfo, {package = self})
             if instance:script("load") then

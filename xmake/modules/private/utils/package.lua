@@ -22,6 +22,7 @@
 function _concat_packages(a, b)
     local result = table.copy(a)
     for k, v in pairs(b) do
+        local v = v
         local o = result[k]
         if o ~= nil then
             v = table.join(o, v)
@@ -29,6 +30,7 @@ function _concat_packages(a, b)
         result[k] = v
     end
     for k, v in pairs(result) do
+        local v = v
         if k == "links" or k == "syslinks" or k == "frameworks" or k == "ldflags" or k == "shflags" then
             if type(v) == "table" and #v > 1 then
                 -- we need to ensure link orders when removing repeat values

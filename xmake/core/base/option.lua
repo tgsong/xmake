@@ -726,6 +726,7 @@ function option.show_options(options, taskname)
             -- transform description
             local desp_strs = table.new(#description, 0)
             for _, v in ipairs(description) do
+                local v = v
                 if type(v) == "function" then
                     v = v()
                 end

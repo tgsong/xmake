@@ -539,6 +539,7 @@ function install(package, configs, opt)
     table.insert(argv, "-y")
     table.insert(argv, "-c")
     for name, value in pairs(_get_configs(package, configs, opt)) do
+        local value = value
         value = tostring(value):trim()
         if type(name) == "number" then
             if value ~= "" then

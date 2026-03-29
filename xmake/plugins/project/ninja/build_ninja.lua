@@ -78,6 +78,7 @@ function _translate_compflags(compflags, outputdir)
     local flags = {}
     local last_flag = nil;
     for _, flag in ipairs(compflags) do
+        local flag = flag
         if flag == "-I" or flag == "-isystem" then
             last_flag = flag
         else
@@ -103,6 +104,7 @@ end
 function _translate_linkflags(linkflags, outputdir)
     local flags = {}
     for _, flag in ipairs(linkflags) do
+        local flag = flag
         for _, pattern in ipairs({"[%-](L)(.*)", "[%-](F)(.*)"}) do
             flag = flag:gsub(pattern, function (flag, dir)
                 dir = _get_relative_unix_path(dir, outputdir)

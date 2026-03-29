@@ -188,6 +188,7 @@ function _find_package(name, result, opt)
         local libarch = libarchs[arch] or "x64"
         local libmode = configs.debug and "Debug" or "Release"
         for _, file in ipairs(libinfo.files) do
+            local file = file
             local filepath = path.join(installdir, file)
             file = file:trim()
 

@@ -89,6 +89,7 @@ function _generate_file(target, inputpaths, outputpath, uniqueid)
     -- generate include graph
     local gh = graph.new(true)
     for idx, inputpath in ipairs(inputpaths) do
+        local inputpath = inputpath
         inputpath = path.normalize(path.absolute(inputpath, os.projectdir()))
         inputpaths[idx] = inputpath
         gh:add_edge("__root__", inputpath)
