@@ -106,8 +106,7 @@ function main(name, flags, opt)
     -- split flag group, e.g. "-I /xxx" => {"-I", "/xxx"}
     local results = {}
     for _, flag in ipairs(checkflags) do
-        local flag = flag
-        flag = flag:trim()
+        local flag = flag:trim()
         if #flag > 0 then
             if flag:find(" ", 1, true) then
                 table.join2(results, os.argv(flag))

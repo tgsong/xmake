@@ -292,8 +292,7 @@ force to build in current directory via run `xmake -P .`]], os.projectdir())
 
     -- merge the project options after default options
     for name, value in pairs(project.get("config")) do
-        local value = value
-        value = table.unwrap(value)
+        local value = table.unwrap(value)
         assert(type(value) == "string" or type(value) == "boolean" or type(value) == "number", "set_config(%s): unsupported value type(%s)", name, type(value))
         if not config.readonly(name) then
             config.set(name, value)

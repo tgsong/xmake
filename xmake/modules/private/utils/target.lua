@@ -114,8 +114,7 @@ function translate_flags_in_tool(target, flagkind, flags)
     --
     local result = {}
     for _, flag in ipairs(flags) do
-        local flag = flag
-        flag = flag_belong_to_tool(flag, toolinst, extraconf)
+        local flag = flag_belong_to_tool(flag, toolinst, extraconf)
         if flag then
             table.insert(result, flag)
         end

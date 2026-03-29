@@ -165,8 +165,7 @@ function builder:_add_flags_from_flagkind(flags, target, flagkind, opt)
     local targetflags = target:get(flagkind, opt)
     local extraconf   = target:extraconf(flagkind)
     for _, flag in ipairs(table.wrap(targetflags)) do
-        local flag = flag
-        flag = target_utils.flag_belong_to_tool(flag, self, extraconf)
+        local flag = target_utils.flag_belong_to_tool(flag, self, extraconf)
         if flag then
             if extraconf then
                 local flagconf = extraconf[flag]

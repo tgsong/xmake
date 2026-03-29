@@ -40,8 +40,7 @@ function _get_sourcefiles_from_cmake(target, cmakefile)
             -- get global class source files
             -- set(hello_GLOBAL "${VERILATOR_ROOT}/include/verilated.cpp" "${VERILATOR_ROOT}/include/verilated_threads.cpp")
             for classfile in values:gmatch("\"(.-)\"") do
-                local classfile = classfile
-                classfile = classfile:gsub("%${VERILATOR_ROOT}", verilator_root)
+                local classfile = classfile:gsub("%${VERILATOR_ROOT}", verilator_root)
                 if os.isfile(classfile) then
                     table.insert(global_classes, classfile)
                 end

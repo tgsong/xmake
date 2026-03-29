@@ -123,8 +123,7 @@ function _pack_runself(makeself, package)
         table.insert(specvars_names, name)
     end)
     for _, name in ipairs(specvars_names) do
-        local name = name
-        name = name:trim()
+        local name = name:trim()
         if specvars_values[name] == nil then
             local value = specvars[name]
             if type(value) == "function" then

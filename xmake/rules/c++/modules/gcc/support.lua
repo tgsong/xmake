@@ -38,8 +38,7 @@ function _get_toolchain_includedirs_for_stlheaders(includedirs, gcc)
     local result = try {function () return os.iorunv(gcc, {"-E", "-x", "c++", tmpfile}) end}
     if result then
         for _, line in ipairs(result:split("\n", {plain = true})) do
-            local line = line
-            line = line:trim()
+            local line = line:trim()
             if line:startswith("#") and line:find("/vector\"", 1, true) then
                 local includedir = line:match("\"(.+)/vector\"")
                 if includedir and os.isdir(includedir) then
@@ -115,8 +114,7 @@ function toolchain_includedirs(target)
         local _, result = try {function () return os.iorunv(gcc, {"-E", "-Wp,-v", "-xc", os.nuldev()}) end}
         if result then
             for _, line in ipairs(result:split("\n", {plain = true})) do
-                local line = line
-                line = line:trim()
+                local line = line:trim()
                 if os.isdir(line) then
                     table.insert(includedirs, path.normalize(line))
                 elseif line:startswith("End") then

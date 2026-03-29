@@ -69,8 +69,7 @@ function build(package, configs, opt)
     end
     configs = table.join(jom_argv, configs)
     for name, value in pairs(configs) do
-        local value = value
-        value = tostring(value):trim()
+        local value = tostring(value):trim()
         if value ~= "" then
             if type(name) == "number" then
                 table.insert(argv, value)

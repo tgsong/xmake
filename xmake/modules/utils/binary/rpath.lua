@@ -55,8 +55,7 @@ function _get_rpath_list_by_objdump(binaryfile, opt)
         if result then
             local cmd = false
             for _, line in ipairs(result:split("\n")) do
-                local line = line
-                line = line:trim()
+                local line = line:trim()
                 if plat == "macosx" or plat == "iphoneos" or plat == "appletvos" or plat == "watchos" then
                     if not cmd and line:find("cmd LC_RPATH", 1, true) then
                         cmd = true

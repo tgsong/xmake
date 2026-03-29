@@ -566,8 +566,7 @@ function generate(package, configs, opt)
     -- TODO: support more backends https://mesonbuild.com/Commands.html#setup
     local argv = {"setup"}
     for name, value in pairs(_get_configs(package, configs, opt)) do
-        local value = value
-        value = tostring(value):trim()
+        local value = tostring(value):trim()
         if value ~= "" then
             if type(name) == "number" then
                 table.insert(argv, value)

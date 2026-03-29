@@ -53,8 +53,7 @@ function _generate_dependinfo(compinst, compflags, sourcefiles, dependinfo)
                 local depsdata = io.readfile(depsfile)
                 if depsdata then
                     for _, line in ipairs(depsdata:split("\n")) do
-                        local line = line
-                        line = line:trim()
+                        local line = line:trim()
                         if #line > 0 then
                             table.insert(dependinfo.files, line)
                         end

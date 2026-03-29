@@ -1876,8 +1876,7 @@ function _instance:filerules(sourcefile)
             -- we can also get extensions from add_rules("xxx", {extensions = ".cpp"})
             local rule_extensions = self:extraconf("rules", r:name(), "extensions") or r:get("extensions")
             for _, extension in ipairs(table.wrap(rule_extensions)) do
-                local extension = extension
-                extension = extension:lower()
+                local extension = extension:lower()
                 key2rules[extension] = key2rules[extension] or {}
                 table.insert(key2rules[extension], r)
             end

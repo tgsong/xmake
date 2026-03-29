@@ -462,8 +462,7 @@ function interpreter:_filter(values, level)
     if table.is_dictionary(values) then
         local results = {}
         for key, value in pairs(values) do
-            local key = key
-            key = (type(key) == "string" and filter:handle(key) or key)
+            local key = (type(key) == "string" and filter:handle(key) or key)
             if type(value) == "string" then
                 results[key] = filter:handle(value)
             elseif type(value) == "table" and level < 1 then

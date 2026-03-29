@@ -152,8 +152,7 @@ function _get_confirm_from_3rd(packages)
     local confirmed_extpackages = {}
     if result and result ~= "n" then
         for _, idx in ipairs(result:split(',')) do
-            local idx = idx
-            idx = tonumber(idx)
+            local idx = tonumber(idx)
             if extpackages_list[idx] then
                 table.insert(confirmed_extpackages, extpackages_list[idx])
             end

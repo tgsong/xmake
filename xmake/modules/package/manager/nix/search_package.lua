@@ -75,8 +75,7 @@ function _search_with_env(name)
         -- nixpkgs.cmakeWithGui                         cmake-3.27.7
         
         for _, line in ipairs(searchdata:split("\n", {plain = true})) do
-            local line = line
-            line = line:trim()
+            local line = line:trim()
             if line ~= "" then
                 local parts = line:split("%s+", {limit = 2})
                 if #parts >= 2 then

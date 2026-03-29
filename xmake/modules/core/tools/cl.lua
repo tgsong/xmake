@@ -704,8 +704,7 @@ function _show_warnings(self, output, sourcefile)
     local has_warnings = false
     local has_source_dependencies = _has_source_dependencies(self)
     for _, line in ipairs(output:split("\n", {plain = true})) do
-        local line = line
-        line = line:rtrim()
+        local line = line:rtrim()
         if #line > 0 then
             local skip = false
 
@@ -808,8 +807,7 @@ function compile(self, sourcefile, objectfile, dependinfo, flags, opt)
                 else
                     -- filter includes notes: "Note: including file: xxx.h", @note maybe not english language
                     for _, line in ipairs(tostring(errors):split("\n", {plain = true})) do
-                        local line = line
-                        line = line:rtrim()
+                        local line = line:rtrim()
                         if not parse_include.has_include_note(line) then
                             results = results .. line .. "\r\n"
                         end

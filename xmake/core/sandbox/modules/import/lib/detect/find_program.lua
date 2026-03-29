@@ -270,8 +270,7 @@ function sandbox_lib_detect_find_program._find(name, paths, opt)
         local ok, wherepaths = os.iorunv("where.exe", {program_name})
         if ok and wherepaths then
             for _, program_path in ipairs(wherepaths:split("\n")) do
-                local program_path = program_path
-                program_path = program_path:trim()
+                local program_path = program_path:trim()
                 if #program_path > 0 then
                     local program_path_real = sandbox_lib_detect_find_program._check(program_path, opt)
                     if program_path_real then

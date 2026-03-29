@@ -117,8 +117,7 @@ module_exit(hello_exit);
         if result then
             -- we can also split ';' for the muliple commands
             for _, line in ipairs(result:split("[\n;]")) do
-                local line = line
-                line = line:trim()
+                local line = line:trim()
                 if line:endswith("stub.c") then
                     local include_cflag = false
                     for _, cflag in ipairs(line:split("%s+")) do

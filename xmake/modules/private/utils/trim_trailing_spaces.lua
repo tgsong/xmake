@@ -24,8 +24,7 @@ function main(pattern)
         if filedata then
             local filedata2 = {}
             for _, line in ipairs(filedata:split('\n', {strict = true})) do
-                local line = line
-                line = line:rtrim()
+                local line = line:rtrim()
                 table.insert(filedata2, line)
             end
             io.writefile(filepath, table.concat(filedata2, "\n"))

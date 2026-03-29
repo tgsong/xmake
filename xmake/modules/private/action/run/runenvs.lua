@@ -98,8 +98,7 @@ function _add_target_pkgenvs(addenvs, target, targets_added)
     local pkgenvs = target:pkgenvs()
     if pkgenvs then
         for name, values in pairs(pkgenvs) do
-            local values = values
-            values = path.splitenv(values)
+            local values = path.splitenv(values)
             local oldenvs = addenvs[name]
             if oldenvs then
                 table.join2(oldenvs, values)

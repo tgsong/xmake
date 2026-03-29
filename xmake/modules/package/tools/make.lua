@@ -138,8 +138,7 @@ function build(package, configs, opt)
         table.insert(argv, "V=1")
     end
     for name, value in pairs(configs) do
-        local value = value
-        value = tostring(value):trim()
+        local value = tostring(value):trim()
         if value ~= "" then
             if type(name) == "number" then
                 table.insert(argv, value)

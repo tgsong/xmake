@@ -46,8 +46,7 @@ function sandbox_lib_detect_find_directory._expand_paths(paths)
             _path = vformat(_path)
         end
         for _, _s_path in ipairs(table.wrap(_path)) do
-            local _s_path = _s_path
-            _s_path = tostring(_s_path)
+            local _s_path = tostring(_s_path)
             if #_s_path > 0 then
                 table.insert(results, _s_path)
             end
@@ -60,8 +59,7 @@ end
 function sandbox_lib_detect_find_directory._normalize_suffixes(suffixes)
     local results = {}
     for _, suffix in ipairs(table.wrap(suffixes)) do
-        local suffix = suffix
-        suffix = tostring(suffix)
+        local suffix = tostring(suffix)
         if #suffix > 0 then
             table.insert(results, suffix)
         end

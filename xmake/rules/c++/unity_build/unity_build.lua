@@ -32,8 +32,7 @@ function _merge_unityfile(target, sourcefile_unity, sourcefiles, opt)
         local uniqueid = target:data("unity_build.uniqueid")
         local unityfile = io.open(sourcefile_unity, "w")
         for _, sourcefile in ipairs(sourcefiles) do
-            local sourcefile = sourcefile
-            sourcefile = path.absolute(sourcefile)
+            local sourcefile = path.absolute(sourcefile)
             sourcefile_unity = path.absolute(sourcefile_unity)
             sourcefile = path.relative(sourcefile, path.directory(sourcefile_unity))
             if uniqueid then

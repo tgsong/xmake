@@ -142,8 +142,7 @@ function _get_file_patterns(sourcefiles)
         if excludes then
             local _excludes = {}
             for _, exclude in ipairs(excludes) do
-                local exclude = exclude
-                exclude = path.translate(exclude)
+                local exclude = path.translate(exclude)
                 exclude = path.pattern(exclude)
                 table.insert(_excludes, exclude)
             end

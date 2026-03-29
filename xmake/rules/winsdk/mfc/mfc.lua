@@ -107,8 +107,7 @@ function application(target, mfc_kind)
     -- set startup entry
     local unicode = false
     for _, define in ipairs(target:get("defines")) do
-        local define = define
-        define = define:lower():trim()
+        local define = define:lower():trim()
         if define:find("^[_]?unicode$") then
             unicode = true
             break

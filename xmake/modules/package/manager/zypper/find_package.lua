@@ -38,8 +38,7 @@ function _find_package(rpm, name, opt)
     end }
     if listinfo then
         for _, line in ipairs(listinfo:split('\n', { plain = true })) do
-            local line = line
-            line = line:trim()
+            local line = line:trim()
 
             -- get includedirs
             local pos = line:find("include/", 1, true)
