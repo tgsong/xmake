@@ -536,7 +536,7 @@ function get_tests()
                         target_new:remove("files", file)
                     end
                     if extra.kind then
-                        target_new:set("kind", kind)
+                        target_new:set("kind", extra.kind)
                     end
                     if extra.frameworks then
                         target_new:add("frameworks", extra.frameworks)
