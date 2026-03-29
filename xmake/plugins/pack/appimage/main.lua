@@ -89,13 +89,13 @@ end
 function _get_appimagetool()
 
     -- enter the environments of appimagetool
-    local oldenvs = packagenv.enter("appimagetool")
+    local oldenvs = packagenv.enter("appimage")
 
     -- find appimagetool
     local packages = {}
     local appimagetool = find_tool("appimagetool")
     if not appimagetool then
-        table.join2(packages, install_packages("appimagetool"))
+        table.join2(packages, install_packages("appimage"))
     end
 
     -- enter the environments of installed packages
