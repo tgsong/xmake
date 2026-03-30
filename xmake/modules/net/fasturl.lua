@@ -29,6 +29,10 @@ function _parse_host(url)
     return host
 end
 
+-- add urls to the ping queue for later sorting
+--
+-- @param urls  the urls array to add
+--
 function add(urls)
     local pinginfo = _g._PINGINFO or {}
     _g._PINGHOSTS = _g._PINGHOSTS or {}
@@ -40,6 +44,11 @@ function add(urls)
     end
 end
 
+-- sort urls by network latency (fastest first)
+--
+-- @param urls  the urls array to sort
+-- @return      the sorted urls array
+--
 function sort(urls)
 
     -- ping hosts

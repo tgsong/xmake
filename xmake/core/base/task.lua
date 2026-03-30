@@ -365,7 +365,12 @@ function task.apis()
     }
 end
 
--- new a task instance
+-- create a new task instance
+--
+-- @param name  the task name
+-- @param info  the task info table
+-- @return      the task instance
+--
 function task.new(name, info)
     local instance = table.inherit(task)
     if name then
@@ -380,7 +385,10 @@ function task.new(name, info)
     return instance
 end
 
--- get global tasks
+-- get all registered tasks
+--
+-- @return      the tasks table {name = task, ...}
+--
 function task.tasks()
     if task._TASKS then
         return task._TASKS
@@ -410,12 +418,20 @@ function task.tasks()
     return instances
 end
 
--- get the given global task
+-- get the given task by name
+--
+-- @param name  the task name
+-- @return      the task instance, or nil if not found
+--
 function task.task(name)
     return task.tasks()[name]
 end
 
--- get the task menu
+-- get the task menu for command line parsing
+--
+-- @param tasks the tasks table (optional, default all tasks)
+-- @return      the menu table
+--
 function task.menu(tasks)
     local menu = {}
     for taskname, taskinst in pairs(tasks) do

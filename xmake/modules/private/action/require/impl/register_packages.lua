@@ -133,6 +133,10 @@ function _register_required_package(instance, required_package)
 end
 
 -- register all required root packages to local cache
+-- register all packages to targets
+--
+-- @param packages  the packages table
+--
 function main(packages)
 
     -- register to package cache for add_packages()

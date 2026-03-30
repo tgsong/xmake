@@ -483,16 +483,33 @@ function scheduler:_profiler()
 end
 
 -- start a new coroutine task
+--
+-- @param cotask the coroutine task function
+-- @param ...    the task arguments
+-- @return       the coroutine object
+--
 function scheduler:co_start(cotask, ...)
     return self:co_start_named(nil, cotask, ...)
 end
 
 -- start a new named coroutine task
+--
+-- @param coname the coroutine name for debugging
+-- @param cotask the coroutine task function
+-- @param ...    the task arguments
+-- @return       the coroutine object
+--
 function scheduler:co_start_named(coname, cotask, ...)
     return self:co_start_withopt({name = coname}, cotask, ...)
 end
 
 -- start a new coroutine task with options
+--
+-- @param opt    the options, e.g. {name = "xxx", isolate = true}
+-- @param cotask the coroutine task function
+-- @param ...    the task arguments
+-- @return       the coroutine object
+--
 function scheduler:co_start_withopt(opt, cotask, ...)
 
     -- check coroutine task
@@ -543,6 +560,11 @@ function scheduler:co_start_withopt(opt, cotask, ...)
 end
 
 -- resume the given coroutine
+--
+-- @param co     the coroutine object
+-- @param ...    the resume arguments
+-- @return       true on success, and the yield results
+--
 function scheduler:co_resume(co, ...)
 
     -- do resume
@@ -570,6 +592,10 @@ function scheduler:co_resume(co, ...)
 end
 
 -- suspend the current coroutine
+--
+-- @param ...    the suspend results to return to resume caller
+-- @return       the resume arguments
+--
 function scheduler:co_suspend(...)
 
     -- suspend it
@@ -594,12 +620,15 @@ function scheduler:co_suspend(...)
     return table.unpack(results)
 end
 
--- yield the current coroutine
+-- yield the current coroutine (give up execution temporarily)
 function scheduler:co_yield()
     return scheduler.co_sleep(self, 1)
 end
 
--- sleep some times (ms)
+-- sleep the current coroutine for given milliseconds
+--
+-- @param ms     the sleep time in milliseconds
+--
 function scheduler:co_sleep(ms)
 
     -- we don't need to sleep
@@ -631,7 +660,10 @@ function scheduler:co_sleep(ms)
     return true
 end
 
--- lock the current coroutine
+-- lock the current coroutine (cooperative lock by name)
+--
+-- @param lockname   the lock name
+--
 function scheduler:co_lock(lockname)
 
     -- get the running coroutine
@@ -682,6 +714,9 @@ function scheduler:co_lock(lockname)
 end
 
 -- unlock the current coroutine
+--
+-- @param lockname   the lock name
+--
 function scheduler:co_unlock(lockname)
 
     -- get the running coroutine
@@ -713,6 +748,10 @@ function scheduler:co_unlock(lockname)
 end
 
 -- get the given coroutine group
+--
+-- @param name   the group name
+-- @return       the coroutines table in this group
+--
 function scheduler:co_group(name)
     return self._CO_GROUPS and self._CO_GROUPS[name]
 end
@@ -742,7 +781,12 @@ function scheduler:co_group_begin(name, scopefunc)
     return true
 end
 
--- wait for finishing the given coroutine group
+-- wait for finishing all coroutines in the given group
+--
+-- @param name   the group name
+-- @param opt    the options, e.g. {limit = 8}
+-- @return       true on success, or errors
+--
 function scheduler:co_group_wait(name, opt)
 
     -- get coroutine group
@@ -815,6 +859,9 @@ function scheduler:co_group_waitobjs(name)
 end
 
 -- get the current running coroutine
+--
+-- @return       the current coroutine object
+--
 function scheduler:co_running()
     if self._ENABLED then
         local running = coroutine.running()
@@ -823,6 +870,9 @@ function scheduler:co_running()
 end
 
 -- get all coroutine tasks
+--
+-- @return       the tasks table
+--
 function scheduler:co_tasks()
     local cotasks = self._CO_TASKS
     if not cotasks then

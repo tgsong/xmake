@@ -65,7 +65,11 @@ function option._context()
     end
 end
 
--- save context
+-- save option context (push a new context onto the stack)
+--
+-- @param taskname   the task name (optional)
+-- @return          the new context
+--
 function option.save(taskname)
     option._CONTEXTS = option._CONTEXTS or {}
     local context = {options = {}, defaults = {}, taskname = taskname}
@@ -76,7 +80,7 @@ function option.save(taskname)
     return context
 end
 
--- restore context
+-- restore option context (pop the current context from the stack)
 function option.restore()
     if option._CONTEXTS then
         table.remove(option._CONTEXTS)
@@ -142,7 +146,13 @@ function option.init(menu)
     return true
 end
 
--- parse arguments with the given options
+-- parse arguments with the given options definition
+--
+-- @param argv      the arguments array or string
+-- @param options   the options definition table
+-- @param opt       the description and usage strings
+-- @return          the parsed options table
+--
 function option.parse(argv, options, opt)
     assert(argv and options)
     opt = opt or { populate_defaults = true }
@@ -306,6 +316,9 @@ end
 
 
 -- get the current task name
+--
+-- @return      the task name string
+--
 function option.taskname()
     return option._context().taskname
 end
@@ -324,6 +337,10 @@ function option.taskmenu(task)
 end
 
 -- get the given option value for the current task
+--
+-- @param name  the option name, e.g. "verbose", "diagnosis", "target"
+-- @return      the option value
+--
 function option.get(name)
     local options = option.options()
     if options then
@@ -336,6 +353,10 @@ function option.get(name)
 end
 
 -- set the given option for the current task
+--
+-- @param name  the option name
+-- @param value the option value
+--
 function option.set(name, value)
     -- cannot be the first context for menu
     assert(#option._CONTEXTS > 1)
@@ -348,7 +369,11 @@ function option.set(name, value)
     options[name] = value
 end
 
--- get the boolean value
+-- convert value to boolean (handles "y", "yes", "true", etc.)
+--
+-- @param value the value to convert
+-- @return      true, false, or nil
+--
 function option.boolean(value)
     if type(value) == "string" then
         local v = value:lower()
@@ -359,7 +384,11 @@ function option.boolean(value)
     return value
 end
 
--- get the given default option value for the current task
+-- get the default option value for the current task
+--
+-- @param name  the option name
+-- @return      the default value
+--
 function option.default(name)
     assert(name)
 

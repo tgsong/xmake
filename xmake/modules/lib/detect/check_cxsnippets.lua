@@ -171,6 +171,12 @@ end
 --  }]], {tryrun = true})
 -- @endcode
 --
+-- check C/C++ code snippets for compilation
+--
+-- @param snippets   the code snippets table
+-- @param opt        the options, e.g. {target = target, sourcekind = "cc", includes = {}, configs = {}}
+-- @return           true and output on success, or false
+--
 function main(snippets, opt)
 
     -- init options

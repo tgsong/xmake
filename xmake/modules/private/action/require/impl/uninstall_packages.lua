@@ -23,6 +23,11 @@ import("core.cache.localcache")
 import("private.action.require.impl.package")
 
 -- uninstall packages
+-- uninstall required packages
+--
+-- @param requires  the requires table
+-- @param opt       the options
+--
 function main(requires, opt)
 
     -- init options

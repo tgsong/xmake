@@ -23,6 +23,11 @@ import("core.package.package", {alias = "core_package"})
 import("private.action.require.impl.package")
 
 -- export packages
+-- export required packages to a directory
+--
+-- @param requires  the requires table
+-- @param opt       the options
+--
 function main(requires, opt)
     opt = opt or {}
     local packages = {}

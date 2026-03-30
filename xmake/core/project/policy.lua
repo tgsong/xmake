@@ -30,6 +30,9 @@ local utils   = require("base/utils")
 local string  = require("base/string")
 
 -- get all defined policies
+--
+-- @return      the policies table {name = {description, ...}, ...}
+--
 function policy.policies()
     local policies = policy._POLICIES
     if not policies then
@@ -212,6 +215,10 @@ function policy.policies()
 end
 
 -- set policy default value
+--
+-- @param name  the policy name, e.g. "build.ccache"
+-- @param value the default value
+--
 function policy.set_default(name, value)
     local defined_policy = policy.policies()[name]
     if defined_policy then
@@ -221,7 +228,12 @@ function policy.set_default(name, value)
     end
 end
 
--- check policy value
+-- check and validate policy value
+--
+-- @param name  the policy name
+-- @param value the value to check
+-- @return      the validated value
+--
 function policy.check(name, value)
     local defined_policy = policy.policies()[name]
     if defined_policy then

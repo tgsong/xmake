@@ -496,7 +496,10 @@ function tty.has_emoji()
     return has_emoji
 end
 
--- has vtansi?
+-- does the terminal support VT/ANSI escape codes?
+--
+-- @return      true if supported
+--
 function tty.has_vtansi()
     return tty.has_color8()
 end
@@ -658,7 +661,10 @@ function tty.term_mode(stdtype, newmode)
     return oldmode
 end
 
--- get session id
+-- get the terminal session id
+--
+-- @return      the session id string
+--
 function tty.session_id()
     local session_id = tty._SESSION_ID
     if session_id == nil then

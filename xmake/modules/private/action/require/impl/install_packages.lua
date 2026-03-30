@@ -843,6 +843,11 @@ function _install_packages(requires, opt)
     return packages
 end
 
+-- install all required packages
+--
+-- @param requires  the requires table
+-- @param opt       the options
+--
 function main(requires, opt)
     -- we need to install toolchain packages first,
     -- because we will call compiler-specific api in package.on_load,

@@ -93,7 +93,11 @@ function _is_callable(func)
     end
 end
 
--- get proxy mirror url
+-- get proxy mirror url for the given url
+--
+-- @param url   the original url
+-- @return      the mirrored url
+--
 function mirror(url)
     local proxy_pac = _proxy_pac()
     if proxy_pac and proxy_pac.mirror then
@@ -142,8 +146,10 @@ function _global_proxy()
     return proxy
 end
 
--- get proxy configuration from the given url, [protocol://]host[:port]
+-- get proxy configuration for the given url
 --
+-- @param url   the target url
+-- @return      the proxy string, e.g. "socks5://127.0.0.1:1080", or nil
 -- @see https://github.com/xmake-io/xmake/issues/854
 --
 function config(url)

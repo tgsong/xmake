@@ -154,6 +154,11 @@ function _uninstall_moduleonly(target, opt)
     _uninstall_headers(target, opt)
 end
 
+-- uninstall the given target
+--
+-- @param target    the target instance
+-- @param opt       the options, e.g. {installdir = "", libdir = "", bindir = "", includedir = ""}
+--
 function main(target, opt)
     opt = opt or {}
     local installdir = opt.installdir or target:installdir()

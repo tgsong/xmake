@@ -48,21 +48,33 @@ end
 
 
 -- get the repository name
+--
+-- @return      the name string
+--
 function _instance:name()
     return self._NAME
 end
 
 -- get the repository url
+--
+-- @return      the url string
+--
 function _instance:url()
     return self._URL
 end
 
 -- get the repository branch
+--
+-- @return      the branch string
+--
 function _instance:branch()
     return self._BRANCH
 end
 
--- get the current commit
+-- get the current commit hash
+--
+-- @return      the commit string
+--
 function _instance:commit()
     return self._COMMIT
 end
@@ -73,11 +85,17 @@ function _instance:commit_set(commit)
 end
 
 -- is global repository?
+--
+-- @return      true if global
+--
 function _instance:is_global()
     return self._IS_GLOBAL
 end
 
--- get the repository directory
+-- get the repository directory on disk
+--
+-- @return      the directory path
+--
 function _instance:directory()
     return self._DIRECTORY
 end
@@ -125,7 +143,11 @@ function repository.apis()
     }
 end
 
--- get the local or global repository directory
+-- get the repositories root directory
+--
+-- @param is_global  get global directory if true
+-- @return          the directory path
+--
 function repository.directory(is_global)
 
     -- get directory
@@ -136,7 +158,14 @@ function repository.directory(is_global)
     end
 end
 
--- load the repository
+-- load a repository
+--
+-- @param name       the repository name
+-- @param url        the repository url
+-- @param branch     the repository branch
+-- @param is_global  is global repository?
+-- @return           the repository instance
+--
 function repository.load(name, url, branch, is_global)
 
     -- check url
@@ -165,6 +194,11 @@ function repository.load(name, url, branch, is_global)
 end
 
 -- get repository url from the given name
+--
+-- @param name       the repository name
+-- @param is_global  search global repositories?
+-- @return           the repository url
+--
 function repository.get(name, is_global)
 
     -- get it
@@ -179,7 +213,13 @@ function repository.get(name, is_global)
     end
 end
 
--- add repository url to the given name
+-- add a repository
+--
+-- @param name       the repository name
+-- @param url        the repository url
+-- @param branch     the repository branch
+-- @param is_global  add as global repository?
+--
 function repository.add(name, url, branch, is_global)
 
     -- no name?
@@ -199,7 +239,11 @@ function repository.add(name, url, branch, is_global)
     return true
 end
 
--- remove repository from gobal or local directory
+-- remove a repository
+--
+-- @param name       the repository name
+-- @param is_global  remove from global?
+--
 function repository.remove(name, is_global)
 
     -- get repositories
@@ -225,7 +269,11 @@ function repository.clear(is_global)
 end
 
 
--- get all repositories from global or local directory
+-- get all repositories
+--
+-- @param is_global  get global repositories?
+-- @return           the repositories table {name = repo, ...}
+--
 function repository.repositories(is_global)
     return repository._cache(is_global):get("repositories")
 end

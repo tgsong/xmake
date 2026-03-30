@@ -23,6 +23,14 @@ import("core.base.option")
 import("private.action.require.impl.utils.filter")
 
 -- test the given package
+-- test the installed package
+--
+-- @param package  the package instance
+--
+-- test the installed package
+--
+-- @param package  the package instance
+--
 function main(package)
 
     -- enter the test directory

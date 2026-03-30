@@ -29,7 +29,12 @@ local string    = require("base/string")
 -- save original interfaces
 coroutine._resume  = coroutine._resume or coroutine.resume
 
--- resume coroutine
+-- resume coroutine with enhanced error reporting
+--
+-- @param co    the coroutine to resume
+-- @param ...   the resume arguments
+-- @return      true and results on success, or false and error info
+--
 function coroutine.resume(co, ...)
     local ok, results = coroutine._resume(co, ...)
     if not ok then

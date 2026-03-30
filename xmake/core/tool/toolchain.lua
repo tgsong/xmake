@@ -79,6 +79,9 @@ function _instance.new(name, info, opt)
 end
 
 -- get toolchain name
+--
+-- @return      the toolchain name string
+--
 function _instance:name()
     return self._NAME
 end
@@ -109,7 +112,10 @@ function _instance:memcache()
     return cache
 end
 
--- get toolchain platform
+-- get toolchain platform, e.g. "windows", "linux", "macosx"
+--
+-- @return      the platform name
+--
 function _instance:plat()
     return self._PLAT or self:config("plat")
 end
@@ -119,7 +125,10 @@ function _instance:plat_set(plat)
     self._PLAT = plat
 end
 
--- get toolchain architecture
+-- get toolchain architecture, e.g. "x86_64", "arm64"
+--
+-- @return      the architecture name
+--
 function _instance:arch()
     return self._ARCH or self:config("arch")
 end
@@ -234,6 +243,9 @@ function _instance:is_builtin()
 end
 
 -- get the run environments
+--
+-- @return      the run environments table {PATH = "...", ...}
+--
 function _instance:runenvs()
     local runenvs = self._RUNENVS
     if runenvs == nil then
@@ -254,6 +266,10 @@ function _instance:runenvs()
 end
 
 -- get the program and name of the given tool kind
+--
+-- @param toolkind   the tool kind, e.g. "cc", "cxx", "ld", "ar"
+-- @return          the program path, the tool name
+--
 function _instance:tool(toolkind)
     if not self:_is_checked() then
         utils.warning("we cannot get tool(%s) in toolchain(%s) with %s/%s, because it has been not checked yet!", toolkind, self:name(), self:plat(), self:arch())
@@ -282,7 +298,10 @@ function _instance:cross()
     return self:config("cross") or config.get("cross") or self:info():get("cross")
 end
 
--- get the bin directory
+-- get the toolchain bin directory
+--
+-- @return      the bin directory path
+--
 function _instance:bindir()
     local bindir = self:config("bindir") or config.get("bin") or self:info():get("bindir")
     if not bindir and self:sdkdir() and os.isdir(path.join(self:sdkdir(), "bin")) then
@@ -291,7 +310,10 @@ function _instance:bindir()
     return bindir
 end
 
--- get the sdk directory
+-- get the toolchain sdk directory
+--
+-- @return      the sdk directory path
+--
 function _instance:sdkdir()
     return self:config("sdkdir") or config.get("sdk") or self:info():get("sdkdir")
 end
@@ -301,12 +323,20 @@ function _instance:cachekey()
     return self._CACHEKEY
 end
 
--- get user config from `set_toolchains("", {configs = {vs = "2018"}})`
+-- get toolchain config value
+--
+-- @param name  the config name, e.g. "sdkver", "vs"
+-- @return      the config value
+--
 function _instance:config(name)
     return self._CONFIGS[name]
 end
 
--- set user config
+-- set toolchain config value
+--
+-- @param name  the config name
+-- @param data  the config value
+--
 function _instance:config_set(name, data)
     self._CONFIGS[name] = data
 end
@@ -317,6 +347,9 @@ function _instance:configs_save()
 end
 
 -- do check, we only check it once for all architectures
+--
+-- @return      true if the toolchain is available
+--
 function _instance:check()
     local checked = self:config("__checked")
     if checked == nil then

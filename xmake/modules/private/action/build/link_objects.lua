@@ -61,6 +61,12 @@ function _do_link_target(target, opt)
           values = depvalues, files = depfiles, dryrun = dryrun})
 end
 
+-- link object files to the target file
+--
+-- @param jobgraph  the job graph for dependency tracking
+-- @param target    the target instance
+-- @param opt       the options
+--
 function main(jobgraph, target, opt)
     opt = opt or {}
     local buildcmds = opt.buildcmds

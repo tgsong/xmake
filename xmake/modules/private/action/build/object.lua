@@ -171,6 +171,13 @@ function _add_jobgraph(target, jobgraph, sourcebatch, opt)
     end
 end
 
+-- build object files from source batch
+--
+-- @param target       the target instance
+-- @param jobgraph    the job graph for dependency tracking
+-- @param sourcebatch  the source batch {sourcefiles, sourcekind, ...}
+-- @param opt          the options, e.g. {progress = {}}
+--
 function main(target, jobgraph, sourcebatch, opt)
     opt = opt or {}
     if jobgraph.add_orders then

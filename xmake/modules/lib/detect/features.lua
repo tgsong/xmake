@@ -35,6 +35,12 @@ import("core.base.scheduler")
 -- local features = features("clang", {flags = {"-g", "-O0"}, envs = {PATH = ""}})
 -- @endcode
 --
+-- get all supported features of the given tool
+--
+-- @param name  the tool name, e.g. "clang", "gcc"
+-- @param opt   the options, e.g. {program = "", flags = {}}
+-- @return      the features table, e.g. {cxx_constexpr = true}
+--
 function main(name, opt)
 
     -- init options

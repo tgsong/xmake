@@ -166,7 +166,11 @@ function _install_cmake_targetfile(target, installdir, filename, opt)
     end
 end
 
--- install .cmake import files
+-- install .cmake import files for the target
+--
+-- @param target    the target instance
+-- @param opt       the options, e.g. {installdir = "", libdir = ""}
+--
 function main(target, opt)
 
     -- check

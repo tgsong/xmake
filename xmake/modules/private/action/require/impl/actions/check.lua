@@ -22,7 +22,11 @@
 import("core.base.option")
 import("core.project.config")
 
--- check the given package
+-- check the package after installation
+--
+-- @param package  the package instance
+-- @param opt      the options
+--
 function main(package, opt)
     opt = opt or {}
 

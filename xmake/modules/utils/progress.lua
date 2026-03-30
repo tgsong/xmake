@@ -375,15 +375,23 @@ function _get_target_name_prefix(progress)
     end
 end
 
--- set the associated target name for the progress object (coroutine-local)
--- it's safe to call with non-table progress (e.g. number), it will be ignored
+-- set the associated target name for the progress display
+--
+-- @param progress  the progress object or number
+-- @param target    the target instance
+--
 function set_target(progress, target)
     if _is_show_target_enabled() and type(progress) == "table" and progress.set then
         progress:set("target_name", target:fullname())
     end
 end
 
--- show the message with progress
+-- show the message with progress indicator
+--
+-- @param progress  the progress value (0 ~ 100)
+-- @param format    the format string with color markup
+-- @param ...       the format arguments
+--
 function show(progress, format, ...)
     local target_prefix = _get_target_name_prefix(progress)
     if target_prefix then
@@ -403,8 +411,11 @@ function show(progress, format, ...)
     end
 end
 
--- print additional output logs with colors outside the progress log area, such as warning logs.
--- it's used when the progress style is multirow/singlerow refresh.
+-- print additional output logs outside the progress area (for warnings, etc.)
+--
+-- @param format    the format string with color markup
+-- @param ...       the format arguments
+--
 function show_output(format, ...)
     local refresh_mode = _g.refresh_mode
     if refresh_mode == "singlerow" then
@@ -502,7 +513,13 @@ function show_abort()
     end
 end
 
--- get the message text with progress
+-- get the formatted message text with progress (without printing)
+--
+-- @param progress  the progress value (0 ~ 100)
+-- @param format    the format string
+-- @param ...       the format arguments
+-- @return          the formatted text string
+--
 function text(progress, format, ...)
     local target_prefix = _get_target_name_prefix(progress)
     if target_prefix then

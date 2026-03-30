@@ -24,20 +24,26 @@ local object = require("base/object")
 -- define module
 local queue = queue or object {_init = {"_first", "_last"}} {1, 0}
 
--- clear queue
+-- clear all elements
 function queue:clear()
     self._first = 1
     self._last = 0
 end
 
--- push item to queue
+-- push an item to the back of the queue
+--
+-- @param item  the item to push
+--
 function queue:push(item)
     local last = self._last + 1
     self._last = last
     self[last] = item
 end
 
--- pop item from queue
+-- pop an item from the front of the queue
+--
+-- @return      the popped item, or nil if empty
+--
 function queue:pop()
     local first = self._first
     if first > self._last then
@@ -50,17 +56,26 @@ function queue:pop()
     return value
 end
 
--- get queue size
+-- get the queue size
+--
+-- @return      the number of elements
+--
 function queue:size()
     return self._last - self._first + 1
 end
 
--- is queue empty?
+-- is the queue empty?
+--
+-- @return      true if empty
+--
 function queue:empty()
     return self._first > self._last
 end
 
--- peek the first item of queue
+-- peek the first item without removing
+--
+-- @return      the first element, or nil if empty
+--
 function queue:first()
     if self._first > self._last then
         return nil
@@ -68,7 +83,10 @@ function queue:first()
     return self[self._first]
 end
 
--- peek the last item of queue
+-- peek the last item without removing
+--
+-- @return      the last element, or nil if empty
+--
 function queue:last()
     if self._first > self._last then
         return nil
@@ -107,7 +125,10 @@ function queue:ritems()
     end
 end
 
--- clone queue
+-- clone the queue
+--
+-- @return      the cloned queue
+--
 function queue:clone()
     local q = queue.new()
     for i = self._first, self._last do

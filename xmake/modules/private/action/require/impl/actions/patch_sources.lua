@@ -143,6 +143,14 @@ function _patch(package, patchinfo)
 end
 
 -- patch the given package
+-- patch the package sources
+--
+-- @param package  the package instance
+--
+-- patch the package sources
+--
+-- @param package  the package instance
+--
 function main(package)
 
     -- we don't need to patch it if we use the precompiled artifacts to install package

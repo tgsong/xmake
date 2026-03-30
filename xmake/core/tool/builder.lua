@@ -753,47 +753,81 @@ function builder:_preprocess_flags(flags)
     return results
 end
 
--- get the target
+-- get the associated target
+--
+-- @return      the target instance
+--
 function builder:target()
     return self._TARGET
 end
 
--- get tool name
+-- get the tool name, e.g. "gcc", "clang", "cl"
+--
+-- @return      the tool name string
+--
 function builder:name()
     return self:_tool():name()
 end
 
--- get tool kind
+-- get the tool kind, e.g. "cc", "cxx", "ld", "ar"
+--
+-- @return      the tool kind string
+--
 function builder:kind()
     return self:_tool():kind()
 end
 
--- get tool program
+-- get the tool program path
+--
+-- @return      the program path string
+--
 function builder:program()
     return self:_tool():program()
 end
 
--- get toolchain of this tool
+-- get the toolchain of this tool
+--
+-- @return      the toolchain instance
+--
 function builder:toolchain()
     return self:_tool():toolchain()
 end
 
--- get the run environments
+-- get the run environments for this tool
+--
+-- @return      the environments table
+--
 function builder:runenvs()
     return self:_tool():runenvs()
 end
 
 -- get properties of the tool
+--
+-- @param name  the property name
+-- @return      the property value
+--
 function builder:get(name)
     return self:_tool():get(name)
 end
 
--- has flags?
+-- check if the tool supports the given flags
+--
+-- @param flags     the flags to check
+-- @param flagkind  the flag kind (optional)
+-- @param opt       the options (optional)
+-- @return          true if supported
+--
 function builder:has_flags(flags, flagkind, opt)
     return self:_tool():has_flags(flags, flagkind, opt)
 end
 
--- map flags from name and values, e.g. linkdirs, links, defines
+-- map abstract flags to tool-specific flags
+--
+-- @param name      the flag category, e.g. "links", "defines", "includedirs"
+-- @param values    the values to map
+-- @param opt       the options (optional)
+-- @return          the mapped flags array
+--
 function builder:map_flags(name, values, opt)
     local flags  = {}
     local mapper = self:_tool()["nf_" .. name]

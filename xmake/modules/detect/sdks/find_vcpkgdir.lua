@@ -26,6 +26,10 @@ import("core.cache.detectcache")
 import("lib.detect.find_tool")
 
 -- find vcpkgdir
+-- find the vcpkg installation directory
+--
+-- @return      the vcpkg directory path, or nil
+--
 function main()
     local vcpkgdir = detectcache:get("detect.sdks.find_vcpkgdir")
     if vcpkgdir == nil then

@@ -48,6 +48,10 @@ function _lock_package(instance)
 end
 
 -- lock all required packages
+-- lock package versions
+--
+-- @param packages  the packages table
+--
 function main(packages)
     if project.policy("package.requires_lock") then
         local plat = config.plat() or os.subhost()
