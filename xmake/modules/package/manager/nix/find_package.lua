@@ -28,6 +28,8 @@ import("core.cache.memcache")
 import("core.base.json")
 import("core.base.object")
 import("core.base.semver")
+import("core.project.config")
+import("package.manager.nix.configurations")
 
 -- cache keys
 local STORE_PATHS_CACHE = "nix_store_paths"
@@ -37,23 +39,46 @@ local PKGCONFIG_CACHE = "nix_pkgconfig"
 local DERIVATION_CACHE = "nix_derivation_info"
 
 -- get nix cache instance
-local function get_nix_cache()
+function get_nix_cache()
     return globalcache.cache("nix_packages")
 end
 
 -- get memory cache for current session
-local function get_memory_cache()
+function get_memory_cache()
     return memcache.cache("nix_session")
 end
 
 -- check if we're in a nix shell
-local function is_in_nix_shell()
+function is_in_nix_shell()
     local in_nix_shell = os.getenv("IN_NIX_SHELL")
     return in_nix_shell == "pure" or in_nix_shell == "impure"
 end
 
+function is_in_nix_build()
+    local v = os.getenv("NIX_BUILD_TOP")
+    return v ~= nil and v ~= ""
+end
+
+-- check if we're in a nix environment (shell or build)
+function is_in_nix_environment()
+    return is_in_nix_shell() or is_in_nix_build()
+end
+
+-- resolve the active sources from opt.configs.source.
+-- source may be a pipe-separated list, e.g. "nix_shell|homemanager".
+-- returns a set table, e.g. { nix_shell = true, homemanager = true }.
+function resolve_source(opt)
+    local configs = (opt and opt.configs) or {}
+    local source_str = configs.source or "nix_shell"
+    local active = {}
+    for s in source_str:gmatch("[^|]+") do
+        active[s:match("^%s*(.-)%s*$")] = true  -- trim whitespace
+    end
+    return active
+end
+
 -- generate cache key for environment state
-local function generate_env_cache_key()
+function generate_env_cache_key()
     local env_vars = {
         "buildInputs",
         "nativeBuildInputs", 
@@ -79,7 +104,7 @@ local function generate_env_cache_key()
 end
 
 -- extract package information from store path using derivation data
-local function extract_package_info_from_path(store_path, opt)
+function extract_package_info_from_path(store_path, opt)
     local cache = get_nix_cache()
     local memory_cache = get_memory_cache()
     
@@ -325,7 +350,7 @@ function package_info:finalize()
 end
 
 -- follow propagated build inputs recursively with caching
-local function follow_propagated_inputs(store_paths, opt)
+function follow_propagated_inputs(store_paths, opt)
     local cache = get_nix_cache()
     local visited = {}
     
@@ -385,33 +410,8 @@ local function follow_propagated_inputs(store_paths, opt)
     return table.unique(all_paths)
 end
 
--- get store paths from nix command output
-local function get_store_paths_from_command(command, args, opt)
-    local output = try {function()
-        local outdata = os.iorunv(command, args)
-        if outdata then
-            return outdata:trim()
-        end
-        return outdata
-    end}
-    
-    if not output then
-        return {}
-    end
-    
-    local store_paths = {}
-    for line in output:gmatch("[^\n]+") do
-        local store_path = line:match("(/nix/store/[^%s]+)")
-        if store_path then
-            table.insert(store_paths, store_path)
-        end
-    end
-    
-    return follow_propagated_inputs(store_paths, opt)
-end
-
 -- parse store paths from environment variables with caching
-local function parse_store_paths_from_env(env_vars, opt)
+function parse_store_paths_from_env(env_vars, opt)
     local cache_key = generate_env_cache_key()
     local memory_cache = get_memory_cache()
     
@@ -457,9 +457,6 @@ local function parse_store_paths_from_env(env_vars, opt)
         end
     end
     
-    -- Follow propagated inputs
-    paths = follow_propagated_inputs(paths, opt)
-    
     -- Cache the result
     cache:set2(STORE_PATHS_CACHE, cache_key, paths)
     memory_cache:set2(STORE_PATHS_CACHE, cache_key, paths)
@@ -474,10 +471,11 @@ local function parse_store_paths_from_env(env_vars, opt)
 end
 
 -- STORE PATH EXTRACTION FUNCTIONS
+-- Each returns only the direct root path(s) for that source.
 
--- extract store paths from nix shell
-local function get_store_paths_nix_shell(opt)
-    if not is_in_nix_shell() then
+-- Source: nix-shell / nix develop / stdenv.mkDerivation
+function get_store_paths_build_inputs(opt)
+    if not is_in_nix_environment() then
         return {}
     end
     
@@ -491,7 +489,26 @@ local function get_store_paths_nix_shell(opt)
     return parse_store_paths_from_env(build_env_vars, opt)
 end
 
--- Find package from current user's nix profile, includes nix-env installed packages
+-- Source: home-manager profile (/etc/profiles/per-user/$USER)
+function get_store_paths_home_manager_profile(opt)
+    local user = os.getenv("USER") or "unknown"
+    local user_profile = "/etc/profiles/per-user/" .. user
+    
+    if not os.isdir(user_profile) then
+        if opt and (opt.verbose or option.get("verbose")) then
+            print("Nix: Home-manager profile not found at " .. user_profile)
+        end
+        return {}
+    end
+    
+    if opt and (opt.verbose or option.get("verbose")) then
+        print("Nix: Using home-manager profile at " .. user_profile)
+    end
+    return {user_profile}
+end
+
+-- Source: nix profile / nix-env (~/.nix-profile)
+-- Both `nix profile install` and `nix-env -i` install into ~/.nix-profile
 -- Note: nix-env only lists one output in the profile list
 -- $ nix-env -iA nixpkgs.<package> # installs multiple outputs, but only one is listed in the profile
 -- this can cause issues if the main output does not contain the necessary files
@@ -500,129 +517,50 @@ end
 -- It is better to use nix profile like:
 -- $ nix profile install 'nixpkgs#zlib^*'' # installs all outputs
 -- $ nix profile install 'nixpkgs#zlib^dev' # installs only the dev output
-local function get_store_paths_nix_profile(opt)
-    local nix = find_tool("nix")
-    if not nix then
-        return {}
-    end
+function get_store_paths_from_user_profile(opt)
+    local user_profile = path.join(os.home(), ".nix-profile")
     
-    return get_store_paths_from_command(
-        nix.program, 
-        {"profile", "list", "--extra-experimental-features", "nix-command flakes"},
-        opt
-    )
-end
-
--- Popular nix-community tool to declaratively manage user environments (NixOS and non-NixOS)
-local function get_store_paths_home_manager_tool(opt)
-    local home_manager = find_tool("home-manager")
-    if not home_manager then
-        return {}
-    end
-    
-    return get_store_paths_from_command(
-        home_manager.program,
-        {"packages"},
-        opt
-    )
-end
-
--- Home manager can be installed as a module in nixos, in which case the home-manager tool is missing.
-local function get_store_paths_home_manager_profile(opt)
-    local nix_store = find_tool("nix-store")
-    if not nix_store then
-        return {}
-    end
-    
-    local user = os.getenv("USER") or "unknown"
-    local user_profile = "/etc/profiles/per-user/" .. user
     if not os.isdir(user_profile) then
+        if opt and (opt.verbose or option.get("verbose")) then
+            print("Nix: User profile not found at " .. user_profile)
+        end
         return {}
     end
     
-    return get_store_paths_from_command(
-        nix_store.program,
-        {"--query", "--requisites", user_profile},
-        opt
-    )
+    if opt and (opt.verbose or option.get("verbose")) then
+        print("Nix: Using user profile at " .. user_profile)
+    end
+    return {user_profile}
 end
 
--- nixos-option is not always configured properly, but if it is, we can find user/system packages
-local function get_store_paths_nixos_user_packages(opt)
-    local nixos_option = find_tool("nixos-option")
-    if not nixos_option then
+-- Source: NixOS system profile
+-- Use /run/current-system/sw
+function get_store_paths_nixos_system_profile(opt)
+    local sw = "/run/current-system/sw"
+    if not os.isdir(sw) then
+        if opt and (opt.verbose or option.get("verbose")) then
+            print("Nix: NixOS system profile not found at " .. sw)
+        end
         return {}
     end
     
-    local user = os.getenv("USER") or "unknown"
-    local output = try {function()
-        local outdata = os.iorunv(nixos_option.program, {"users.users." .. user .. ".packages"})
-        if outdata then
-            return outdata:trim()
-        end
-        return outdata
-    end}
-    
-    if output then
-        local store_paths = {}
-        for store_path in output:gmatch('(/nix/store/[^"\'%s]+)') do
-            table.insert(store_paths, store_path)
-        end
-        
-        return follow_propagated_inputs(store_paths, opt)
+    if opt and (opt.verbose or option.get("verbose")) then
+        print("Nix: Using NixOS system profile at " .. sw)
     end
-    return {}
+    return {sw}
 end
 
--- extract store paths from nixos system packages
-local function get_store_paths_nixos_system_packages(opt)
-    local nixos_option = find_tool("nixos-option")
-    if not nixos_option then
-        return {}
-    end
-    
-    local output = try {function()
-        local outdata = os.iorunv(nixos_option.program, {"environment.systemPackages"})
-        if outdata then
-            return outdata:trim()
-        end
-        return outdata
-    end}
-    
-    if output then
-        local store_paths = {}
-        for store_path in output:gmatch('(/nix/store/[^"\'%s]+)') do
-            table.insert(store_paths, store_path)
-        end
-        
-        return follow_propagated_inputs(store_paths, opt)
-    end
-    return {}
-end
-
--- Includes all system/user/home-manager packages
-local function get_store_paths_nixos_current_system(opt)
-    local nix_store = find_tool("nix-store")
-    if not nix_store then
-        return {}
-    end
-    
-    if not os.isdir("/run/current-system") then
-        return {}
-    end
-    
-    return get_store_paths_from_command(
-        nix_store.program,
-        {"--query", "--requisites", "/run/current-system"},
-        opt
-    )
-end
-
--- get all store paths from all nix environments with caching
-local function get_all_store_paths(opt)
+function get_all_store_paths(opt)
     local cache = get_nix_cache()
     local memory_cache = get_memory_cache()
-    local cache_key = "all_environments:" .. generate_env_cache_key()
+
+    -- Cache key includes the active source so changing it busts the cache
+    local active_sources = resolve_source(opt)
+    local sources_key = (active_sources["nix_shell"]    and "1" or "0")
+                     .. (active_sources["homemanager"]  and "1" or "0")
+                     .. (active_sources["nix_profile"]  and "1" or "0")
+                     .. (active_sources["nixos_system"] and "1" or "0")
+    local cache_key = "all_environments:" .. sources_key .. ":" .. generate_env_cache_key()
     
     -- Check memory cache first
     local cached_paths = memory_cache:get2(STORE_PATHS_CACHE, cache_key)
@@ -637,26 +575,27 @@ local function get_all_store_paths(opt)
         return cached_paths
     end
     
-    -- Extract from all sources
+    -- Collect root paths from each active source in priority order
     local all_paths = {}
     local seen = {}
-    
-    local get_store_path_functions = {
-        get_store_paths_nix_shell,
-        get_store_paths_nix_profile,
-        get_store_paths_home_manager_tool,
-        get_store_paths_home_manager_profile,
-        get_store_paths_nixos_user_packages,
-        get_store_paths_nixos_system_packages,
-        get_store_paths_nixos_current_system
+
+    local sources = {
+        {key = "nix_shell",    fn = get_store_paths_build_inputs},
+        {key = "homemanager",  fn = get_store_paths_home_manager_profile},
+        {key = "nix_profile",  fn = get_store_paths_from_user_profile},
+        {key = "nixos_system", fn = get_store_paths_nixos_system_profile},
     }
-    
-    for _, func in ipairs(get_store_path_functions) do
-        local paths = func(opt)
-        for _, store_path in ipairs(paths) do
-            if not seen[store_path] then
-                seen[store_path] = true
-                table.insert(all_paths, store_path)
+
+    for _, s in ipairs(sources) do
+        if active_sources[s.key] then
+            if opt and (opt.verbose or option.get("verbose")) then
+                print("Nix: Searching source: " .. s.key)
+            end
+            for _, store_path in ipairs(s.fn(opt)) do
+                if not seen[store_path] then
+                    seen[store_path] = true
+                    table.insert(all_paths, store_path)
+                end
             end
         end
     end
@@ -667,21 +606,21 @@ local function get_all_store_paths(opt)
     cache:save()
     
     if opt and (opt.verbose or option.get("verbose")) then
-        print("Nix: Found " .. #all_paths .. " total store paths across all environments")
+        print("Nix: Found " .. #all_paths .. " root paths across enabled sources")
     end
     
     return all_paths
 end
 
 -- check if store path has the package name (substring search)
-local function path_matches_package(store_path, package_name)
+function path_matches_package(store_path, package_name)
     local path_name_lower = path.basename(store_path):lower()
     local package_name_lower = package_name:lower()
     
     return path_name_lower:find(package_name_lower, 1, true) ~= nil
 end
 
-local function group_paths_by_version(store_paths, package_name, opt)
+function group_paths_by_version(store_paths, package_name, opt)
     local version_groups = {}  -- { "package:version" -> [store_paths] }
     
     for _, store_path in ipairs(store_paths) do
@@ -726,7 +665,7 @@ local function group_paths_by_version(store_paths, package_name, opt)
 end
 
 -- extract package information from store paths with caching
-local function extract_package_info(store_paths, package_name, opt)
+function extract_package_info(store_paths, package_name, opt)
     opt = opt or {}
     local cache = get_nix_cache()
     local memory_cache = get_memory_cache()
@@ -767,7 +706,7 @@ local function extract_package_info(store_paths, package_name, opt)
             end
         end
         
-        -- Then find their dependencies
+        -- Then find their dependencies (only for the matched package, not the whole source)
         local all_deps = follow_propagated_inputs(filtered_paths, opt)
         filtered_paths = table.unique(all_deps)
         
@@ -804,16 +743,10 @@ local function extract_package_info(store_paths, package_name, opt)
                 end
             end
 
-            -- include directories (and their subdirs)
+            -- include directories
             local includedir = path.join(store_path, "include")
             if os.isdir(includedir) then
                 pkg:add_includedir(includedir)
-                local subdirs = try { function() return os.dirs(path.join(includedir, "*")) end } or {}
-                for _, subdir in ipairs(subdirs) do
-                    if os.isdir(subdir) then
-                        pkg:add_includedir(subdir)
-                    end
-                end
             end
 
             -- bin
@@ -882,7 +815,7 @@ local function extract_package_info(store_paths, package_name, opt)
     return result
 end
 
-local function find_all_with_pkgconfig(package_name, store_paths, opt)
+function find_all_with_pkgconfig(package_name, store_paths, opt)
     local cache = get_nix_cache()
     local memory_cache = get_memory_cache()
 
@@ -923,7 +856,7 @@ local function find_all_with_pkgconfig(package_name, store_paths, opt)
         end
     end
     
-    -- Add dependencies of matching packages
+    -- Add dependencies of matching packages (only after filtering to matched package)
     filtered_paths = follow_propagated_inputs(filtered_paths, opt)
 
     local all_results = {}
@@ -952,7 +885,7 @@ local function find_all_with_pkgconfig(package_name, store_paths, opt)
     return all_results
 end
 
-local function select_best_version(packages, package_name, require_version, opt)
+function select_best_version(packages, package_name, require_version, opt)
     -- Collect all versions of the target package
     local candidates = {}
     local name_lower = package_name:lower()
@@ -1060,17 +993,31 @@ local function select_best_version(packages, package_name, require_version, opt)
     return best_match
 end
 
-local function nonempty_string(v)
+function nonempty_string(v)
     return type(v) == "string" and v ~= "" and v
 end
 
 -- find package using the nix package manager
 --
 -- @param name  the package name
--- @param opt   the options, e.g. {verbose = true, version = "1.12.x")
-
+-- @param opt   the options, e.g. {verbose = true, version = "1.12.x",
+--                                  configs = {source = "nix_profile"}}
+--
+-- The active source is selected via configs.source (default: "nix_shell"):
+--   add_requires("nix::zlib", {configs = {source = "nix_profile"}})
 function main(name, opt)
     opt = opt or {}
+
+    -- if nix_shell is the only active source but we are not inside a
+    -- nix-shell or stdenv.mkDerivation build, there is nothing to search
+    local active_sources = resolve_source(opt)
+    local only_nix_shell = active_sources["nix_shell"]
+                       and not active_sources["homemanager"]
+                       and not active_sources["nix_profile"]
+                       and not active_sources["nixos_system"]
+    if only_nix_shell and not is_in_nix_environment() then
+        return
+    end
 
     -- ensure a stable env cache key is available for the whole run
     local memory_cache = get_memory_cache()
@@ -1083,7 +1030,7 @@ function main(name, opt)
         return
     end
     
-    -- Get all store paths from all nix environments (cached)
+    -- Get root paths from all enabled sources
     local store_paths = get_all_store_paths(opt)
     if #store_paths == 0 then
         if opt and (opt.verbose or option.get("verbose")) then
@@ -1092,7 +1039,7 @@ function main(name, opt)
         return nil
     end
     
-    -- Extract all package info (cached)
+    -- Extract all package info
     local packages = extract_package_info(store_paths, name, opt)
     local keys = table.keys(packages)
     if not packages or #keys == 0 then
