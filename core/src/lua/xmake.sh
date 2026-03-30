@@ -45,6 +45,10 @@ target "lua"
     # add definitions
     add_defines "LUA_COMPAT_5_1" "LUA_COMPAT_5_2" "LUA_COMPAT_5_3" "{public}"
 
+    # allow reassignment of for-loop control variables (lua 5.4 compatible)
+    add_undefines "RDKCONST"
+    add_defines "RDKCONST=0"
+
     if is_plat "mingw"; then true
         # it has been defined in luaconf.h
         #add_defines "LUA_USE_WINDOWS"
