@@ -84,24 +84,42 @@ function _instance:clone()
     return instance
 end
 
--- get the rule info
+-- get the rule info value
+--
+-- @param name  the info name
+-- @return      the info value
+--
 function _instance:get(name)
     return self._INFO:get(name)
 end
 
 -- set the value to the rule info
+--
+-- @param name  the info name
+-- @param ...   the values
+--
 function _instance:set(name, ...)
     self._INFO:apival_set(name, ...)
     self:_invalidate(name)
 end
 
 -- add the value to the rule info
+--
+-- @param name  the info name
+-- @param ...   the values to add
+--
 function _instance:add(name, ...)
     self._INFO:apival_add(name, ...)
     self:_invalidate(name)
 end
 
 -- get the extra configuration
+--
+-- @param name  the config name
+-- @param item  the config item
+-- @param key   the config key (optional)
+-- @return      the extra config value
+--
 function _instance:extraconf(name, item, key)
     return self._INFO:extraconf(name, item, key)
 end
@@ -112,6 +130,9 @@ function _instance:extraconf_set(name, item, key, value)
 end
 
 -- get the rule name
+--
+-- @return      the rule name string
+--
 function _instance:name()
     return self._NAME
 end
@@ -171,7 +192,12 @@ function _instance:orderdeps()
     return self._ORDERDEPS
 end
 
--- get xxx_script
+-- get the rule script function (on_build, on_install, etc.)
+--
+-- @param name     the script name, e.g. "build", "install", "clean"
+-- @param generic  use generic script if platform-specific not found?
+-- @return         the script function
+--
 function _instance:script(name, generic)
 
     -- get script
