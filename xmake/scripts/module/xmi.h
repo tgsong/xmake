@@ -67,7 +67,7 @@
 #   define XMI_LUA_GLOBALSINDEX     (-10002)
 #   define xmi_lua_upvalueindex(i)  (XMI_LUA_GLOBALSINDEX - (i))
 #else
-#   define LUA_LUA_REGISTRYINDEX    (-(INT_MAX/2 + 1000))
+#   define XMI_LUA_REGISTRYINDEX    (-(INT_MAX/2 + 1000))
 #   define xmi_lua_upvalueindex(i)  (XMI_LUA_REGISTRYINDEX - (i))
 #endif
 
