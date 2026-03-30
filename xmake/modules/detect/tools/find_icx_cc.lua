@@ -15,13 +15,25 @@
 -- Copyright (C) 2015-present, Xmake Open Source Community.
 --
 -- @author      ruki
--- @file        icx.lua
+-- @file        find_icx_cc.lua
 --
 
--- https://github.com/xmake-io/xmake/issues/7438
--- https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/get-started-guide/2024-1/get-started-on-windows.html
-if is_host("windows") then
-    inherit("clang_cl")
-else
-    inherit("clang")
+-- imports
+import("lib.detect.find_program")
+import("lib.detect.find_programver")
+
+-- find icx-cc
+--
+-- @param opt   the argument options, e.g. {version = true}
+--
+-- @return      program, version
+--
+function main(opt)
+    opt = opt or {}
+    local program = find_program(opt.program or "icx-cc", opt)
+    local version = nil
+    if program and opt.version then
+        version = find_programver(program, opt)
+    end
+    return program, version
 end

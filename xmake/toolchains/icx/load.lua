@@ -56,23 +56,23 @@ function _load_intel_on_windows(toolchain)
 
     -- set toolset
     if toolchain:is_plat("windows") then
-        toolchain:set("toolset", "cc", "icx.exe")
-        toolchain:set("toolset", "cxx", "icx.exe")
+        toolchain:set("toolset", "cc", "icx-cc.exe")
+        toolchain:set("toolset", "cxx", "icx-cc.exe")
         toolchain:set("toolset", "mrc", "rc.exe")
         if toolchain:is_arch("x64") then
             toolchain:set("toolset", "as",  "ml64.exe")
         else
             toolchain:set("toolset", "as",  "ml.exe")
         end
-        toolchain:set("toolset", "ld",  "link.exe")
-        toolchain:set("toolset", "sh",  "link.exe")
-        toolchain:set("toolset", "ar",  "link.exe")
+        toolchain:set("toolset", "ld",  "icx-cc.exe")
+        toolchain:set("toolset", "sh",  "icx-cc.exe")
+        toolchain:set("toolset", "ar",  "llvm-ar.exe")
     else
         toolchain:set("toolset", "cc", "icx")
         toolchain:set("toolset", "cxx", "icpx", "icx")
         toolchain:set("toolset", "ld", "icpx", "icx")
         toolchain:set("toolset", "sh", "icpx", "icx")
-        toolchain:set("toolset", "ar", "ar")
+        toolchain:set("toolset", "ar", "llvm-ar", "ar")
         toolchain:set("toolset", "strip", "strip")
         toolchain:set("toolset", "as", "icx")
     end
