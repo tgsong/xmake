@@ -31,7 +31,10 @@ local dump   = require("base/dump")
 local text   = require("base/text")
 
 
--- dump values
+-- dump values with colored pretty-printing
+--
+-- @param ...   the values to dump
+--
 function utils.dump(...)
     if option.get("quiet") then
         return ...
@@ -142,6 +145,10 @@ function utils._decode_errors(errors)
 end
 
 -- print format string with newline
+--
+-- @param format the format string
+-- @param ...    the format arguments
+--
 function utils.print(format, ...)
     assert(format)
     local message = string.tryformat(format, ...)
@@ -150,6 +157,10 @@ function utils.print(format, ...)
 end
 
 -- print format string without newline
+--
+-- @param format the format string
+-- @param ...    the format arguments
+--
 function utils.printf(format, ...)
     assert(format)
     local message = string.tryformat(format, ...)
@@ -157,7 +168,11 @@ function utils.printf(format, ...)
     log:write(message)
 end
 
--- print format string and colors with newline
+-- print format string with color markup and newline
+--
+-- @param format the format string with ${color} markup
+-- @param ...    the format arguments
+--
 function utils.cprint(format, ...)
     assert(format)
     local message = string.tryformat(format, ...)
@@ -167,7 +182,11 @@ function utils.cprint(format, ...)
     end
 end
 
--- print format string and colors without newline
+-- print format string with color markup without newline
+--
+-- @param format the format string with ${color} markup
+-- @param ...    the format arguments
+--
 function utils.cprintf(format, ...)
     assert(format)
     local message = string.tryformat(format, ...)
@@ -177,7 +196,11 @@ function utils.cprintf(format, ...)
     end
 end
 
--- print the verbose information
+-- print the verbose information (only when -v is enabled)
+--
+-- @param format the format string
+-- @param ...    the format arguments
+--
 function utils.vprint(format, ...)
     if (option.get("verbose") or option.get("diagnosis")) and format ~= nil then
         utils.print(format, ...)
@@ -191,7 +214,11 @@ function utils.vprintf(format, ...)
     end
 end
 
--- print the diagnosis information
+-- print the diagnosis information (only when -D is enabled)
+--
+-- @param format the format string
+-- @param ...    the format arguments
+--
 function utils.dprint(format, ...)
     if option.get("diagnosis") and format ~= nil then
         utils.print(format, ...)
@@ -205,7 +232,11 @@ function utils.dprintf(format, ...)
     end
 end
 
--- print the error information
+-- print the error information to stderr
+--
+-- @param format the format string
+-- @param ...    the format arguments
+--
 function utils.error(format, ...)
     if format ~= nil then
         local errors = string.tryformat(format, ...)
@@ -218,7 +249,11 @@ function utils.error(format, ...)
     end
 end
 
--- add warning message
+-- add a warning message (displayed at the end of execution)
+--
+-- @param format the format string
+-- @param ...    the format arguments
+--
 function utils.warning(format, ...)
     if option.get("quiet") then
         return
@@ -253,7 +288,13 @@ function utils.show_warnings()
     end
 end
 
--- try to call script
+-- try to call script safely
+--
+-- @param script     the script function
+-- @param traceback  the traceback function (optional)
+-- @param ...        the script arguments
+-- @return           true and results on success, or false and errors
+--
 function utils.trycall(script, traceback, ...)
     return xpcall(script, function (errors)
 

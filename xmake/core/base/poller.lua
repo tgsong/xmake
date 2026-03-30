@@ -56,17 +56,27 @@ function poller:_pollerdata_set(cdata, data)
     pollerdata[cdata] = data
 end
 
--- support events?
+-- check if the poller supports the given events
+--
+-- @param events    the events to check
+-- @return          true if supported
+--
 function poller:support(events)
     return io.poller_support(events)
 end
 
--- spank poller to break the wait() and return all triggered events
+-- spank the poller to break wait() and return immediately
 function poller:spank()
     io.poller_spank()
 end
 
 -- insert object events to poller
+--
+-- @param obj       the object (pipe, socket, process, fwatcher)
+-- @param events    the events to monitor
+-- @param udata     the user data (optional)
+-- @return          true on success, or false and error info
+--
 function poller:insert(obj, events, udata)
 
     -- insert it
@@ -81,6 +91,12 @@ function poller:insert(obj, events, udata)
 end
 
 -- modify object events in poller
+--
+-- @param obj       the object
+-- @param events    the new events to monitor
+-- @param udata     the user data (optional)
+-- @return          true on success, or false and error info
+--
 function poller:modify(obj, events, udata)
 
     -- modify it
@@ -95,6 +111,10 @@ function poller:modify(obj, events, udata)
 end
 
 -- remove object from poller
+--
+-- @param obj       the object to remove
+-- @return          true on success, or false and error info
+--
 function poller:remove(obj)
 
     -- remove it
@@ -108,7 +128,11 @@ function poller:remove(obj)
     return true
 end
 
--- wait object events in poller
+-- wait for object events in poller
+--
+-- @param timeout   the timeout in milliseconds, -1 for infinite
+-- @return          the number of events, or -1 on error
+--
 function poller:wait(timeout)
 
     -- wait it

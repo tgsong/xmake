@@ -94,6 +94,9 @@ function _instance:memcache()
 end
 
 -- get the package name without namespace
+--
+-- @return      the package name string
+--
 function _instance:name()
     return self._NAME
 end
@@ -129,7 +132,11 @@ function _instance:base()
     return self._BASE
 end
 
--- get the package configuration
+-- get the package configuration value
+--
+-- @param name  the config name
+-- @return      the config value
+--
 function _instance:get(name)
     local value = self._INFO:get(name)
     if name == "configs" then
@@ -149,6 +156,10 @@ function _instance:get(name)
 end
 
 -- set the value to the package info
+--
+-- @param name  the info name
+-- @param ...   the values
+--
 function _instance:set(name, ...)
     if self._SOURCE_INITED then
         -- we can use set/add to modify urls, .. in on_load() if urls have been inited.
@@ -202,7 +213,10 @@ function _instance:description()
     return self:get("description")
 end
 
--- get the platform of package
+-- get the platform of package, e.g. "windows", "linux", "macosx"
+--
+-- @return      the platform name
+--
 function _instance:plat()
     if self._PLAT then
         return self._PLAT
@@ -217,7 +231,10 @@ function _instance:plat()
     return package.targetplat()
 end
 
--- get the architecture of package
+-- get the architecture of package, e.g. "x86_64", "arm64"
+--
+-- @return      the architecture name
+--
 function _instance:arch()
     if self._ARCH then
         return self._ARCH
@@ -266,7 +283,11 @@ function _instance:repo()
     return self._REPO
 end
 
--- the current platform is belong to the given platforms?
+-- is the package platform belong to the given platforms?
+--
+-- @param ...   the platform names
+-- @return      true if matched
+--
 function _instance:is_plat(...)
     local plat = self:plat()
     for _, v in ipairs(table.pack(...)) do
@@ -276,7 +297,11 @@ function _instance:is_plat(...)
     end
 end
 
--- the current architecture is belong to the given architectures?
+-- is the package architecture belong to the given architectures?
+--
+-- @param ...   the architecture names
+-- @return      true if matched
+--
 function _instance:is_arch(...)
     local arch = self:arch()
     for _, v in ipairs(table.pack(...)) do
@@ -325,7 +350,10 @@ function _instance:extsources()
     return self:get("extsources")
 end
 
--- get urls
+-- get the source urls
+--
+-- @return      the urls array
+--
 function _instance:urls()
     return self:current_scheme():urls()
 end
@@ -570,6 +598,9 @@ function _instance:kind()
 end
 
 -- is binary package?
+--
+-- @return      true if the package kind is "binary"
+--
 function _instance:is_binary()
     return self:kind() == "binary" or self:kind() == "toolchain"
 end
@@ -580,6 +611,9 @@ function _instance:is_toolchain()
 end
 
 -- is library package?
+--
+-- @return      true if the package kind is "library" or default
+--
 function _instance:is_library()
     return self:kind() == nil or self:kind() == "library"
 end
@@ -589,7 +623,10 @@ function _instance:is_template()
     return self:kind() == "template"
 end
 
--- is header only?
+-- is header-only library?
+--
+-- @return      true if the package kind is "headeronly"
+--
 function _instance:is_headeronly()
     return self:is_library() and self:extraconf("kind", "library", "headeronly")
 end
@@ -790,11 +827,17 @@ function _instance:unlock()
 end
 
 -- get the source directory
+--
+-- @return      the source directory path
+--
 function _instance:sourcedir()
     return self:get("sourcedir")
 end
 
 -- get the build directory
+--
+-- @return      the build directory path
+--
 function _instance:builddir()
     local builddir = self._BUILDDIR
     if not builddir then
@@ -817,6 +860,9 @@ function _instance:buildir()
 end
 
 -- get the cached directory of this package
+--
+-- @return      the cache directory path
+--
 function _instance:cachedir()
     local cachedir = self._CACHEDIR
     if not cachedir then
@@ -851,6 +897,10 @@ function _instance:cachedir()
 end
 
 -- get the installed directory of this package
+--
+-- @param ...   the subdirectory components (optional)
+-- @return      the install directory path
+--
 function _instance:installdir(...)
     local installdir = self._INSTALLDIR
     if not installdir then

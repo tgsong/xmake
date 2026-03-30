@@ -51,6 +51,9 @@ function _subprocess.new(program, proc)
 end
 
 -- get the process name
+--
+-- @return      the process name string
+--
 function _subprocess:name()
     if not self._NAME then
         self._NAME = path.filename(self:program())
@@ -58,7 +61,10 @@ function _subprocess:name()
     return self._NAME
 end
 
--- get the process program
+-- get the process program path
+--
+-- @return      the program path string
+--
 function _subprocess:program()
     return self._PROGRAM
 end
@@ -101,7 +107,10 @@ function _subprocess:wait(timeout)
     return result, status_or_errors
 end
 
--- kill subprocess
+-- kill the subprocess
+--
+-- @return      true on success
+--
 function _subprocess:kill()
 
     -- ensure opened
@@ -115,7 +124,10 @@ function _subprocess:kill()
     return true
 end
 
--- close subprocess
+-- close the subprocess and release resources
+--
+-- @return      true on success
+--
 function _subprocess:close()
 
     -- ensure opened
@@ -305,7 +317,12 @@ function process._get_missing_dlls(program)
     return missing
 end
 
--- get process exit errors
+-- get process exit error message
+--
+-- @param program    the program path
+-- @param exitcode   the exit code
+-- @return          the error message string, or nil
+--
 function process.get_exit_errors(program, exitcode)
     local errors
     if os.is_host("windows") then

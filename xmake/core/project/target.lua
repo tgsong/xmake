@@ -718,12 +718,20 @@ function _instance:get_from(name, sources, opt)
 end
 
 -- set the value to the target info
+--
+-- @param name  the info name
+-- @param ...   the values
+--
 function _instance:set(name, ...)
     self._INFO:apival_set(name, ...)
     self:_invalidate(name)
 end
 
 -- add the value to the target info
+--
+-- @param name  the info name
+-- @param ...   the values to add
+--
 function _instance:add(name, ...)
     self._INFO:apival_add(name, ...)
     self:_invalidate(name)
@@ -825,11 +833,19 @@ function _instance:sourceinfo(name, item)
 end
 
 -- get user private data
+--
+-- @param name  the data key
+-- @return      the data value
+--
 function _instance:data(name)
     return self._DATA and self._DATA[name]
 end
 
 -- set user private data
+--
+-- @param name  the data key
+-- @param data  the data value
+--
 function _instance:data_set(name, data)
     self._DATA = self._DATA or {}
     self._DATA[name] = data
@@ -841,7 +857,12 @@ function _instance:data_add(name, data)
     self._DATA[name] = table.unwrap(table.join(self._DATA[name] or {}, data))
 end
 
--- get values
+-- get values set by set_values/add_values
+--
+-- @param name       the values name, e.g. "csharp.target_framework"
+-- @param sourcefile the source file (optional, for file-level values)
+-- @return          the values
+--
 function _instance:values(name, sourcefile)
 
     -- get values from the source file first
@@ -892,6 +913,9 @@ function _instance:type()
 end
 
 -- get the target name
+--
+-- @return      the target name string
+--
 function _instance:name()
     return self._NAME
 end
@@ -917,7 +941,10 @@ function _instance:fullname()
     return namespace and namespace .. "::" .. self:name() or self:name()
 end
 
--- get the target kind
+-- get the target kind, e.g. "binary", "shared", "static", "object", "headeronly"
+--
+-- @return      the kind string
+--
 function _instance:kind()
     return self:get("kind") or "binary"
 end
@@ -927,17 +954,27 @@ function _instance:targetkind()
     return self:kind()
 end
 
--- get the platform of this target
+-- get the platform of this target, e.g. "windows", "linux", "macosx"
+--
+-- @return      the platform name
+--
 function _instance:plat()
     return self:get("plat") or config.get("plat") or os.host()
 end
 
--- get the architecture of this target
+-- get the architecture of this target, e.g. "x86_64", "arm64"
+--
+-- @return      the architecture name
+--
 function _instance:arch()
     return self:get("arch") or config.get("arch") or os.arch()
 end
 
--- the current target is belong to the given platforms?
+-- is the current target belong to the given platforms?
+--
+-- @param ...   the platform names, e.g. "windows", "linux"
+-- @return      true if matched
+--
 function _instance:is_plat(...)
     local plat = self:plat()
     for _, v in ipairs(table.pack(...)) do
@@ -947,7 +984,11 @@ function _instance:is_plat(...)
     end
 end
 
--- the current target is belong to the given architectures?
+-- is the current target belong to the given architectures?
+--
+-- @param ...   the architecture names, e.g. "x86_64", "arm64"
+-- @return      true if matched
+--
 function _instance:is_arch(...)
     local arch = self:arch()
     for _, v in ipairs(table.pack(...)) do
@@ -1061,6 +1102,9 @@ function _instance:policy(name)
 end
 
 -- get the base name of target file
+--
+-- @return      the base name without extension
+--
 function _instance:basename()
     local filename = self:get("filename")
     if filename then
@@ -1116,6 +1160,10 @@ function _instance:linkflags()
 end
 
 -- get the given dependent target
+--
+-- @param name  the dependent target name
+-- @return      the target instance, or nil if not found
+--
 function _instance:dep(name)
     local deps = self:deps()
     if deps then
@@ -1130,7 +1178,10 @@ function _instance:dep(name)
     end
 end
 
--- get target deps
+-- get all dependent targets
+--
+-- @return      the deps table {name = target, ...}
+--
 function _instance:deps()
     if not self:_is_loaded() then
         os.raise("please call target:deps() or target:dep() in after_load()!")
@@ -1141,7 +1192,11 @@ function _instance:deps()
     return self._DEPS
 end
 
--- get target ordered deps
+-- get dependent targets in dependency order
+--
+-- @param opt   the options, e.g. {inherit = true}
+-- @return      the ordered deps array
+--
 function _instance:orderdeps(opt)
     opt = opt or {}
     if not self:_is_loaded() then
@@ -1170,6 +1225,10 @@ function _instance:orderules()
 end
 
 -- get target rule from the given rule name
+--
+-- @param name  the rule name
+-- @return      the rule instance, or nil if not found
+--
 function _instance:rule(name)
     if self._RULES then
         local r = self._RULES[name]
@@ -1213,26 +1272,41 @@ function _instance:is_phony()
 end
 
 -- is binary target?
+--
+-- @return      true if the target kind is "binary"
+--
 function _instance:is_binary()
     return self:kind() == "binary"
 end
 
 -- is shared library target?
+--
+-- @return      true if the target kind is "shared"
+--
 function _instance:is_shared()
     return self:kind() == "shared"
 end
 
 -- is static library target?
+--
+-- @return      true if the target kind is "static"
+--
 function _instance:is_static()
     return self:kind() == "static"
 end
 
 -- is object files target?
+--
+-- @return      true if the target kind is "object"
+--
 function _instance:is_object()
     return self:kind() == "object"
 end
 
 -- is headeronly target?
+--
+-- @return      true if the target kind is "headeronly"
+--
 function _instance:is_headeronly()
     return self:kind() == "headeronly"
 end
@@ -1323,12 +1397,21 @@ function _instance:orderopts(opt)
     return orderopts
 end
 
--- get the enabled package
+-- get the enabled package by name
+--
+-- @param name  the package name
+-- @param opt   the options (optional)
+-- @return      the package instance, or nil if not found
+--
 function _instance:pkg(name, opt)
     return self:pkgs(opt)[name]
 end
 
--- get the enabled packages
+-- get all enabled packages
+--
+-- @param opt   the options (optional)
+-- @return      the packages table {name = package, ...}
+--
 function _instance:pkgs(opt)
     opt = opt or {}
     local cachekey = "pkgs"
@@ -1348,7 +1431,11 @@ function _instance:pkgs(opt)
     return packages
 end
 
--- get the required packages with {interface|public = ..}
+-- get the required packages in order
+--
+-- @param opt   the options (optional)
+-- @return      the ordered packages array
+--
 function _instance:orderpkgs(opt)
     opt = opt or {}
     local cachekey = "orderpkgs"
@@ -1436,6 +1523,10 @@ function _instance:pkgconfig(pkgname)
 end
 
 -- get the object files directory
+--
+-- @param opt   the options (optional)
+-- @return      the object directory path
+--
 function _instance:objectdir(opt)
 
     -- the object directory
@@ -1509,7 +1600,11 @@ function _instance:dependir(opt)
     return dependir
 end
 
--- get the autogen files directory
+-- get the auto-generated files directory
+--
+-- @param opt   the options (optional)
+-- @return      the autogen directory path
+--
 function _instance:autogendir(opt)
 
     -- init the autogen directory
@@ -1623,7 +1718,10 @@ function _instance:_default_targetdir()
     return targetdir
 end
 
--- get the target directory
+-- get the target output directory
+--
+-- @return      the target directory path
+--
 function _instance:targetdir()
     local targetdir = self:get("targetdir")
     if not targetdir then
@@ -1674,7 +1772,10 @@ function _instance:artifactfile(kind)
     end
 end
 
--- get the target file name
+-- get the target file name (with prefix, extension)
+--
+-- @return      the file name string, e.g. "libfoo.a", "foo.exe"
+--
 function _instance:filename()
 
     -- no target file?
@@ -1699,7 +1800,10 @@ function _instance:filename()
     return filename
 end
 
--- get the link name only for static/shared library
+-- get the link name for static/shared library
+--
+-- @return      the link name string, e.g. "foo" for libfoo.a
+--
 function _instance:linkname()
     if self:is_static() or self:is_shared() then
         local filename = self:get("filename")
@@ -1716,7 +1820,10 @@ function _instance:linkname()
     end
 end
 
--- get the target file
+-- get the target file full path
+--
+-- @return      the target file path
+--
 function _instance:targetfile()
     local filename = self:filename()
     if filename then
@@ -1766,6 +1873,9 @@ function _instance:prefixdir()
 end
 
 -- get the installed binary directory
+--
+-- @return      the binary install directory path
+--
 function _instance:bindir()
     local bindir = baseoption.get("bindir")
     if bindir then
@@ -1779,6 +1889,9 @@ function _instance:bindir()
 end
 
 -- get the installed library directory
+--
+-- @return      the library install directory path
+--
 function _instance:libdir()
     local libdir = baseoption.get("libdir")
     if libdir then
@@ -1804,7 +1917,11 @@ function _instance:includedir()
     return self:installdir(includedir)
 end
 
--- get install directory
+-- get the install directory
+--
+-- @param ...   the subdirectory components (optional)
+-- @return      the install directory path
+--
 function _instance:installdir(...)
     opt = opt or {}
     local installdir = baseoption.get("installdir")
@@ -2005,6 +2122,9 @@ function _instance:fileconfig_add(sourcefile, info, opt)
 end
 
 -- get the source files
+--
+-- @return      the source files array
+--
 function _instance:sourcefiles()
 
     -- cached? return it directly
@@ -2113,7 +2233,11 @@ function _instance:sourcefiles()
     return sourcefiles, true
 end
 
--- get object file from source file
+-- get the object file path from source file
+--
+-- @param sourcefile  the source file path
+-- @return          the object file path
+--
 function _instance:objectfile(sourcefile)
     return self:autogenfile(sourcefile, {rootdir = self:objectdir(),
         filename = target.filename(path.filename(sourcefile), "object", {
@@ -2122,7 +2246,10 @@ function _instance:objectfile(sourcefile)
             format = self:_format("object")})})
 end
 
--- get the object files
+-- get all object files
+--
+-- @return      the object files array
+--
 function _instance:objectfiles()
 
     -- get source batches
@@ -2366,7 +2493,10 @@ function _instance:sourcecount()
     return #self:sourcefiles()
 end
 
--- get source batches
+-- get source batches grouped by source kind
+--
+-- @return      the source batches table {sourcekind = {sourcefiles = {...}, ...}, ...}
+--
 function _instance:sourcebatches()
 
     -- get source files
@@ -2568,7 +2698,11 @@ function _instance:has_runtime(...)
     end
 end
 
--- get the given toolchain
+-- get the given toolchain by name
+--
+-- @param name  the toolchain name, e.g. "gcc", "clang", "msvc"
+-- @return      the toolchain instance, or nil if not found
+--
 function _instance:toolchain(name)
     local toolchains_map = self:memcache():get("toolchains_map")
     if toolchains_map == nil then
@@ -2581,7 +2715,10 @@ function _instance:toolchain(name)
     return toolchains_map[name]
 end
 
--- get the toolchains
+-- get all toolchains of this target
+--
+-- @return      the toolchains array
+--
 function _instance:toolchains()
     local toolchains = self:memcache():get("toolchains")
     if toolchains == nil then
@@ -2633,6 +2770,10 @@ function _instance:toolchains()
 end
 
 -- get the program and name of the given tool kind
+--
+-- @param toolkind   the tool kind, e.g. "cc", "cxx", "ld", "sh", "ar"
+-- @return          the program path, the tool name
+--
 function _instance:tool(toolkind)
     -- we cannot get tool in on_load, because target:toolchains() has been not checked in configuration stage.
     if not self._LOADED_AFTER then
