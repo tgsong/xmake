@@ -18,4 +18,5 @@
 -- @file        icx_cc.lua
 --
 
-inherit("clang_cl")
+-- inherit icx (clang-compatible)
+inherit("clang")

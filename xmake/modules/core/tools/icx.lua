@@ -15,8 +15,13 @@
 -- Copyright (C) 2015-present, Xmake Open Source Community.
 --
 -- @author      ruki
--- @file        icc.lua
+-- @file        icx.lua
 --
 
--- inherit gcc
-inherit("clang")
+-- https://github.com/xmake-io/xmake/issues/7438
+-- https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/get-started-guide/2024-1/get-started-on-windows.html
+if is_host("windows") then
+    inherit("clang_cl")
+else
+    inherit("clang")
+end
