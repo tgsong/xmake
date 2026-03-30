@@ -249,22 +249,38 @@ function _runcmds(cmds, opt)
     end
 end
 
--- is empty? no commands
+-- is empty? (no pending commands)
+--
+-- @return      true if no commands
+--
 function batchcmds:empty()
     return #self:cmds() == 0
 end
 
--- get commands
+-- get all pending commands
+--
+-- @return      the commands array
+--
 function batchcmds:cmds()
     return self._CMDS
 end
 
--- add command: os.runv
+-- add command: run program silently
+--
+-- @param program   the program path
+-- @param argv      the arguments (optional)
+-- @param opt       the options, e.g. {envs = {}}
+--
 function batchcmds:runv(program, argv, opt)
     table.insert(self:cmds(), {kind = "runv", program = program, argv = argv, opt = opt})
 end
 
--- add command: os.vrunv
+-- add command: run program with verbose output
+--
+-- @param program   the program path
+-- @param argv      the arguments (optional)
+-- @param opt       the options, e.g. {envs = {}}
+--
 function batchcmds:vrunv(program, argv, opt)
     table.insert(self:cmds(), {kind = "vrunv", program = program, argv = argv, opt = opt})
 end
@@ -279,7 +295,12 @@ function batchcmds:vexecv(program, argv, opt)
     table.insert(self:cmds(), {kind = "vexecv", program = program, argv = argv, opt = opt})
 end
 
--- add command: run lua script file, command or module
+-- add command: run lua script
+--
+-- @param script the lua script path or module name
+-- @param argv   the arguments (optional)
+-- @param opt    the options (optional)
+--
 function batchcmds:lua(script, argv, opt)
     table.insert(self:cmds(), {kind = "lua", script = script, argv = argv, opt = opt})
 end
@@ -289,7 +310,12 @@ function batchcmds:vlua(script, argv, opt)
     table.insert(self:cmds(), {kind = "vlua", script = script, argv = argv, opt = opt})
 end
 
--- add command: compiler.compile
+-- add command: compile source files
+--
+-- @param sourcefiles the source file paths
+-- @param objectfile  the output object file path
+-- @param opt         the options, e.g. {sourcekind = "cxx", configs = {}}
+--
 function batchcmds:compile(sourcefiles, objectfile, opt)
 
     -- bind target if exists
@@ -365,7 +391,12 @@ function batchcmds:compilev(argv, opt)
     end
 end
 
--- add command: linker.link
+-- add command: link object files
+--
+-- @param objectfiles the object file paths
+-- @param targetfile  the output target file path
+-- @param opt         the options (optional)
+--
 function batchcmds:link(objectfiles, targetfile, opt)
 
     -- bind target if exists
@@ -406,27 +437,48 @@ function batchcmds:link(objectfiles, targetfile, opt)
     self:vrunv(program, argv, {envs = table.join(linker_inst:runenvs(), opt.envs)})
 end
 
--- add command: os.mkdir
+-- add command: create directory
+--
+-- @param dir   the directory path
+--
 function batchcmds:mkdir(dir)
     table.insert(self:cmds(), {kind = "mkdir", dir = dir})
 end
 
--- add command: os.rmdir
+-- add command: remove directory
+--
+-- @param dir   the directory path
+-- @param opt   the options, e.g. {emptydirs = true}
+--
 function batchcmds:rmdir(dir, opt)
     table.insert(self:cmds(), {kind = "rmdir", dir = dir, opt = opt})
 end
 
--- add command: os.rm
+-- add command: remove file
+--
+-- @param filepath the file path
+-- @param opt      the options (optional)
+--
 function batchcmds:rm(filepath, opt)
     table.insert(self:cmds(), {kind = "rm", filepath = filepath, opt = opt})
 end
 
--- add command: os.cp
+-- add command: copy files or directories
+--
+-- @param srcpath   the source path (supports patterns)
+-- @param dstpath   the destination path
+-- @param opt       the options, e.g. {rootdir = "", symlink = true}
+--
 function batchcmds:cp(srcpath, dstpath, opt)
     table.insert(self:cmds(), {kind = "cp", srcpath = srcpath, dstpath = dstpath, opt = opt})
 end
 
--- add command: os.mv
+-- add command: move files or directories
+--
+-- @param srcpath   the source path
+-- @param dstpath   the destination path
+-- @param opt       the options (optional)
+--
 function batchcmds:mv(srcpath, dstpath, opt)
     table.insert(self:cmds(), {kind = "mv", srcpath = srcpath, dstpath = dstpath, opt = opt})
 end
@@ -436,17 +488,30 @@ function batchcmds:ln(srcpath, dstpath, opt)
     table.insert(self:cmds(), {kind = "ln", srcpath = srcpath, dstpath = dstpath, opt = opt})
 end
 
--- add command: os.cd
+-- add command: change directory
+--
+-- @param dir   the directory path
+-- @param opt   the options (optional)
+--
 function batchcmds:cd(dir, opt)
     table.insert(self:cmds(), {kind = "cd", dir = dir, opt = opt})
 end
 
--- add command: show
+-- add command: show message
+--
+-- @param format the format string
+-- @param ...    the format arguments
+--
 function batchcmds:show(format, ...)
     table.insert(self:cmds(), {kind = "show", format = format, argv = table.pack(...)})
 end
 
--- add command: show progress
+-- add command: show message with progress
+--
+-- @param progress  the progress value (0 ~ 100)
+-- @param format    the format string with color markup
+-- @param ...       the format arguments
+--
 function batchcmds:show_progress(progress, format, ...)
     table.insert(self:cmds(), {kind = "show_progress", progress = progress, format = format, argv = table.pack(...)})
 end
@@ -472,6 +537,10 @@ function batchcmds:change_rpath(filepath, rpath_old, rpath_new, opt)
 end
 
 -- add raw command for the specific generator or xpack format
+--
+-- @param kind   the command kind
+-- @param rawstr the raw command string
+--
 function batchcmds:rawcmd(kind, rawstr)
     table.insert(self:cmds(), {kind = kind, rawstr = rawstr})
 end
@@ -481,7 +550,10 @@ function batchcmds:depinfo()
     return self._DEPINFO
 end
 
--- add dependent files
+-- add dependent files for incremental build
+--
+-- @param ...   the dependent file paths
+--
 function batchcmds:add_depfiles(...)
     local depinfo = self._DEPINFO or {}
     depinfo.files = depinfo.files or {}
@@ -497,14 +569,20 @@ function batchcmds:add_depvalues(...)
     self._DEPINFO = depinfo
 end
 
--- set the last mtime of dependent files and values
+-- set the last modification time for dependency checking
+--
+-- @param lastmtime  the last modification time
+--
 function batchcmds:set_depmtime(lastmtime)
     local depinfo = self._DEPINFO or {}
     depinfo.lastmtime = lastmtime
     self._DEPINFO = depinfo
 end
 
--- set cache file of depend info
+-- set the cache file path for dependency info
+--
+-- @param cachefile  the dependency cache file path
+--
 function batchcmds:set_depcache(cachefile)
     local depinfo = self._DEPINFO or {}
     depinfo.dependfile = cachefile

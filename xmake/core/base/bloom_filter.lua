@@ -54,12 +54,18 @@ function _instance.new(handle)
     return instance
 end
 
--- get cdata of the bloom filter
+-- get the internal cdata handle
+--
+-- @return      the cdata
+--
 function _instance:cdata()
     return self._HANDLE
 end
 
--- get the bloom filter data
+-- get serialized bloom filter data
+--
+-- @return      the data bytes, or nil and error info
+--
 function _instance:data()
     -- ensure opened
     local ok, errors = self:_ensure_opened()
@@ -78,7 +84,11 @@ function _instance:data()
     return bytes(size, data)
 end
 
--- set the bloom filter data
+-- load bloom filter from serialized data
+--
+-- @param data  the data bytes
+-- @return      true on success, or false and error info
+--
 function _instance:data_set(data)
     -- ensure opened
     local ok, errors = self:_ensure_opened()
@@ -95,7 +105,10 @@ function _instance:data_set(data)
     return bloom_filter._data_set(self:cdata(), dataaddr, datasize)
 end
 
--- clear the bloom filter data
+-- clear all data in the bloom filter
+--
+-- @return      true on success, or false and error info
+--
 function _instance:clear()
     -- ensure opened
     local ok, errors = self:_ensure_opened()

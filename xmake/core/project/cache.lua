@@ -86,22 +86,30 @@ function cache._instance(scopename)
     return instance
 end
 
--- get the value
+-- get the cached value
+--
+-- @param name  the cache key
+-- @return      the cached value
+--
 function cache:get(name)
     return self._CACHEDATA[name]
 end
 
--- set the value
+-- set the cached value
+--
+-- @param name  the cache key
+-- @param value the value to cache
+--
 function cache:set(name, value)
     self._CACHEDATA[name] = value
 end
 
--- clear all
+-- clear all cached values
 function cache:clear()
     self._CACHEDATA = {__version = xmake._VERSION_SHORT}
 end
 
--- flush to cache file
+-- flush cached values to file
 function cache:flush()
 
     -- flush the version

@@ -383,7 +383,12 @@ function set_target(progress, target)
     end
 end
 
--- show the message with progress
+-- show the message with progress indicator
+--
+-- @param progress  the progress value (0 ~ 100)
+-- @param format    the format string with color markup
+-- @param ...       the format arguments
+--
 function show(progress, format, ...)
     local target_prefix = _get_target_name_prefix(progress)
     if target_prefix then
@@ -403,8 +408,11 @@ function show(progress, format, ...)
     end
 end
 
--- print additional output logs with colors outside the progress log area, such as warning logs.
--- it's used when the progress style is multirow/singlerow refresh.
+-- print additional output logs outside the progress area (for warnings, etc.)
+--
+-- @param format    the format string with color markup
+-- @param ...       the format arguments
+--
 function show_output(format, ...)
     local refresh_mode = _g.refresh_mode
     if refresh_mode == "singlerow" then

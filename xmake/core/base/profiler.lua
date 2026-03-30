@@ -165,7 +165,7 @@ function profiler:start()
     end
 end
 
--- stop profiling
+-- stop profiling and print results
 function profiler:stop()
     if self:is_trace() then
         debug.sethook()
@@ -231,7 +231,11 @@ function profiler:stop()
    end
 end
 
--- enter the given tag for perf:tag
+-- enter the given performance tag
+--
+-- @param name  the tag name
+-- @param ...   the format arguments for tag name
+--
 function profiler:enter(name, ...)
     local is_perf_tag = self._IS_PERF_TAG
     if is_perf_tag == nil then
@@ -246,7 +250,11 @@ function profiler:enter(name, ...)
     end
 end
 
--- leave the given tag for perf:tag
+-- leave the given performance tag
+--
+-- @param name  the tag name
+-- @param ...   the format arguments for tag name
+--
 function profiler:leave(name, ...)
     local is_perf_tag = self._IS_PERF_TAG
     if is_perf_tag == nil then
@@ -264,7 +272,10 @@ function profiler:leave(name, ...)
     end
 end
 
--- get profiler mode, e.g. perf:call, perf:tag, perf:process, trace
+-- get profiler mode
+--
+-- @return      the mode string, e.g. "perf:call", "perf:tag", "perf:process", "trace"
+--
 function profiler:mode()
     local mode = self._MODE
     if mode == nil then
@@ -274,13 +285,20 @@ function profiler:mode()
     return mode or nil
 end
 
--- is trace?
+-- is trace mode?
+--
+-- @return      true if trace mode
+--
 function profiler:is_trace()
     local mode = self:mode()
     return mode and mode == "trace"
 end
 
--- is perf?
+-- is perf mode?
+--
+-- @param name  the specific perf type (optional), e.g. "call", "tag", "process"
+-- @return      true if perf mode
+--
 function profiler:is_perf(name)
     local mode = self:mode()
     if mode and name then
@@ -288,7 +306,10 @@ function profiler:is_perf(name)
     end
 end
 
--- profiler is enabled?
+-- is the profiler enabled?
+--
+-- @return      true if enabled via --profile option
+--
 function profiler:enabled()
     return self:is_perf("call") or self:is_perf("tag") or self:is_trace()
 end

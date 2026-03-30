@@ -51,31 +51,50 @@ function _instance.new(name, opt)
 end
 
 -- get the scheme name
+--
+-- @return      the scheme name string
+--
 function _instance:name()
     return self._NAME
 end
 
--- get the type: scheme
+-- get the instance type
+--
+-- @return      "scheme"
+--
 function _instance:type()
     return "scheme"
 end
 
--- is default scheme?
+-- is the default scheme?
+--
+-- @return      true if default
+--
 function _instance:is_default()
     return self:name() == "__default__"
 end
 
--- is precompiled scheme?
+-- is precompiled binary scheme?
+--
+-- @return      true if precompiled
+--
 function _instance:is_precompiled()
     return self:name() == "__precompiled__"
 end
 
--- get the it's package
+-- get the associated package
+--
+-- @return      the package instance
+--
 function _instance:package()
     return self._PACKAGE
 end
 
--- get the scheme configuration
+-- get the scheme configuration value
+--
+-- @param name  the config name
+-- @return      the config value
+--
 function _instance:get(name)
     local value = self._INFO:get(name)
     if value == nil and self:is_default() and self:package() then
@@ -85,6 +104,10 @@ function _instance:get(name)
 end
 
 -- set the value to scheme info
+--
+-- @param name  the info name
+-- @param ...   the values
+--
 function _instance:set(name, ...)
     self._INFO:apival_set(name, ...)
 end
@@ -108,7 +131,10 @@ function _instance:extraconf_set(name, item, key, value)
     return self._INFO:extraconf_set(name, item, key, value)
 end
 
--- get urls
+-- get the source urls
+--
+-- @return      the urls array
+--
 function _instance:urls()
     local urls = self._URLS
     if urls == nil then

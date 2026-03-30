@@ -24,7 +24,7 @@ local object = require("base/object")
 -- define module
 local list = list or object { _init = {"_length"} } {0}
 
--- clear list
+-- clear all elements
 function list:clear()
     self._length = 0
     self._first  = nil
@@ -136,37 +136,59 @@ function list:remove_last()
     return t
 end
 
--- push item to tail
+-- push element to the back
+--
+-- @param t     the element
+--
 function list:push(t)
     self:insert_last(t)
 end
 
--- pop item from tail
+-- pop element from the back
+--
+-- @return      the removed element
+--
 function list:pop()
     self:remove_last()
 end
 
--- shift item: 1 2 3 <- 2 3
+-- shift element from the front
+--
+-- @return      the removed element
+--
 function list:shift()
     self:remove_first()
 end
 
--- unshift item: 1 2 -> t 1 2
+-- unshift element to the front
+--
+-- @param t     the element
+--
 function list:unshift(t)
     self:insert_first(t)
 end
 
--- get first item
+-- get the first element
+--
+-- @return      the first element, or nil if empty
+--
 function list:first()
     return self._first
 end
 
--- get last item
+-- get the last element
+--
+-- @return      the last element, or nil if empty
+--
 function list:last()
     return self._last
 end
 
--- get next item
+-- get the next element after the given one
+--
+-- @param last  the current element
+-- @return      the next element, or nil
+--
 function list:next(last)
     if last then
         return last._next
@@ -175,7 +197,11 @@ function list:next(last)
     end
 end
 
--- get the previous item
+-- get the previous element before the given one
+--
+-- @param last  the current element
+-- @return      the previous element, or nil
+--
 function list:prev(last)
     if last then
         return last._prev
@@ -184,12 +210,18 @@ function list:prev(last)
     end
 end
 
--- get list size
+-- get the list size
+--
+-- @return      the number of elements
+--
 function list:size()
     return self._length
 end
 
--- is empty?
+-- is the list empty?
+--
+-- @return      true if empty
+--
 function list:empty()
     return self:size() == 0
 end
@@ -202,6 +234,10 @@ end
 --     print(item)
 -- end
 --
+-- iterate elements from front to back
+--
+-- @return      the iterator function
+--
 function list:items()
     local iter = function (list, item)
         return list:next(item)
@@ -209,7 +245,10 @@ function list:items()
     return iter, self, nil
 end
 
--- get reverse items
+-- iterate elements from back to front
+--
+-- @return      the reverse iterator function
+--
 function list:ritems()
     local iter = function (list, item)
         return list:prev(item)

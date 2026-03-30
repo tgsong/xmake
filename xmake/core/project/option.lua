@@ -388,11 +388,17 @@ function _instance:check()
 end
 
 -- get the option value
+--
+-- @return      the option value
+--
 function _instance:value()
     return config.get(self:fullname())
 end
 
 -- set the option value
+--
+-- @param value the value to set
+--
 function _instance:set_value(value)
     config.set(self:fullname(), value)
     self:_save()
@@ -404,7 +410,10 @@ function _instance:clear()
     self:_clear()
 end
 
--- this option is enabled?
+-- is this option enabled?
+--
+-- @return      true if enabled
+--
 function _instance:enabled()
     return config.get(self:fullname())
 end
@@ -437,12 +446,19 @@ function _instance:info()
     return self._INFO:info()
 end
 
--- get the type: option
+-- get the instance type
+--
+-- @return      "option"
+--
 function _instance:type()
     return "option"
 end
 
--- get the option info
+-- get the option info value
+--
+-- @param name  the info name
+-- @return      the info value
+--
 function _instance:get(name)
     return self._INFO:get(name)
 end

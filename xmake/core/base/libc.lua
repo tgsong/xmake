@@ -44,6 +44,12 @@ if ffi then
     ]]
 end
 
+-- allocate memory
+--
+-- @param size  the memory size in bytes
+-- @param opt   the options, e.g. {zeroed = true}
+-- @return      the cdata pointer
+--
 function libc.malloc(size, opt)
     if ffi then
         if opt and opt.gc then
@@ -60,6 +66,10 @@ function libc.malloc(size, opt)
     end
 end
 
+-- free memory
+--
+-- @param data  the cdata pointer to free
+--
 function libc.free(data)
     if ffi then
         return ffi.C.free(data)
@@ -68,6 +78,12 @@ function libc.free(data)
     end
 end
 
+-- copy memory
+--
+-- @param dst   the destination pointer
+-- @param src   the source pointer
+-- @param size  the copy size in bytes
+--
 function libc.memcpy(dst, src, size)
     if ffi then
         return ffi.copy(dst, src, size)
@@ -76,6 +92,12 @@ function libc.memcpy(dst, src, size)
     end
 end
 
+-- move memory (handles overlapping regions)
+--
+-- @param dst   the destination pointer
+-- @param src   the source pointer
+-- @param size  the move size in bytes
+--
 function libc.memmov(dst, src, size)
     if ffi then
         return ffi.C.memmove(dst, src, size)
@@ -84,6 +106,12 @@ function libc.memmov(dst, src, size)
     end
 end
 
+-- fill memory with a byte value
+--
+-- @param data  the memory pointer
+-- @param ch    the byte value
+-- @param size  the fill size in bytes
+--
 function libc.memset(data, ch, size)
     if ffi then
         return ffi.fill(data, size, ch)
@@ -92,6 +120,12 @@ function libc.memset(data, ch, size)
     end
 end
 
+-- duplicate a string with length limit
+--
+-- @param s     the source string
+-- @param n     the maximum length
+-- @return      the new cdata string pointer
+--
 function libc.strndup(s, n)
     if ffi then
         return ffi.string(s, n)
@@ -104,6 +138,12 @@ function libc.strndup(s, n)
     end
 end
 
+-- get byte value at the given offset
+--
+-- @param data    the memory pointer
+-- @param offset  the byte offset
+-- @return        the byte value
+--
 function libc.byteof(data, offset)
     if ffi then
         return data[offset]
@@ -112,6 +152,12 @@ function libc.byteof(data, offset)
     end
 end
 
+-- set byte value at the given offset
+--
+-- @param data    the memory pointer
+-- @param offset  the byte offset
+-- @param value   the byte value
+--
 function libc.setbyte(data, offset, value)
     if ffi then
         data[offset] = value
@@ -120,6 +166,12 @@ function libc.setbyte(data, offset, value)
     end
 end
 
+-- get cdata pointer from string or bytes
+--
+-- @param data  the string or bytes data
+-- @param opt   the options (optional)
+-- @return      the cdata pointer
+--
 function libc.dataptr(data, opt)
     opt = opt or {}
     if ffi and opt.ffi ~= false then
@@ -133,6 +185,12 @@ function libc.dataptr(data, opt)
     end
 end
 
+-- get the numeric address of a cdata pointer
+--
+-- @param data  the cdata pointer
+-- @param opt   the options (optional)
+-- @return      the address as number
+--
 function libc.ptraddr(data, opt)
     opt = opt or {}
     if ffi and opt.ffi ~= false then

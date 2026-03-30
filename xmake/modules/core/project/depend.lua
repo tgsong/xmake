@@ -96,11 +96,21 @@ function save(dependinfo, dependfile)
     io.save(dependfile, dependinfo)
 end
 
--- Is the dependent info changed?
+-- is the dependent info changed?
 --
--- if not depend.is_changed(dependinfo, {filemtime = os.mtime(objectfile), values = {...}}) then
+-- @param dependinfo    the depend info table from depend.load()
+-- @param opt           the options
+--                      - lastmtime: the last modification time to compare
+--                      - values: the depend values to compare
+--                      - files: the depend files (optional, from dependinfo.files)
+--                      - timecache: enable time cache for performance (optional)
+-- @return              true if changed
+--
+-- @code
+-- if not depend.is_changed(dependinfo, {lastmtime = os.mtime(objectfile), values = {program, flags}}) then
 --      return
 -- end
+-- @endcode
 --
 function is_changed(dependinfo, opt)
 
@@ -185,23 +195,21 @@ function is_changed(dependinfo, opt)
     end
 end
 
--- on changed for the dependent files and values
+-- run callback only when dependent files or values have changed
 --
--- e.g.
+-- @param callback      the callback function to run when changed
+-- @param opt           the options
+--                      - dependfile: the depend cache file path (required)
+--                      - files: the source files to track
+--                      - values: the values to track (e.g. flags, program)
 --
+-- @code
 -- depend.on_changed(function ()
---     -- do some thing
---     -- ..
---
---     -- maybe need update dependent files
---     dependinfo.files = {""}
---
---     -- return new dependinfo (optional)
---     return {files = {}, ..}
---
--- end, {dependfile = "/xx/xx",
---       values = {compinst:program(), compflags},
---       files = {sourcefile, ...}})
+--     -- do build work here
+-- end, {dependfile = target:dependfile(objectfile),
+--       files = {sourcefile},
+--       values = {compinst:program(), compflags}})
+-- @endcode
 --
 function on_changed(callback, opt)
     opt = opt or {}
