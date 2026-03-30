@@ -39,43 +39,46 @@ local PKGCONFIG_CACHE = "nix_pkgconfig"
 local DERIVATION_CACHE = "nix_derivation_info"
 
 -- get nix cache instance
-local function get_nix_cache()
+function get_nix_cache()
     return globalcache.cache("nix_packages")
 end
 
 -- get memory cache for current session
-local function get_memory_cache()
+function get_memory_cache()
     return memcache.cache("nix_session")
 end
 
 -- check if we're in a nix shell
-local function is_in_nix_shell()
+function is_in_nix_shell()
     local in_nix_shell = os.getenv("IN_NIX_SHELL")
     return in_nix_shell == "pure" or in_nix_shell == "impure"
 end
 
-local function is_in_nix_build()
+function is_in_nix_build()
     local v = os.getenv("NIX_BUILD_TOP")
     return v ~= nil and v ~= ""
 end
 
 -- check if we're in a nix environment (shell or build)
-local function is_in_nix_environment()
+function is_in_nix_environment()
     return is_in_nix_shell() or is_in_nix_build()
 end
 
--- resolve the effective boolean value for a source option.
-local function resolve_source_opt(key, default, opt)
-    local configs = opt.configs or {}
-    local config_key = "use_" .. key
-    if configs[config_key] ~= nil then
-        return configs[config_key]
+-- resolve the active sources from opt.configs.source.
+-- source may be a pipe-separated list, e.g. "nix_shell|homemanager".
+-- returns a set table, e.g. { nix_shell = true, homemanager = true }.
+function resolve_source(opt)
+    local configs = (opt and opt.configs) or {}
+    local source_str = configs.source or "nix_shell"
+    local active = {}
+    for s in source_str:gmatch("[^|]+") do
+        active[s:match("^%s*(.-)%s*$")] = true  -- trim whitespace
     end
-    return default
+    return active
 end
 
 -- generate cache key for environment state
-local function generate_env_cache_key()
+function generate_env_cache_key()
     local env_vars = {
         "buildInputs",
         "nativeBuildInputs", 
@@ -101,7 +104,7 @@ local function generate_env_cache_key()
 end
 
 -- extract package information from store path using derivation data
-local function extract_package_info_from_path(store_path, opt)
+function extract_package_info_from_path(store_path, opt)
     local cache = get_nix_cache()
     local memory_cache = get_memory_cache()
     
@@ -347,7 +350,7 @@ function package_info:finalize()
 end
 
 -- follow propagated build inputs recursively with caching
-local function follow_propagated_inputs(store_paths, opt)
+function follow_propagated_inputs(store_paths, opt)
     local cache = get_nix_cache()
     local visited = {}
     
@@ -408,7 +411,7 @@ local function follow_propagated_inputs(store_paths, opt)
 end
 
 -- parse store paths from environment variables with caching
-local function parse_store_paths_from_env(env_vars, opt)
+function parse_store_paths_from_env(env_vars, opt)
     local cache_key = generate_env_cache_key()
     local memory_cache = get_memory_cache()
     
@@ -471,7 +474,7 @@ end
 -- Each returns only the direct root path(s) for that source.
 
 -- Source: nix-shell / nix develop / stdenv.mkDerivation
-local function get_store_paths_build_inputs(opt)
+function get_store_paths_build_inputs(opt)
     if not is_in_nix_environment() then
         return {}
     end
@@ -487,7 +490,7 @@ local function get_store_paths_build_inputs(opt)
 end
 
 -- Source: home-manager profile (/etc/profiles/per-user/$USER)
-local function get_store_paths_home_manager_profile(opt)
+function get_store_paths_home_manager_profile(opt)
     local user = os.getenv("USER") or "unknown"
     local user_profile = "/etc/profiles/per-user/" .. user
     
@@ -514,7 +517,7 @@ end
 -- It is better to use nix profile like:
 -- $ nix profile install 'nixpkgs#zlib^*'' # installs all outputs
 -- $ nix profile install 'nixpkgs#zlib^dev' # installs only the dev output
-local function get_store_paths_from_user_profile(opt)
+function get_store_paths_from_user_profile(opt)
     local user_profile = path.join(os.home(), ".nix-profile")
     
     if not os.isdir(user_profile) then
@@ -532,7 +535,7 @@ end
 
 -- Source: NixOS system profile
 -- Use /run/current-system/sw
-local function get_store_paths_nixos_system_profile(opt)
+function get_store_paths_nixos_system_profile(opt)
     local sw = "/run/current-system/sw"
     if not os.isdir(sw) then
         if opt and (opt.verbose or option.get("verbose")) then
@@ -547,15 +550,16 @@ local function get_store_paths_nixos_system_profile(opt)
     return {sw}
 end
 
-local function get_all_store_paths(opt)
+function get_all_store_paths(opt)
     local cache = get_nix_cache()
     local memory_cache = get_memory_cache()
 
-    -- Cache key includes enabled sources so changing them busts the cache
-    local sources_key = (resolve_source_opt("nix_shell",    true,  opt) and "1" or "0")
-                     .. (resolve_source_opt("homemanager",  false, opt) and "1" or "0")
-                     .. (resolve_source_opt("nix_profile",  false, opt) and "1" or "0")
-                     .. (resolve_source_opt("nixos_system", false, opt) and "1" or "0")
+    -- Cache key includes the active source so changing it busts the cache
+    local active_sources = resolve_source(opt)
+    local sources_key = (active_sources["nix_shell"]    and "1" or "0")
+                     .. (active_sources["homemanager"]  and "1" or "0")
+                     .. (active_sources["nix_profile"]  and "1" or "0")
+                     .. (active_sources["nixos_system"] and "1" or "0")
     local cache_key = "all_environments:" .. sources_key .. ":" .. generate_env_cache_key()
     
     -- Check memory cache first
@@ -571,23 +575,23 @@ local function get_all_store_paths(opt)
         return cached_paths
     end
     
-    -- Collect root paths from each enabled source in priority order
+    -- Collect root paths from each active source in priority order
     local all_paths = {}
     local seen = {}
 
     local sources = {
-        {key = "nix_shell",    default = true,  fn = get_store_paths_build_inputs},
-        {key = "homemanager",  default = false, fn = get_store_paths_home_manager_profile},
-        {key = "nix_profile",  default = false, fn = get_store_paths_from_user_profile},
-        {key = "nixos_system", default = false, fn = get_store_paths_nixos_system_profile},
+        {key = "nix_shell",    fn = get_store_paths_build_inputs},
+        {key = "homemanager",  fn = get_store_paths_home_manager_profile},
+        {key = "nix_profile",  fn = get_store_paths_from_user_profile},
+        {key = "nixos_system", fn = get_store_paths_nixos_system_profile},
     }
 
-    for _, source in ipairs(sources) do
-        if resolve_source_opt(source.key, source.default, opt) then
+    for _, s in ipairs(sources) do
+        if active_sources[s.key] then
             if opt and (opt.verbose or option.get("verbose")) then
-                print("Nix: Searching source: " .. source.key)
+                print("Nix: Searching source: " .. s.key)
             end
-            for _, store_path in ipairs(source.fn(opt)) do
+            for _, store_path in ipairs(s.fn(opt)) do
                 if not seen[store_path] then
                     seen[store_path] = true
                     table.insert(all_paths, store_path)
@@ -609,14 +613,14 @@ local function get_all_store_paths(opt)
 end
 
 -- check if store path has the package name (substring search)
-local function path_matches_package(store_path, package_name)
+function path_matches_package(store_path, package_name)
     local path_name_lower = path.basename(store_path):lower()
     local package_name_lower = package_name:lower()
     
     return path_name_lower:find(package_name_lower, 1, true) ~= nil
 end
 
-local function group_paths_by_version(store_paths, package_name, opt)
+function group_paths_by_version(store_paths, package_name, opt)
     local version_groups = {}  -- { "package:version" -> [store_paths] }
     
     for _, store_path in ipairs(store_paths) do
@@ -661,7 +665,7 @@ local function group_paths_by_version(store_paths, package_name, opt)
 end
 
 -- extract package information from store paths with caching
-local function extract_package_info(store_paths, package_name, opt)
+function extract_package_info(store_paths, package_name, opt)
     opt = opt or {}
     local cache = get_nix_cache()
     local memory_cache = get_memory_cache()
@@ -811,7 +815,7 @@ local function extract_package_info(store_paths, package_name, opt)
     return result
 end
 
-local function find_all_with_pkgconfig(package_name, store_paths, opt)
+function find_all_with_pkgconfig(package_name, store_paths, opt)
     local cache = get_nix_cache()
     local memory_cache = get_memory_cache()
 
@@ -881,7 +885,7 @@ local function find_all_with_pkgconfig(package_name, store_paths, opt)
     return all_results
 end
 
-local function select_best_version(packages, package_name, require_version, opt)
+function select_best_version(packages, package_name, require_version, opt)
     -- Collect all versions of the target package
     local candidates = {}
     local name_lower = package_name:lower()
@@ -989,7 +993,7 @@ local function select_best_version(packages, package_name, require_version, opt)
     return best_match
 end
 
-local function nonempty_string(v)
+function nonempty_string(v)
     return type(v) == "string" and v ~= "" and v
 end
 
@@ -997,19 +1001,20 @@ end
 --
 -- @param name  the package name
 -- @param opt   the options, e.g. {verbose = true, version = "1.12.x",
---                                  configs = {use_nix_profile = true}}
+--                                  configs = {source = "nix_profile"}}
 --
--- Each source can be toggled:
---   add_requires("nix::zlib", {configs = {use_nix_profile = true}})
+-- The active source is selected via configs.source (default: "nix_shell"):
+--   add_requires("nix::zlib", {configs = {source = "nix_profile"}})
 function main(name, opt)
     opt = opt or {}
 
-    -- only the default source (nix_shell) is enabled but we are
-    -- not inside a nix-shell or stdenv.mkDerivation build
-    local only_nix_shell = resolve_source_opt("nix_shell",    true,  opt)
-                       and not resolve_source_opt("homemanager",  false, opt)
-                       and not resolve_source_opt("nix_profile",  false, opt)
-                       and not resolve_source_opt("nixos_system", false, opt)
+    -- if nix_shell is the only active source but we are not inside a
+    -- nix-shell or stdenv.mkDerivation build, there is nothing to search
+    local active_sources = resolve_source(opt)
+    local only_nix_shell = active_sources["nix_shell"]
+                       and not active_sources["homemanager"]
+                       and not active_sources["nix_profile"]
+                       and not active_sources["nixos_system"]
     if only_nix_shell and not is_in_nix_environment() then
         return
     end

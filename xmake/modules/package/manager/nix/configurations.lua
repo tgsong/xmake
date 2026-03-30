@@ -21,19 +21,18 @@
 -- get configurations
 --
 -- Source priority order (highest to lowest):
---   1. nix-shell / nix develop / stdenv.mkDerivation
---   2. home-manager profile                         
---   3. nix profile / nix-env (~/.nix-profile)       
---   4. NixOS system profile (/run/current-system/sw)
+--   1. nix_shell   - nix-shell / nix develop / stdenv.mkDerivation environment
+--   2. homemanager - home-manager profile (/etc/profiles/per-user/$USER)
+--   3. nix_profile - nix profile / nix-env (~/.nix-profile)
+--   4. nixos_system - NixOS system profile (/run/current-system/sw)
 --
 -- Usage:
---   add_requires("nix::zlib", {configs = {use_nix_profile = true}})
--- 
+--   add_requires("nix::zlib")                                                              -- defaults to nix_shell
+--   add_requires("nix::zlib", {configs = {source = "homemanager"}})
+--   add_requires("nix::zlib", {configs = {source = "nix_shell|nix_profile|nixos_system"}}) -- multiple sources
+--
 function main()
     return {
-        use_nix_shell    = {description = "Search packages from the active nix-shell / nix develop / stdenv.mkDerivation environment. Default: true.",  default = true},
-        use_homemanager  = {description = "Search packages installed via home-manager (/etc/profiles/per-user/$USER). Default: false.",                 default = false},
-        use_nix_profile  = {description = "Search packages installed via nix profile or nix-env (~/.nix-profile). Default: false.",                     default = false},
-        use_nixos_system = {description = "Search packages from the NixOS system profile (/run/current-system/sw). Default: false.",                    default = false},
+        source = {description = "Nix source(s) to search packages from. Pipe-separated list of: nix_shell, homemanager, nix_profile, nixos_system.", default = "nix_shell"},
     }
 end
