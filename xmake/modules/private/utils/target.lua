@@ -26,6 +26,12 @@ import("core.project.project")
 import("utils.binary.deplibs", {alias = "get_depend_libraries"})
 
 -- Is this target has these tools?
+-- check if the given tool is in the tools list
+--
+-- @param toolname   the tool name to check
+-- @param tools      the tools table
+-- @return           true if found
+--
 function has_tool(toolname, tools)
     if toolname then
         -- We need compatibility with gcc/g++, clang/clang++ for c++ compiler/linker
@@ -55,6 +61,13 @@ end
 -- for all: add_cxxflags("-g")
 -- only for clang: add_cxxflags("clang::-stdlib=libc++")
 -- only for clang and multiple flags: add_cxxflags("-stdlib=libc++", "-DFOO", {tools = "clang"})
+--
+-- check if a flag belongs to the given tool
+--
+-- @param flag        the flag string
+-- @param toolinst    the tool instance
+-- @param extraconf   the extra configuration
+-- @return            the flag if belongs, or nil
 --
 function flag_belong_to_tool(flag, toolinst, extraconf)
     local for_this_tool = true
@@ -122,6 +135,10 @@ function translate_flags_in_tool(target, flagkind, flags)
 end
 
 -- get project targets
+-- get all enabled project targets
+--
+-- @return      the targets array
+--
 function get_project_targets()
     local selected_target = option.get("target")
     if selected_target then
@@ -169,6 +186,11 @@ function check_target_toolchains()
 end
 
 -- config target
+-- configure the given target (run on_config rules)
+--
+-- @param target    the target instance
+-- @param opt       the options (optional)
+--
 function config_target(target, opt)
     for _, rule in ipairs(table.wrap(target:orderules())) do
         local before_config = rule:script("config_before")
@@ -197,6 +219,10 @@ function config_target(target, opt)
 end
 
 -- config targets
+-- configure all project targets
+--
+-- @param opt   the options (optional)
+--
 function config_targets(opt)
     opt = opt or {}
     for _, target in ipairs(table.wrap(project.ordertargets())) do

@@ -275,6 +275,12 @@ end
 --
 -- @endcode
 --
+-- find Android NDK SDK
+--
+-- @param sdkdir the NDK SDK directory (optional)
+-- @param opt    the options, e.g. {verbose = true, force = false}
+-- @return       the SDK info table {sdkdir, bindir, cross, sdkver, ...}
+--
 function main(sdkdir, opt)
 
     -- init arguments

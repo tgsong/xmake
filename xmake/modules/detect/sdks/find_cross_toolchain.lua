@@ -74,6 +74,12 @@ end
 --
 -- @endcode
 --
+-- find cross-compilation toolchain
+--
+-- @param sdkdir the SDK directory
+-- @param opt    the options, e.g. {bindir = "", cross = "arm-linux-gnueabihf-"}
+-- @return       the toolchain info table {sdkdir, bindir, cross, ...}
+--
 function main(sdkdir, opt)
 
     -- init arguments

@@ -61,6 +61,11 @@ end
 -- local is_bigendian = check_bigendian()
 -- @endcode
 --
+-- check if the target system is big-endian
+--
+-- @param opt   the options, e.g. {target = target}
+-- @return      true if big-endian
+--
 function main(opt)
     local snippets = check_bigendian_template
     local ok, is_bigendian = check_cxxsnippets(snippets, table.join(table.wrap(opt), {binary_match = _byteorder_binary_match}))

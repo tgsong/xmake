@@ -48,6 +48,12 @@ import("private.utils.package", {alias = "package_utils"})
 --
 -- @endcode
 --
+-- find package from system or package managers
+--
+-- @param name  the package name
+-- @param opt   the options, e.g. {require_version = ">=1.0", system = true, packagedirs = {}}
+-- @return      the package info table {links, linkdirs, includedirs, ...}, or nil
+--
 function main(name, opt)
 
     -- get the copied options

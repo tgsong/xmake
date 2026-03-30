@@ -18,7 +18,11 @@
 -- @file        pkgconfig_importfiles.lua
 --
 
--- install pkgconfig/.pc import files
+-- install pkgconfig/.pc import files for the target
+--
+-- @param target    the target instance
+-- @param opt       the options, e.g. {installdir = "", libdir = "", includedir = ""}
+--
 function main(target, opt)
 
     -- check

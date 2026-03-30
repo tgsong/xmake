@@ -214,6 +214,12 @@ function _install_moduleonly(target, opt)
     end
 end
 
+-- install the given target
+--
+-- @param target    the target instance
+-- @param opt       the options, e.g. {installdir = "", libdir = "", bindir = "", includedir = "",
+--                                     headers = true, binaries = true, libraries = true, packages = true}
+--
 function main(target, opt)
     opt = opt or {}
     if opt.headers == nil then

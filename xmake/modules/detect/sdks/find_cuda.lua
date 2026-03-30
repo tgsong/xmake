@@ -158,6 +158,12 @@ end
 --
 -- @endcode
 --
+-- find CUDA SDK
+--
+-- @param sdkdir the CUDA SDK directory (optional)
+-- @param opt    the options, e.g. {verbose = true, force = false}
+-- @return       the SDK info table {sdkdir, bindir, libdirs, includedirs, ...}
+--
 function main(sdkdir, opt)
 
     -- init arguments

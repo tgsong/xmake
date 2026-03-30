@@ -131,6 +131,12 @@ end
 --
 -- @endcode
 --
+-- find MinGW SDK
+--
+-- @param sdkdir the MinGW SDK directory (optional)
+-- @param opt    the options, e.g. {verbose = true, force = false}
+-- @return       the SDK info table {sdkdir, bindir, cross, ...}
+--
 function main(sdkdir, opt)
     opt = opt or {}
 

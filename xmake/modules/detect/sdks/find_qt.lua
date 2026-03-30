@@ -333,6 +333,12 @@ end
 --
 -- @endcode
 --
+-- find Qt SDK
+--
+-- @param sdkdir the Qt SDK directory (optional)
+-- @param opt    the options, e.g. {verbose = true, force = false}
+-- @return       the SDK info table {sdkdir, bindir, libdir, includedir, ...}
+--
 function main(sdkdir, opt)
 
     -- init arguments
