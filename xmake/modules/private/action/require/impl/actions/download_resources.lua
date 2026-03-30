@@ -164,6 +164,14 @@ function _download(package, resource_name, resource_url, resource_hash)
 end
 
 -- download all resources of the given package
+-- download the package resources
+--
+-- @param package  the package instance
+--
+-- download the package resources
+--
+-- @param package  the package instance
+--
 function main(package)
 
     -- we don't need to download it if we use the precompiled artifacts to install package

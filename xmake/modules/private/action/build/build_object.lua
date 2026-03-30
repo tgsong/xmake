@@ -21,6 +21,12 @@
 -- imports
 import("private.action.build.target", {alias = "target_buildutils"})
 
+-- build object files target
+--
+-- @param jobgraph  the job graph for dependency tracking
+-- @param target    the target instance
+-- @param opt       the options
+--
 function main(jobgraph, target, opt)
     target_buildutils.add_filejobs(jobgraph, target, opt)
 end

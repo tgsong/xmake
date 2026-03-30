@@ -323,6 +323,16 @@ function _urls(package)
 end
 
 -- download the given package
+-- download the package source
+--
+-- @param package  the package instance
+-- @param opt      the options
+--
+-- download the package source
+--
+-- @param package  the package instance
+-- @param opt      the options
+--
 function main(package, opt)
     opt = opt or {}
 

@@ -21,6 +21,12 @@
 -- imports
 import("build_binary")
 
+-- build shared library target
+--
+-- @param jobgraph  the job graph for dependency tracking
+-- @param target    the target instance
+-- @param opt       the options
+--
 function main(jobgraph, target, opt)
     build_binary(jobgraph, target, opt)
 end

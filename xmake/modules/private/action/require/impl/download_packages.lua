@@ -232,6 +232,11 @@ function _download_packages(packages_download)
 end
 
 -- download packages
+-- download all required packages
+--
+-- @param requires  the requires table
+-- @param opt       the options
+--
 function main(requires, opt)
     opt = opt or {}
 

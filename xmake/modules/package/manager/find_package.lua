@@ -169,6 +169,18 @@ end
 -- @endcode
 --
 
+-- find package from package managers (vcpkg, conan, brew, apt, etc.)
+--
+-- @param name  the package name
+-- @param opt   the options, e.g. {packagedirs = {}, system = true}
+-- @return      the package info table, or nil
+--
+-- find package from package managers (vcpkg, conan, brew, apt, etc.)
+--
+-- @param name  the package name
+-- @param opt   the options, e.g. {packagedirs = {}, system = true}
+-- @return      the package info table, or nil
+--
 function main(name, opt)
 
     -- get the copied options

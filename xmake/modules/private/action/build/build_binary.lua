@@ -22,6 +22,12 @@
 import("build_object")
 import("private.action.build.target", {alias = "target_buildutils"})
 
+-- build binary target
+--
+-- @param jobgraph  the job graph for dependency tracking
+-- @param target    the target instance
+-- @param opt       the options
+--
 function main(jobgraph, target, opt)
     opt = opt or {}
     local objects_group = target:fullname() .. "/objects"

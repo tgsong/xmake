@@ -436,6 +436,10 @@ function _get_package_tipname(package)
     return package_tipname
 end
 
+-- install the package
+--
+-- @param package  the package instance
+--
 function main(package)
     local oldir = _enter_workdir(package)
 

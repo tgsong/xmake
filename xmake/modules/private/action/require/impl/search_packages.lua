@@ -40,6 +40,11 @@ function _search_packages(name, opt)
 end
 
 -- search packages
+-- search packages by names
+--
+-- @param names  the package names to search
+-- @param opt    the options
+--
 function main(names, opt)
     local results = {}
     for _, name in ipairs(names) do
