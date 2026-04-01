@@ -45,6 +45,11 @@ rule("utils.replace")
         -- get the replaced file path
         local replacefile = target:autogenfile(sourcefile)
 
+        -- add the original source directory as includedir for the replaced file,
+        -- so that relative #include paths still work
+        local sourcedir = path.directory(path.absolute(sourcefile))
+        target:fileconfig_add(replacefile, {includedirs = sourcedir})
+
         -- replace the sourcefile in the build sourcebatch,
         -- so that the compiler uses the replaced file instead of the original
         for _, sourcebatch in pairs(target:sourcebatches()) do
