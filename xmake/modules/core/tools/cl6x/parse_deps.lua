@@ -65,7 +65,7 @@ function main(depsdata, opt)
     local line = depsdata:rtrim() -- maybe there will be an empty newline at the end. so we trim it first
     local plain = {plain = true}
     for _, includefile in ipairs(line:split('\n', plain)) do -- it will trim all internal spaces without `{strict = true}`
-        includefile = includefile:split(": ", plain)[2]
+        local includefile = includefile:split(": ", plain)[2]
         if includefile and #includefile > 0 then
             includefile = _normailize_dep(includefile, projectdir)
             if includefile then

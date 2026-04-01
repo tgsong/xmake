@@ -87,6 +87,7 @@ rule("qt.moc")
         }
         for _, pathmap in ipairs(pathmaps) do
             for _, item in ipairs(_get_values_from_target(target, pathmap[1])) do
+                local item = item
                 local pathitem = path(item, function (p)
                     local item = table.unwrap(compiler.map_flags("cxx", pathmap[2], p))
                     if item then

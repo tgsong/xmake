@@ -77,6 +77,7 @@ function _conan_generate_conanfile(name, configs, opt)
         if #options > 0 then
             conanfile:print("[options]")
             for _, item in ipairs(options) do
+                local item = item
                 if not item:find(":", 1, true) then
                     item = name .. ":" .. item
                 end

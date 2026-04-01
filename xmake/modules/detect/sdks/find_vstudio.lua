@@ -395,6 +395,7 @@ function _check_vcvarsall_env(vars)
         if value_org and value_new and #value_org > 0 then
             local values_new = hashset.from(path.splitenv(value_new))
             for _, p in ipairs(value_org) do
+                local p = p
                 if not values_new:has(p) then
                     if #p > 256 then
                         p = p:sub(1, 256) .. "..."
@@ -518,6 +519,7 @@ function _find_vstudio(opt)
     -- find vs2017 -> vs4.2
     local results = {}
     for _, version in ipairs(order_vsvers) do
+        local version = version
 
         -- find VC install path (and aux build path) using `vswhere` (for version >= 15.0)
         -- * version > 15.0 eschews registry entries; but `vswhere` (included with version >= 15.2) can be used to find VC install path

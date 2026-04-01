@@ -49,6 +49,7 @@ function _find_with_whole_name(program)
     local partnames = {}
     local names = path.filename(program):lower():split("%s")
     for _, name in ipairs(names) do
+        local name = name
         -- remove suffix: ".exe", e.g. "zig.exe cc"
         name = _remove_suffix(name)
         -- "zig c++" -> zig_cxx

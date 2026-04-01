@@ -431,6 +431,7 @@ function rule.new(name, info, opt)
         --
         local deps = {}
         for _, depname in ipairs(table.wrap(instance:get("deps"))) do
+            local depname = depname
             -- @xxx -> @package/xxx
             if depname:startswith("@") and not depname:find("/", 1, true) then
                 depname = "@" .. opt.package:name() .. "/" .. depname:sub(2)
@@ -442,6 +443,7 @@ function rule.new(name, info, opt)
             instance:set("deps", deps)
         end
         for depname, extraconf in pairs(table.wrap(instance:extraconf("deps"))) do
+            local depname = depname
             if depname:startswith("@") and not depname:find("/", 1, true) then
                 depname = "@" .. opt.package:name() .. "/" .. depname:sub(2)
                 instance:extraconf_set("deps", depname, extraconf)

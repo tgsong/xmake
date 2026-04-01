@@ -33,7 +33,7 @@ function _find_package(dpkg, name, opt)
     local listinfo = try {function () return os.iorunv(dpkg.program, {"--listfiles", name}) end}
     if listinfo then
         for _, line in ipairs(listinfo:split('\n', {plain = true})) do
-            line = line:trim()
+            local line = line:trim()
 
             -- get includedirs
             local pos = line:find("include/", 1, true)

@@ -35,14 +35,14 @@ function _required_features(name, configs)
     local features_str = name:match("%[(.-)%]")
     if features_str then
         for _, feature in ipairs(features_str:split(",", {plain = true})) do
-            feature = feature:trim()
+            local feature = feature:trim()
             if #feature > 0 then
                 table.insert(features, feature)
             end
         end
     end
     for _, feature in ipairs(table.wrap(configs and configs.features)) do
-        feature = tostring(feature):trim()
+        local feature = tostring(feature):trim()
         if #feature > 0 then
             table.insert(features, feature)
         end
@@ -102,7 +102,7 @@ function _get_package_info(name, triplet, infodirs, arch, plat, mode)
     local info = io.readfile(infofile)
     if info then
         for _, line in ipairs(info:split('\n')) do
-            line = line:trim()
+            local line = line:trim()
             if plat == "windows" then
                 line = line:lower()
             end

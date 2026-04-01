@@ -191,6 +191,7 @@ function main(script, opt)
     if opt.thread then
         local argv
         for _, arg in ipairs(opt.arguments) do
+            local arg = arg
             argv = argv or {}
             if path.instance_of(arg) then
                 arg = tostring(arg)

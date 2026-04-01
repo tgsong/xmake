@@ -182,6 +182,7 @@ function text.wordwrap(str, width, opt)
 
     -- handle lines
     for _, v in ipairs(lines) do
+        local v = v
 
         -- remove tailing spaces, include "\r", which will be produced by `("l1\r\nl2"):split(...)`
         v = v:rtrim()

@@ -356,6 +356,7 @@ function main(package, opt)
     local ok = false
     local urls_failed = {}
     for idx, url in ipairs(urls) do
+        local url = url
         local url_alias = package:url_alias(url)
         local url_excludes = package:url_excludes(url)
         local url_includes = package:url_includes(url)

@@ -63,7 +63,7 @@ function main(name, opt)
     local has_includes = false
     local pkgconfig_files = {}
     for _, line in ipairs(list) do
-        line = line:trim():split('%s+')[1]
+        local line = line:trim():split('%s+')[1]
         if line:find("/pkgconfig/", 1, true) and line:endswith(".pc") then
             pkgconfig_files[path.basename(line)] = line
         end

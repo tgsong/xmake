@@ -61,6 +61,7 @@ function _run_on_simulator(target, opt)
     -- find the booted devices
     local name, deviceid
     for _, line in ipairs(list:split('\n', {plain = true})) do
+        local line = line
         if line:find("(Booted)", 1, true) then
             line = line:trim()
             name, deviceid = line:match("(.-)%s+%(([%w%-]+)%)")

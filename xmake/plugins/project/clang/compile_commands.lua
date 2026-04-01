@@ -90,6 +90,7 @@ function _translate_arguments(arguments)
     local is_include = false
     local lsp = _get_lsp()
     for idx, arg in ipairs(arguments) do
+        local arg = arg
         -- convert path to string, maybe we need to convert path, but not supported now.
         arg = tostring(arg)
 

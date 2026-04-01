@@ -145,6 +145,7 @@ function linuxos.version()
             if os_release then
                 os_release = os_release:trim():lower():split("\n")
                 for _, line in ipairs(os_release) do
+                    local line = line
                     -- ubuntu: VERSION="16.04.7 LTS (Xenial Xerus)"
                     -- fedora: VERSION="32 (Container Image)"
                     -- debian: VERSION="9 (stretch)"

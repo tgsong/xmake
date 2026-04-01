@@ -93,6 +93,7 @@ function _get_command_string(cmd, vcxprojdir)
     if cmd.program then
         local argv = {}
         for _, v in ipairs(table.join(cmd.program, cmd.argv)) do
+            local v = v
             if path.instance_of(v) then
                 v = v:clone():set(_translate_path(v:rawstr(), vcxprojdir)):str()
             elseif path.is_absolute(v) then
@@ -276,6 +277,7 @@ function _make_targetinfo(mode, arch, target, vcxprojdir)
         end
     end
     for k, v in table.orderpairs(setrunenvs) do
+        local v = v
         if #v == 1 then
             v = v[1]
             if path.is_absolute(v) and v:startswith(project.directory()) then

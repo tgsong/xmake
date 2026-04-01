@@ -234,6 +234,7 @@ function _get_requiresflags(target, module)
     if not requiresflags or requires_changed then
         requiresflags = {}
         for required, dep in table.orderpairs(module.deps) do
+            local required = required
             if dep.headerunit then
                 required = required .. dep.key
             end

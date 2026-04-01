@@ -172,6 +172,7 @@ end
 function project._api_add_moduledirs(interp, ...)
     local scriptdir = project.interpreter():scriptdir()
     for _, dir in ipairs({...}) do
+        local dir = dir
         if not path.is_absolute(dir) then
             dir = path.absolute(dir, scriptdir)
         end
@@ -184,6 +185,7 @@ function project._api_add_plugindirs(interp, ...)
     local scriptdir = project.interpreter():scriptdir()
     local plugindirs = {}
     for _, dir in ipairs({...}) do
+        local dir = dir
         if not path.is_absolute(dir) then
             dir = path.absolute(dir, scriptdir)
         end
@@ -196,6 +198,7 @@ end
 function project._api_add_platformdirs(interp, ...)
     local scriptdir = project.interpreter():scriptdir()
     for _, dir in ipairs({...}) do
+        local dir = dir
         if not path.is_absolute(dir) then
             dir = path.absolute(dir, scriptdir)
         end
@@ -207,6 +210,7 @@ end
 function project._api_add_toolchaindirs(interp, ...)
     local scriptdir = project.interpreter():scriptdir()
     for _, dir in ipairs({...}) do
+        local dir = dir
         if not path.is_absolute(dir) then
             dir = path.absolute(dir, scriptdir)
         end

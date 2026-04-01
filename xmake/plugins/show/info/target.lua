@@ -272,6 +272,7 @@ function _collect_target_info(target)
         end
     end
     for _, sourcekind in sourcekinds:keys() do
+        local sourcekind = sourcekind
         local compinst = target:compiler(sourcekind)
         if compinst then
             info.compilers = info.compilers or {}

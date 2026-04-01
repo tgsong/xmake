@@ -57,7 +57,7 @@ function build(package, configs, opt)
         table.insert(argv, "VERBOSE=1")
     end
     for name, value in pairs(configs) do
-        value = tostring(value):trim()
+        local value = tostring(value):trim()
         if value ~= "" then
             if type(name) == "number" then
                 table.insert(argv, value)

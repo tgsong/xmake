@@ -165,7 +165,7 @@ function main(requires_raw)
         cprint("      -> ${color.dump.string_quote}searchdirs${clear}: %s", table.concat(table.wrap(core_package.searchdirs()), path.envsep()))
         local searchnames = hashset.new()
         for _, url in ipairs(urls) do
-            url = filter.handle(url, instance)
+            local url = filter.handle(url, instance)
             if git.checkurl(url) then
                 searchnames:insert(instance:name() .. archive.extension(url) .. " ${dim}(git)${clear}")
                 searchnames:insert(path.basename(url_filename(url)) .. " ${dim}(git)${clear}")
@@ -193,7 +193,7 @@ function main(requires_raw)
         local fetchinfo = instance:fetch()
         if fetchinfo then
             for name, info in pairs(fetchinfo) do
-                info = table.unwrap(info)
+                local info = table.unwrap(info)
                 if type(info) ~= "table" then
                     info = tostring(info)
                 end

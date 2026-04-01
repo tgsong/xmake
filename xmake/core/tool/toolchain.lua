@@ -253,6 +253,7 @@ function _instance:runenvs()
         if toolchain_runenvs then
             runenvs = {}
             for name, values in pairs(toolchain_runenvs) do
+                local values = values
                 if type(values) == "table" then
                     values = path.joinenv(values)
                 end
@@ -685,6 +686,7 @@ function toolchain.parsename(name)
             toolchain_name = toolchain_name_raw
             local splitinfo = configs_str:split(",", {plain = true})
             for _, v in ipairs(splitinfo) do
+                local v = v
                 local parts = v:split("=", {plain = true})
                 local k = parts[1]
                 v = parts[2]

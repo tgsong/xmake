@@ -66,6 +66,7 @@ function main(requireinfo, opt)
     if configs then
         local configs_order = {}
         for k, v in pairs(configs) do
+            local v = v
             if type(v) == "table" then
                 v = string.serialize(v, {strip = true, indent = false, orderkeys = true})
             end

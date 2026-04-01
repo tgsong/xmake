@@ -70,6 +70,7 @@ function _load_require(require_str, requires_extra, opt)
         packagename = packagename_raw
         local splitinfo = configs_str:split(",", {plain = true})
         for _, v in ipairs(splitinfo) do
+            local v = v
             local parts = v:split("=", {plain = true})
             local k = parts[1]
             v = parts[2]
@@ -1216,6 +1217,7 @@ function _get_package_compatkey(dep)
         if configs then
             local configs_order = {}
             for k, v in pairs(configs) do
+                local v = v
                 if type(v) == "table" then
                     v = string.serialize(v, {strip = true, indent = false, orderkeys = true})
                 end
@@ -1594,6 +1596,7 @@ function get_configs_str(package)
         local ignored_configs_for_buildhash = hashset.from(requireinfo.ignored_configs_for_buildhash or {})
         local configs_overrided = requireinfo.configs_overrided or {}
         for k, v in pairs(requireinfo.configs) do
+            local v = v
             if not ignored_configs_for_buildhash:has(k) then
                 v = configs_overrided[k] or v
                 if type(v) == "boolean" then

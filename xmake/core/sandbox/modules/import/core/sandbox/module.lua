@@ -168,6 +168,7 @@ function core_sandbox_module._load_from_scriptdir(module_fullpath, opt)
             -- save module
             local scope = module
             for _, modulename in ipairs(path.split(modulepath)) do
+                local modulename = modulename
                 local pos = modulename:find(".lua", 1, true)
                 if pos then
                     modulename = modulename:sub(1, pos - 1)

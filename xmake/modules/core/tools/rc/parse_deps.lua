@@ -41,6 +41,7 @@ function main(depsdata)
     local results = hashset.new()
     local projectdir = os.projectdir()
     for _, includefile in ipairs(depsdata:split('\n', {plain = true})) do
+        local includefile = includefile
         if #includefile > 0 then
             includefile = _normailize_dep(includefile, projectdir)
             if includefile then

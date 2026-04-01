@@ -189,6 +189,7 @@ function _get_requiresflags(target, module)
     if not requiresflags or requires_changed then
         local deps_flags = {}
         for required, dep in pairs(module.deps) do
+            local required = required
             if dep.headerunit then
                 required = required .. dep.key
             end

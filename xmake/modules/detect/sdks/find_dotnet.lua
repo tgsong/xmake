@@ -49,7 +49,7 @@ function _find_dotnet_cli(sdkdir)
     if sdklist then
         local sdks = {}
         for _, line in ipairs(sdklist:split("\n", {plain = true})) do
-            line = line:trim()
+            local line = line:trim()
             local ver, dir = line:match("^(%S+)%s+%[(.-)%]")
             if ver and dir then
                 table.insert(sdks, {version = ver, directory = path.join(dir, ver)})
@@ -72,7 +72,7 @@ function _find_dotnet_cli(sdkdir)
     if runtimelist then
         local runtimes = {}
         for _, line in ipairs(runtimelist:split("\n", {plain = true})) do
-            line = line:trim()
+            local line = line:trim()
             local name, ver = line:match("^(%S+)%s+(%S+)%s+%[")
             if name and ver then
                 table.insert(runtimes, {name = name, version = ver})

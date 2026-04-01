@@ -40,7 +40,7 @@ function _get_sourcefiles_from_cmake(target, cmakefile)
             -- get global class source files
             -- set(hello_GLOBAL "${VERILATOR_ROOT}/include/verilated.cpp" "${VERILATOR_ROOT}/include/verilated_threads.cpp")
             for classfile in values:gmatch("\"(.-)\"") do
-                classfile = classfile:gsub("%${VERILATOR_ROOT}", verilator_root)
+                local classfile = classfile:gsub("%${VERILATOR_ROOT}", verilator_root)
                 if os.isfile(classfile) then
                     table.insert(global_classes, classfile)
                 end
@@ -312,6 +312,7 @@ function build_cppfiles(target, jobgraph, sourcebatch, opt)
         end
         local sourcefiles = sourcebatch.sourcefiles
         for _, sourcefile in ipairs(sourcefiles) do
+            local sourcefile = sourcefile
             progress.show(opt.progress or 0, "${color.build.object}compiling.verilog %s", sourcefile)
             -- we need to use slashes to fix it on windows
             -- @see https://github.com/verilator/verilator/issues/3873

@@ -107,7 +107,7 @@ function main(name, opt)
     local result = nil
     local packagedir = metainfo.extracted_package_dir
     for _, line in ipairs(metainfo.files) do
-        line = line:trim()
+        local line = line:trim()
 
         -- get includedirs
         local pos = line:find("include/", 1, true)

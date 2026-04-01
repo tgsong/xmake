@@ -80,6 +80,7 @@ rule("swift.interop")
             if cpp_langflags == nil then
                 local languages = target:get("languages")
                 for _, language in ipairs(languages) do
+                    local language = language
                     if language:startswith("c++")
                         or language:startswith("cxx")
                         or language:startswith("gnu++")

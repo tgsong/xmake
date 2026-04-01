@@ -79,7 +79,7 @@ function _patch_pkgconfig(package)
     -- get libs
     local libs = ""
     for _, linkdir in ipairs(fetchinfo.linkdirs) do
-        linkdir = path.unix(path.normalize(linkdir)):replace(installdir, "${exec_prefix}", {plain = true})
+        local linkdir = path.unix(path.normalize(linkdir)):replace(installdir, "${exec_prefix}", {plain = true})
         if linkdir ~= "${exec_prefix}/lib" then
             libs = libs .. " -L" .. linkdir
         end
@@ -95,7 +95,7 @@ function _patch_pkgconfig(package)
     -- cflags
     local cflags = ""
     for _, includedir in ipairs(fetchinfo.includedirs or fetchinfo.sysincludedirs) do
-        includedir = path.unix(path.normalize(includedir)):replace(installdir, "${prefix}", {plain = true})
+        local includedir = path.unix(path.normalize(includedir)):replace(installdir, "${prefix}", {plain = true})
         if includedir ~= "${prefix}/include" then
             cflags = cflags .. " -I" .. includedir
         end

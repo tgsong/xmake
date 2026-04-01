@@ -44,7 +44,7 @@ function _get_depends_by_dumpbin(binaryfile, opt)
             local result = try { function () return os.iorunv(dumpbin.program, {"/dependents", "/nologo", binaryfile}) end }
             if result then
                 for _, line in ipairs(result:split("\n")) do
-                    line = line:trim()
+                    local line = line:trim()
                     if not line:startswith("Dump of file") and line:endswith(".dll") then
                         depends = depends or {}
                         table.insert(depends, line)
@@ -71,7 +71,7 @@ function _get_depends_by_objdump(binaryfile, opt)
         local result = try { function () return os.iorunv(objdump.program, argv) end }
         if result then
             for _, line in ipairs(result:split("\n")) do
-                line = line:trim()
+                local line = line:trim()
                 if not line:endswith(":") then
                     if plat == "windows" or plat == "mingw" then
                         if line:startswith("DLL Name:") then
@@ -126,6 +126,7 @@ function _get_depends_by_ldd(binaryfile, opt)
         local result = try { function () return os.iorunv(ldd.program, {binaryfile}) end }
         if result then
             for _, line in ipairs(result:split("\n")) do
+                local line = line
                 local splitinfo = line:split("=>")
                 line = splitinfo[2]
                 if not line or line:find("not found", 1, true) then
@@ -202,7 +203,7 @@ function _get_depends_by_otool(binaryfile, opt)
         local result = try { function () return os.iorunv(otool.program, {"-L", binaryfile}) end }
         if result then
             for _, line in ipairs(result:split("\n")) do
-                line = line:trim()
+                local line = line:trim()
                 if not line:endswith(":") then
                     local filename = line:match(".-%.dylib") or line:match(".-%.framework")
                     if filename then
@@ -344,7 +345,7 @@ function _get_plain_depends(binaryfile, opt)
     if depends and opt.resolve_path then
         local result = {}
         for _, dependfile in ipairs(depends) do
-            dependfile = _resolve_filepath(binaryfile, dependfile, opt)
+            local dependfile = _resolve_filepath(binaryfile, dependfile, opt)
             if dependfile then
                 table.insert(result, dependfile)
             end
