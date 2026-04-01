@@ -331,7 +331,7 @@ function _get_configs(package, configs, opt)
     -- add prefix
     configs = configs or {}
     opt._configs_str = string.serialize(configs, {indent = false, strip = true})
-    table.insert(configs, "--prefix=" .. (opt.prefix or package:installdir()))
+    table.insert(configs, "--prefix=" .. path.unix(opt.prefix or package:installdir()))
     table.insert(configs, "--libdir=lib")
 
     -- set build type
