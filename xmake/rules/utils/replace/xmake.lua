@@ -28,6 +28,13 @@
 --
 --   add_files("src/foo.c", {rules = "utils.replace", replaces = {{"RDKCONST);", "VDKREG);"}}, replace_plain = true})
 --
+-- e.g. replace with custom function
+--
+--   add_files("src/foo.c", {rules = "utils.replace", replaces = function (content)
+--       content = content:gsub("old", "new")
+--       return content
+--   end})
+--
 rule("utils.replace")
     on_prepare_file(function (target, sourcefile, opt)
         import("utils.progress")
@@ -64,29 +71,36 @@ rule("utils.replace")
 
         -- build values list from replace config for change detection
         local depvalues = {}
-        for _, item in ipairs(replaces) do
-            table.insert(depvalues, item[1])
-            table.insert(depvalues, item[2])
-        end
-        if use_plain then
-            table.insert(depvalues, "plain")
+        local is_function = type(replaces) == "function"
+        if not is_function then
+            for _, item in ipairs(replaces) do
+                table.insert(depvalues, item[1])
+                table.insert(depvalues, item[2])
+            end
+            if use_plain then
+                table.insert(depvalues, "plain")
+            end
         end
 
         -- do replace if source file or replace config is changed
         depend.on_changed(function ()
             progress.show(opt.progress, "${color.build.object}replacing.$(mode) %s", sourcefile)
             vprint("replace %s to %s", sourcefile, replacefile)
-            if option.get("diagnosis") then
-                for _, item in ipairs(replaces) do
-                    cprint("${dim}  > \"%s\" -> \"%s\"%s", item[1], item[2], use_plain and " (plain)" or "")
-                end
-            end
             local content = io.readfile(sourcefile)
-            for _, item in ipairs(replaces) do
-                if use_plain then
-                    content = content:replace(item[1], item[2], {plain = true})
-                else
-                    content = content:gsub(item[1], item[2])
+            if is_function then
+                content = replaces(content)
+            else
+                if option.get("diagnosis") then
+                    for _, item in ipairs(replaces) do
+                        cprint("${dim}  > \"%s\" -> \"%s\"%s", item[1], item[2], use_plain and " (plain)" or "")
+                    end
+                end
+                for _, item in ipairs(replaces) do
+                    if use_plain then
+                        content = content:replace(item[1], item[2], {plain = true})
+                    else
+                        content = content:gsub(item[1], item[2])
+                    end
                 end
             end
             io.writefile(replacefile, content)
