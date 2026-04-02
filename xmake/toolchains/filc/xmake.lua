@@ -50,14 +50,21 @@ toolchain("filc")
             if os.isfile(filcc.program) then
                 toolchain:config_set("bindir", path.directory(filcc.program))
             end
+            -- discover fil++ explicitly rather than inferring from filcc's bindir
+            local filxx = find_tool("fil++", {paths = paths, force = true})
+            if filxx then
+                toolchain:config_set("filxx", filxx.program)
+            end
             return true
         end
     end)
 
     on_load(function (toolchain)
         local filcc = toolchain:config("filcc") or "filcc"
-        local bindir = toolchain:config("bindir")
-        local filpp = bindir and path.join(bindir, "fil++") or "fil++"
+        local filpp = toolchain:config("filxx") or (function()
+            local bindir = toolchain:config("bindir")
+            return bindir and path.join(bindir, "fil++") or "fil++"
+        end)()
 
         -- filcc/fil++ are the compilers and linker; ar uses the system archiver
         toolchain:set("toolset", "cc",  filcc)
@@ -71,32 +78,16 @@ toolchain("filc")
         -- searched AFTER filc's own libc++ headers, preventing stdlib.h conflicts
         for _, sysdir in ipairs({"/usr/include", "/usr/local/include"}) do
             if os.isdir(sysdir) then
-                toolchain:add("cflags",   "-idirafter " .. sysdir)
-                toolchain:add("cxflags",  "-idirafter " .. sysdir)
+                toolchain:add("cflags",  "-idirafter", sysdir)
+                toolchain:add("cxflags", "-idirafter", sysdir)
             end
         end
 
-        -- add runtime include/lib dirs from the installed package
-        for _, package in ipairs(toolchain:packages()) do
-            local installdir = package:installdir()
-            if installdir then
-                local pizfix = path.join(installdir, "pizfix")
-                -- only add stdfil-include for stdfil.h; pizfix/include (musl C headers)
-                -- must NOT be added as -isystem or it breaks libc++'s stdlib.h include order
-                local stdfil_include = path.join(pizfix, "stdfil-include")
-                if os.isdir(stdfil_include) then
-                    toolchain:add("sysincludedirs", stdfil_include)
-                end
-                for _, libdir in ipairs({path.join(pizfix, "lib64"), path.join(pizfix, "lib")}) do
-                    if os.isdir(libdir) then
-                        toolchain:add("linkdirs", libdir)
-                    end
-                end
-            end
-        end
-        local sdkdir = toolchain:sdkdir()
-        if sdkdir and os.isdir(sdkdir) then
-            local pizfix = path.join(sdkdir, "pizfix")
+        -- add runtime include/lib dirs from the installed package or sdk
+        local function _add_pizfix(dir)
+            local pizfix = path.join(dir, "pizfix")
+            -- only add stdfil-include for stdfil.h; pizfix/include (musl C headers)
+            -- must NOT be added as -isystem or it breaks libc++'s stdlib.h include order
             local stdfil_include = path.join(pizfix, "stdfil-include")
             if os.isdir(stdfil_include) then
                 toolchain:add("sysincludedirs", stdfil_include)
@@ -106,5 +97,15 @@ toolchain("filc")
                     toolchain:add("linkdirs", libdir)
                 end
             end
+        end
+        for _, package in ipairs(toolchain:packages()) do
+            local installdir = package:installdir()
+            if installdir then
+                _add_pizfix(installdir)
+            end
+        end
+        local sdkdir = toolchain:sdkdir()
+        if sdkdir and os.isdir(sdkdir) then
+            _add_pizfix(sdkdir)
         end
     end)
