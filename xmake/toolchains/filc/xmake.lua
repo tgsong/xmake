@@ -25,12 +25,13 @@ toolchain("filc")
     on_check(function (toolchain)
         import("lib.detect.find_tool")
 
-        -- look in package installdir/build/bin first, then bindir/sdkdir, then PATH
+        -- look in package installdir/build/bin and bin first, then bindir/sdkdir, then PATH
         local paths = {}
         for _, package in ipairs(toolchain:packages()) do
             local installdir = package:installdir()
             if installdir then
                 table.insert(paths, path.join(installdir, "build", "bin"))
+                table.insert(paths, path.join(installdir, "bin"))
             end
         end
         local bindir = toolchain:bindir()
@@ -55,9 +56,12 @@ toolchain("filc")
 
     on_load(function (toolchain)
         local filcc = toolchain:config("filcc") or "filcc"
+        local bindir = toolchain:config("bindir")
+        local filpp = bindir and path.join(bindir, "fil++") or "fil++"
 
-        -- filcc is the compiler and linker; ar uses the system archiver
+        -- filcc/fil++ are the compilers and linker; ar uses the system archiver
         toolchain:set("toolset", "cc",  filcc)
+        toolchain:set("toolset", "cxx", filpp)
         toolchain:set("toolset", "ld",  filcc)
         toolchain:set("toolset", "sh",  filcc)
         toolchain:set("toolset", "ar",  "ar")
@@ -68,12 +72,17 @@ toolchain("filc")
             local installdir = package:installdir()
             if installdir then
                 local pizfix = path.join(installdir, "pizfix")
-                -- stdfil.h lives in pizfix/stdfil-include/
-                toolchain:add("sysincludedirs", path.join(pizfix, "stdfil-include"))
-                -- standard C headers (musl-based) live in pizfix/include/
-                toolchain:add("sysincludedirs", path.join(pizfix, "include"))
-                toolchain:add("linkdirs",       path.join(pizfix, "lib"))
-                toolchain:add("linkdirs",       path.join(pizfix, "lib64"))
+                for _, d in ipairs({"stdfil-include", "include"}) do
+                    local includedir = path.join(pizfix, d)
+                    if os.isdir(includedir) then
+                        toolchain:add("sysincludedirs", includedir)
+                    end
+                end
+                for _, libdir in ipairs({path.join(pizfix, "lib64"), path.join(pizfix, "lib")}) do
+                    if os.isdir(libdir) then
+                        toolchain:add("linkdirs", libdir)
+                    end
+                end
             end
         end
         local sdkdir = toolchain:sdkdir()
