@@ -529,7 +529,7 @@ function install(package, configs, opt)
     -- to the child xmake process so it can find already-installed deps
     -- without re-installing them to the global directory
     -- @see https://github.com/xmake-io/xmake/discussions/7441
-    if package:is_local() then
+    if package:is_local() and not package:is_source_embed() then
         envs = table.clone(envs)
         envs.XMAKE_PKG_INSTALLDIR = package.installdir({localdir = true})
     end
