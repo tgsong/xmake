@@ -67,16 +67,25 @@ toolchain("filc")
         toolchain:set("toolset", "ar",  "ar")
         toolchain:set("toolset", "as",  filcc)
 
+        -- expose host system headers (GL, X11, etc.) via -idirafter so they are
+        -- searched AFTER filc's own libc++ headers, preventing stdlib.h conflicts
+        for _, sysdir in ipairs({"/usr/include", "/usr/local/include"}) do
+            if os.isdir(sysdir) then
+                toolchain:add("cflags",   "-idirafter " .. sysdir)
+                toolchain:add("cxflags",  "-idirafter " .. sysdir)
+            end
+        end
+
         -- add runtime include/lib dirs from the installed package
         for _, package in ipairs(toolchain:packages()) do
             local installdir = package:installdir()
             if installdir then
                 local pizfix = path.join(installdir, "pizfix")
-                for _, d in ipairs({"stdfil-include", "include"}) do
-                    local includedir = path.join(pizfix, d)
-                    if os.isdir(includedir) then
-                        toolchain:add("sysincludedirs", includedir)
-                    end
+                -- only add stdfil-include for stdfil.h; pizfix/include (musl C headers)
+                -- must NOT be added as -isystem or it breaks libc++'s stdlib.h include order
+                local stdfil_include = path.join(pizfix, "stdfil-include")
+                if os.isdir(stdfil_include) then
+                    toolchain:add("sysincludedirs", stdfil_include)
                 end
                 for _, libdir in ipairs({path.join(pizfix, "lib64"), path.join(pizfix, "lib")}) do
                     if os.isdir(libdir) then
@@ -88,11 +97,9 @@ toolchain("filc")
         local sdkdir = toolchain:sdkdir()
         if sdkdir and os.isdir(sdkdir) then
             local pizfix = path.join(sdkdir, "pizfix")
-            for _, d in ipairs({"stdfil-include", "include"}) do
-                local includedir = path.join(pizfix, d)
-                if os.isdir(includedir) then
-                    toolchain:add("sysincludedirs", includedir)
-                end
+            local stdfil_include = path.join(pizfix, "stdfil-include")
+            if os.isdir(stdfil_include) then
+                toolchain:add("sysincludedirs", stdfil_include)
             end
             for _, libdir in ipairs({path.join(pizfix, "lib64"), path.join(pizfix, "lib")}) do
                 if os.isdir(libdir) then
