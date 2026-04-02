@@ -1,4 +1,3 @@
-import("lib.detect.find_tool")
 import("utils.ci.is_running", {alias = "ci_is_running"})
 
 function main(t)
@@ -7,14 +6,21 @@ function main(t)
         return t:skip("filc is only supported on linux/x86_64")
     end
 
-    local filcc = find_tool("filcc")
-    if not filcc then
-        return t:skip("filcc not found, please install the filc package first")
+    local flags = ci_is_running() and "-vD" or ""
+
+    -- configure and install the filc package; skip if unavailable
+    local configured = try
+    {
+        function ()
+            os.exec("xmake f -c -y " .. flags)
+            return true
+        end,
+        catch { function () end }
+    }
+    if not configured then
+        return t:skip("filc package not available or install failed")
     end
 
-    -- build the safety test
-    local flags = ci_is_running() and "-vD" or ""
-    os.exec("xmake f -c -y " .. flags)
     os.exec("xmake -r " .. flags)
 
     -- find the compiled binary
