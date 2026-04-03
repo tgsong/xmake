@@ -246,6 +246,7 @@ ti-c2000      TI-CGT C2000 compiler
 ti-c6000      TI-CGT C6000 compiler
 iararm        IAR ARM C/C++ Compiler
 kotlin-native Kotlin Native Programming Language Compiler
+filc          A memory safe implementation of the C and C++ programming languages (https://fil-c.org/)
 ```
 
 ## Supported languages
