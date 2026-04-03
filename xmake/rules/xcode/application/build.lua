@@ -49,7 +49,8 @@ function main (target, opt)
         -- @see https://github.com/xmake-io/xmake/issues/2679#issuecomment-1221839215
         local targetfile = path.join(binarydir, path.filename(target:targetfile()))
         try { function () os.vrunv("install_name_tool", {"-delete_rpath", "@loader_path", targetfile}) end }
-        os.vrunv("install_name_tool", {"-add_rpath", "@executable_path/../Frameworks", targetfile})
+        local rpath = target:is_plat("macosx") and "@executable_path/../Frameworks" or "@executable_path/Frameworks"
+        os.vrunv("install_name_tool", {"-add_rpath", rpath, targetfile})
 
         -- copy dependent dynamic libraries and frameworks
         for _, dep in ipairs(target:orderdeps()) do
@@ -109,4 +110,3 @@ function main (target, opt)
 
     end, {dependfile = target:dependfile(bundledir), files = {bundledir, target:targetfile()}, changed = target:is_rebuilt()})
 end
-
