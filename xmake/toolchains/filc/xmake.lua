@@ -22,6 +22,13 @@ toolchain("filc")
     set_homepage("https://fil-c.org/")
     set_description("A memory safe implementation of the C and C++ programming languages.")
 
+    set_toolset("cc",  "filcc")
+    set_toolset("cxx", "fil++")
+    set_toolset("ld",  "filcc")
+    set_toolset("sh",  "filcc")
+    set_toolset("ar",  "ar")
+    set_toolset("as",  "filcc")
+
     on_check(function (toolchain)
         import("lib.detect.find_tool")
 
@@ -46,40 +53,28 @@ toolchain("filc")
 
         local filcc = find_tool("filcc", {paths = paths, force = true})
         if filcc then
-            toolchain:config_set("filcc", filcc.program)
             if os.isfile(filcc.program) then
                 toolchain:config_set("bindir", path.directory(filcc.program))
-            end
-            -- discover fil++ explicitly rather than inferring from filcc's bindir
-            local filxx = find_tool("fil++", {paths = paths, force = true})
-            if filxx then
-                toolchain:config_set("filxx", filxx.program)
+                -- set sdkdir to the package install root so on_load can find pizfix
+                for _, package in ipairs(toolchain:packages()) do
+                    local installdir = package:installdir()
+                    if installdir and filcc.program:startswith(installdir) then
+                        toolchain:config_set("sdkdir", installdir)
+                        break
+                    end
+                end
             end
             return true
         end
     end)
 
     on_load(function (toolchain)
-        local filcc = toolchain:config("filcc") or "filcc"
-        local filpp = toolchain:config("filxx") or (function()
-            local bindir = toolchain:config("bindir")
-            return bindir and path.join(bindir, "fil++") or "fil++"
-        end)()
-
-        -- filcc/fil++ are the compilers and linker; ar uses the system archiver
-        toolchain:set("toolset", "cc",  filcc)
-        toolchain:set("toolset", "cxx", filpp)
-        toolchain:set("toolset", "ld",  filcc)
-        toolchain:set("toolset", "sh",  filcc)
-        toolchain:set("toolset", "ar",  "ar")
-        toolchain:set("toolset", "as",  filcc)
-
         -- expose host system headers (GL, X11, etc.) via -idirafter so they are
         -- searched AFTER filc's own libc++ headers, preventing stdlib.h conflicts
         for _, sysdir in ipairs({"/usr/include", "/usr/local/include"}) do
             if os.isdir(sysdir) then
-                toolchain:add("cflags",  "-idirafter", sysdir)
-                toolchain:add("cxflags", "-idirafter", sysdir)
+                toolchain:add("cflags",  "-idirafter " .. sysdir)
+                toolchain:add("cxflags", "-idirafter " .. sysdir)
             end
         end
 
@@ -96,12 +91,6 @@ toolchain("filc")
                 if os.isdir(libdir) then
                     toolchain:add("linkdirs", libdir)
                 end
-            end
-        end
-        for _, package in ipairs(toolchain:packages()) do
-            local installdir = package:installdir()
-            if installdir then
-                _add_pizfix(installdir)
             end
         end
         local sdkdir = toolchain:sdkdir()

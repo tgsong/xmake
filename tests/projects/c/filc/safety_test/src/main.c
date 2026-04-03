@@ -7,12 +7,10 @@
 #include <stdfil.h>
 #include <stdlib.h>
 
-static void foo(void)
-{
+static void foo(void) {
 }
 
-int main()
-{
+int main() {
     void (*my_foo)(void) = (void(*)(void))((char*)foo + 42);
     my_foo();
     return 0;
