@@ -23,6 +23,7 @@ import("core.base.option")
 import("core.base.global")
 import("core.tool.toolchain")
 import("core.project.project")
+import("core.package.package", {alias = "package_core"})
 import("core.package.repository")
 import("private.action.require.impl.package", {alias = "require_package"})
 import("private.utils.toolchain", {alias = "toolchain_utils"})
@@ -523,6 +524,15 @@ function install(package, configs, opt)
 
     -- get build environments
     local envs = opt.envs or buildenvs(package)
+
+    -- if the package is installed locally, pass the local packages directory
+    -- to the child xmake process so it can find already-installed deps
+    -- without re-installing them to the global directory
+    -- @see https://github.com/xmake-io/xmake/discussions/7441
+    if package:is_local() and not package:is_source_embed() then
+        envs = table.clone(envs)
+        envs.XMAKE_PKG_INSTALLDIR = package_core.installdir({localdir = true})
+    end
 
     -- pass local repositories
     for _, repo in ipairs(repository.repositories()) do
