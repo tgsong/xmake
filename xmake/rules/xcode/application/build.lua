@@ -50,7 +50,7 @@ function main (target, opt)
         -- @see https://github.com/xmake-io/xmake/issues/2679#issuecomment-1221839215
         local targetfile = path.join(binarydir, path.filename(target:targetfile()))
         try { function () os.vrunv("install_name_tool", {"-delete_rpath", "@loader_path", targetfile}) end }
-        local rpath = "@executable_path/../Frameworks"
+        local rpath = target:is_plat("macosx") and "@executable_path/../Frameworks" or "@executable_path/Frameworks"
         local rpathdirs = rpath_utils.list(targetfile, {plat = target:plat(), arch = target:arch()}) or {}
         if not table.contains(rpathdirs, rpath) then
             os.vrunv("install_name_tool", {"-add_rpath", rpath, targetfile})
