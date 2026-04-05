@@ -1,3 +1,5 @@
+import("utils.binary.rpath")
+
 function main(t)
     if not is_host("macosx") then
         return t:skip("wrong host platform")
@@ -5,8 +7,6 @@ function main(t)
 
     os.execv("xmake", {"f", "-p", "iphoneos", "-a", "arm64", "--appledev=simulator", "-c"})
     os.execv("xmake", {"-vD"})
-
-    import("utils.binary.rpath")
     local appfile = "build/iphoneos/arm64/release/demo.app/demo"
     local rpaths = rpath.list(appfile)
     local found_ios = false
