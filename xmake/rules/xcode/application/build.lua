@@ -50,6 +50,8 @@ function main (target, opt)
         -- @see https://github.com/xmake-io/xmake/issues/2679#issuecomment-1221839215
         local targetfile = path.join(binarydir, path.filename(target:targetfile()))
         try { function () os.vrunv("install_name_tool", {"-delete_rpath", "@loader_path", targetfile}) end }
+        -- macOS uses @executable_path/../Frameworks due to Contents/MacOS/ layout
+        -- iOS/watchOS/tvOS/visionOS use flat bundle layout where frameworks are in the same directory as the executable
         local rpath = target:is_plat("macosx") and "@executable_path/../Frameworks" or "@executable_path/Frameworks"
         local rpathdirs = rpath_utils.list(targetfile, {plat = target:plat(), arch = target:arch()}) or {}
         if not table.contains(rpathdirs, rpath) then
