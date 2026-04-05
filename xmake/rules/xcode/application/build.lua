@@ -23,6 +23,7 @@ import("core.base.option")
 import("core.theme.theme")
 import("core.project.depend")
 import("private.tools.codesign")
+import("utils.binary.rpath", {alias = "rpath_utils"})
 import("utils.progress")
 function main (target, opt)
 
@@ -49,7 +50,11 @@ function main (target, opt)
         -- @see https://github.com/xmake-io/xmake/issues/2679#issuecomment-1221839215
         local targetfile = path.join(binarydir, path.filename(target:targetfile()))
         try { function () os.vrunv("install_name_tool", {"-delete_rpath", "@loader_path", targetfile}) end }
-        os.vrunv("install_name_tool", {"-add_rpath", "@executable_path/../Frameworks", targetfile})
+        local rpath = target:is_plat("macosx") and "@executable_path/../Frameworks" or "@executable_path/Frameworks"
+        local rpathdirs = rpath_utils.list(targetfile, {plat = target:plat(), arch = target:arch()}) or {}
+        if not table.contains(rpathdirs, rpath) then
+            os.vrunv("install_name_tool", {"-add_rpath", rpath, targetfile})
+        end
 
         -- copy dependent dynamic libraries and frameworks
         for _, dep in ipairs(target:orderdeps()) do
@@ -109,4 +114,3 @@ function main (target, opt)
 
     end, {dependfile = target:dependfile(bundledir), files = {bundledir, target:targetfile()}, changed = target:is_rebuilt()})
 end
-
