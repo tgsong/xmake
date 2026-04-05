@@ -843,7 +843,7 @@ function _instance:builddir()
     if not builddir then
         if self:is_local() then
             local name = self:name():lower():gsub("::", "_")
-            local rootdir = path.join(config.builddir({absolute = true}), ".packages", name:sub(1, 1):lower(), name, self:version_str())
+            local rootdir = path.join(package.installdir({localdir = true}), name:sub(1, 1):lower(), name, self:version_str())
             builddir = path.join(rootdir, "cache", "build_" .. hash.rand32())
         else
             builddir = "build_" .. hash.rand32()
@@ -886,7 +886,7 @@ function _instance:cachedir()
                 version_str = version_str:gsub("[>=<|%*]", "")
             end
             if self:is_local() then
-                cachedir = path.join(config.builddir({absolute = true}), ".packages", name:sub(1, 1):lower(), name, version_str, "cache")
+                cachedir = path.join(package.installdir({localdir = true}), name:sub(1, 1):lower(), name, version_str, "cache")
             else
                 cachedir = path.join(package.cachedir(), name:sub(1, 1):lower(), name, version_str)
             end
@@ -908,7 +908,7 @@ function _instance:installdir(...)
         if not installdir then
             local name = self:name():lower():gsub("::", "_")
             if self:is_local() then
-                installdir = path.join(config.builddir({absolute = true}), ".packages", name:sub(1, 1):lower(), name)
+                installdir = path.join(package.installdir({localdir = true}), name:sub(1, 1):lower(), name)
             else
                 installdir = path.join(package.installdir(), name:sub(1, 1):lower(), name)
             end
@@ -2939,8 +2939,18 @@ function package.cachedir(opt)
     return path.join(cachedir, os.date("%y%m"))
 end
 
--- the install directory
-function package.installdir()
+-- the global/local install directory for packages
+--
+-- @param opt   the options, e.g. {localdir = true}
+--              - localdir: return the local project packages directory (build/.packages)
+--                          instead of the global directory (~/.xmake/packages)
+--
+-- @return      the install directory path
+--
+function package.installdir(opt)
+    if opt and opt.localdir then
+        return path.join(config.builddir({absolute = true}), ".packages")
+    end
     local installdir = package._INSTALLDIR
     if not installdir then
         installdir = os.getenv("XMAKE_PKG_INSTALLDIR") or global.get("pkg_installdir") or path.join(global.directory(), "packages")

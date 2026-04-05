@@ -281,15 +281,26 @@ end
 function load_moduleinfo(target, sourcefile)
     local reused, from = is_reused(target, sourcefile)
     local dependfile = reused and from:dependfile(sourcefile) or target:dependfile(sourcefile)
-    local moduleinfo
-    if os.isfile(dependfile) then
+
+    local is_file = os.isfile(dependfile)
+    if is_file then
         local data = io.load(dependfile)
         if data then
-            moduleinfo = json.decode(data.moduleinfo)
+            local moduleinfo = json.decode(data.moduleinfo)
             moduleinfo.sourcefile = sourcefile
+            return moduleinfo
         end
     end
-    return moduleinfo
+
+    local targets = memcache():get("targets")
+    local target_fullname = reused and from:fullname() or target:fullname()
+    if not (targets and targets[target_fullname]) then
+        return nil, string.format("module scanner did not run for target(%s), maybe a custom `on_prepare()` script overrides the modules one", target_fullname)
+    end
+    if not is_file then
+        return nil, string.format("target(%s): dependfile for '%s' not found at '%s'", target_fullname, sourcefile, dependfile)
+    end
+    return nil, string.format("target(%s): failed to load moduleinfo for '%s'", target_fullname, sourcefile)
 end
 
 function find_quote_header_file(sourcefile, file)
