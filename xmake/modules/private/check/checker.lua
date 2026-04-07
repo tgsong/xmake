@@ -20,6 +20,7 @@
 
 -- imports
 import("core.base.option")
+import("core.cache.memcache")
 
 -- get all checkers
 function checkers()
@@ -103,6 +104,16 @@ function update_stats(level, count)
     end
     count = count or 1
     stats[level] = (stats[level] or 0) + count
+end
+
+-- mark a checker as running (called internally by checker implementations)
+function start(name)
+    memcache.set("__checker_running", name, true)
+end
+
+-- mark a checker as stopped (called internally by checker implementations)
+function stop(name)
+    memcache.set("__checker_running", name, false)
 end
 
 -- show stats

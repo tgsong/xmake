@@ -21,7 +21,6 @@
 -- imports
 import("core.base.option")
 import("core.base.task")
-import("core.cache.memcache")
 import("core.project.project")
 import("actions.build.build_files", {rootdir = os.programdir(), alias = "build_files"})
 import("actions.build.build", {rootdir = os.programdir(), alias = "build"})
@@ -102,10 +101,7 @@ function _validate_and_enable_targets(opt)
         end
     end
 
-    -- enable syntax-only via memcache
-    if #cpp_targets > 0 then
-        memcache.set("syntax_check", "enabled", true)
-    end
+    -- no valid targets found?
 
     -- if no C++ target found, return false to skip checking
     if #cpp_targets == 0 then

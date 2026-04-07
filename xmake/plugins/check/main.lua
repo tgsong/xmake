@@ -80,7 +80,9 @@ function _check(group_or_name, arguments)
         if showstats == nil and info and info.showstats ~= nil then
             showstats = info.showstats
         end
+        checker.start(name)
         import("private.check.checkers." .. name, {anonymous = true})(arguments)
+        checker.stop(name)
     end
     if showstats ~= false then
         checker.show_stats()
