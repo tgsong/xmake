@@ -1,10 +1,9 @@
 inherit("test_base")
 
-GCC_MIN_VER = "11"
-MSVC_MIN_VER = "14.30"
+local MSVC_MIN_VER = "14.30"
 
 function main(t)
-    local gcc_options = {fallbackscanner = true, compiler = "gcc", version = GCC_MIN_VER}
+    local gcc_options = {fallbackscanner = true, compiler = "gcc", version = gcc_min_ver()}
     -- gcc/arm64: internal compiler error: in core_vals, at cp/module.cc:6108
     -- on windows, mingw modulemapper doesn't handle headeunit path correctly, but it's working with mingw on macOS / Linux
     if os.arch() == "arm64" or is_subhost("msys") then

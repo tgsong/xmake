@@ -1,8 +1,8 @@
 inherit("test_base")
 
-CLANG_MIN_VER = is_subhost("windows") and "19" or "18"
-GCC_MIN_VER = "13"
-MSVC_MIN_VER = "14.30"
+local CLANG_MIN_VER = is_subhost("windows") and "19" or "18"
+local GCC_MIN_VER = "13"
+local MSVC_MIN_VER = "14.30"
 
 function main(_)
     local clang_options = {compiler = "clang", version = CLANG_MIN_VER}

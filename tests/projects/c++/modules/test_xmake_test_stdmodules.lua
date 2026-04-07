@@ -1,9 +1,9 @@
 inherit("test_base")
 import("utils.ci.is_running", {alias = "ci_is_running"})
 
-CLANG_MIN_VER = "19"
-GCC_MIN_VER = "15"
-MSVC_MIN_VER = "14.35"
+local CLANG_MIN_VER = "19"
+local GCC_MIN_VER = "15"
+local MSVC_MIN_VER = "14.35"
 
 function run_xmake_test(...)
     local flags = ""
