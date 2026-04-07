@@ -1,10 +1,19 @@
 inherit(".test_base")
+import("utils.ci.is_running", {alias = "ci_is_running"})
+
+local CLANG_MIN_VER = is_subhost("windows") and "19" or "17"
+local GCC_MIN_VER = "11"
+local MSVC_MIN_VER = "14.29"
 
 local PRIVATE_DEFINE = "PRIVATE_DEP_DEFINE_DO_NOT_PROPAGATE"
 local PUBLIC_SYSINCLUDEDIR = path.translate(path.absolute("src/include"))
 
 function _build()
-    local outdata = os.iorun("xmake -r -vD")
+    local flags = ""
+    if ci_is_running() then
+        flags = "-vD"
+    end
+    local outdata = os.iorun("xmake -r " .. flags)
     local leaked = false
     local missing_sysincludedir = true
     for line in outdata:gmatch("[^\r\n]+") do
@@ -23,7 +32,7 @@ function _build()
     if missing_sysincludedir then
         raise("Missing public sysincludedir in Consumer module rebuilds under reuse.strict\n%s", outdata)
     end
-    os.run("xmake -vD")
+    os.run("xmake " .. flags)
 end
 
 function main(_)
