@@ -53,6 +53,13 @@ function _show_info(name)
     end
 end
 
+-- run a single checker
+function _run_checker(name, arguments)
+    checker.start(name)
+    import("private.check.checkers." .. name, {anonymous = true})(arguments)
+    checker.stop(name)
+end
+
 -- do check
 function _check(group_or_name, arguments)
 
@@ -80,9 +87,7 @@ function _check(group_or_name, arguments)
         if showstats == nil and info and info.showstats ~= nil then
             showstats = info.showstats
         end
-        checker.start(name)
-        import("private.check.checkers." .. name, {anonymous = true})(arguments)
-        checker.stop(name)
+        _run_checker(name, arguments)
     end
     if showstats ~= false then
         checker.show_stats()
