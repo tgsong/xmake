@@ -31,6 +31,7 @@ import("core.project.project")
 import("core.language.language")
 import("utils.progress")
 import("private.cache.build_cache")
+import("utils.checker")
 import("private.service.distcc_build.client", {alias = "distcc_build_client"})
 import("rules.c++.modules.support", {rootdir = os.programdir()})
 
@@ -76,7 +77,7 @@ end
 
 -- is syntax check enabled?
 function _is_syntax_check()
-    return memcache.get("syntax_check", "enabled") or false
+    return checker.is_running("syntax")
 end
 
 -- get `-MMD -MF depfile.d` flags, some old gcc does not support it at same time

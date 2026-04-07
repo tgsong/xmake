@@ -22,7 +22,6 @@
 import("core.base.option")
 import("core.base.global")
 import("core.base.hashset")
-import("core.cache.memcache")
 import("core.project.project")
 import("core.project.policy")
 import("core.language.language")
@@ -30,6 +29,7 @@ import("private.utils.toolchain", {alias = "toolchain_utils"})
 import("private.tools.vstool")
 import("core.tools.cl.parse_include")
 import("private.cache.build_cache")
+import("utils.checker")
 import("private.service.distcc_build.client", {alias = "distcc_build_client"})
 import("utils.progress")
 
@@ -97,7 +97,7 @@ end
 
 -- is syntax check enabled?
 function _is_syntax_check()
-    return memcache.get("syntax_check", "enabled") or false
+    return checker.is_running("syntax")
 end
 
 -- make the symbol flags
