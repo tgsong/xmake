@@ -1,3 +1,5 @@
+module;
+
 #include <public_config.h>
 
 module mod;
