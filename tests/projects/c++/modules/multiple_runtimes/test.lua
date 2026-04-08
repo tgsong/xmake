@@ -3,9 +3,19 @@ import("core.base.semver")
 import("core.tool.toolchain")
 import("utils.ci.is_running", {alias = "ci_is_running"})
 
-local CLANG_MIN_VER = "19"
-local GCC_MIN_VER = "15"
-local MSVC_MIN_VER = "14.35"
+local _CLANG_MIN_VER = "19"
+local _GCC_MIN_VER = "15"
+local _MSVC_MIN_VER = "14.35"
+
+function clang_min_ver()
+    return _CLANG_MIN_VER
+end
+function gcc_min_ver()
+    return _GCC_MIN_VER
+end
+function msvc_min_ver()
+    return _MSVC_MIN_VER
+end
 
 function _check_tool_version(name, min_ver)
     local tool = find_tool(name, {version = true})
@@ -34,7 +44,7 @@ end
 
 function main(_)
     if is_subhost("windows") then
-        if not _check_msvc_version(MSVC_MIN_VER) then
+        if not _check_msvc_version(msvc_min_ver()) then
             return
         end
         -- on windows, llvm libc++ std module is currently not supported, uncommend when supported
@@ -42,7 +52,7 @@ function main(_)
         --     return
         -- end
     elseif is_host("linux") then
-        if not _check_tool_version("gcc", GCC_MIN_VER) or not _check_tool_version("clang", CLANG_MIN_VER) then
+        if not _check_tool_version("gcc", gcc_min_ver()) or not _check_tool_version("clang", clang_min_ver()) then
             return
         end
     else

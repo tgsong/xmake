@@ -1,10 +1,6 @@
 inherit(".test_base")
 import("utils.ci.is_running", {alias = "ci_is_running"})
 
-local CLANG_MIN_VER = is_subhost("windows") and "19" or "17"
-local GCC_MIN_VER = "11"
-local MSVC_MIN_VER = "14.29"
-
 local PRIVATE_DEFINE = "PRIVATE_DEP_DEFINE_DO_NOT_PROPAGATE"
 local PUBLIC_SYSINCLUDEDIR = path.translate("src/include")
 
@@ -40,8 +36,8 @@ function _build()
 end
 
 function main(_)
-    local clang_options = {compiler = "clang", version = CLANG_MIN_VER, build = _build}
-    local gcc_options = {compiler = "gcc", version = GCC_MIN_VER, build = _build}
-    local msvc_options = {version = MSVC_MIN_VER, build = _build}
+    local clang_options = {compiler = "clang", version = clang_min_ver(), build = _build}
+    local gcc_options = {compiler = "gcc", version = gcc_min_ver(), build = _build}
+    local msvc_options = {version = msvc_min_ver(), build = _build}
     run_tests(clang_options, gcc_options, msvc_options)
 end

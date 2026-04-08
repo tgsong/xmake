@@ -1,12 +1,22 @@
 inherit("test_base")
 
-local CLANG_MIN_VER = "19"
-local GCC_MIN_VER = "15"
-local MSVC_MIN_VER = "14.35"
+local _CLANG_MIN_VER = "19"
+local _GCC_MIN_VER = "15"
+local _MSVC_MIN_VER = "14.35"
+
+function clang_min_ver()
+    return _CLANG_MIN_VER
+end
+function gcc_min_ver()
+    return _GCC_MIN_VER
+end
+function msvc_min_ver()
+    return _MSVC_MIN_VER
+end
 
 function main(_)
-    local clang_options = {stdmodule = true, compiler = "clang", version = CLANG_MIN_VER}
-    local gcc_options = {stdmodule = true, compiler = "gcc", version = GCC_MIN_VER}
+    local clang_options = {stdmodule = true, compiler = "clang", version = clang_min_ver()}
+    local gcc_options = {stdmodule = true, compiler = "gcc", version = gcc_min_ver()}
     -- latest mingw gcc 15.1 is broken
     --  error: F:/msys64/mingw64/include/c++/15.1.0/shared_mutex:105:3: error: 'int std::__glibcxx_rwlock_timedrdlock(pthread_rwlock_t*, const timespec*)' exposes TU-local entity 'int pthread_rwlock_timedrdlock(pthread_rwlock_t*, const timespec*)'
     --   105 |   __glibcxx_rwlock_timedrdlock (pthread_rwlock_t *__rwlock,
@@ -27,6 +37,6 @@ function main(_)
     if is_subhost("msys") then
         gcc_options = nil
     end
-    local msvc_options = {stdmodule = true, version = MSVC_MIN_VER}
+    local msvc_options = {stdmodule = true, version = msvc_min_ver()}
     run_tests(clang_options, gcc_options, msvc_options)
 end
