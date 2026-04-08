@@ -1,8 +1,8 @@
 inherit("test_base")
 
-CLANG_MIN_VER = "19"
-GCC_MIN_VER = "15"
-MSVC_MIN_VER = "14.35"
+local CLANG_MIN_VER = "19"
+local GCC_MIN_VER = "15"
+local MSVC_MIN_VER = "14.35"
 
 function main(_)
     local clang_options = {stdmodule = true, compiler = "clang", version = CLANG_MIN_VER}

@@ -3,10 +3,28 @@ import("core.base.semver")
 import("core.tool.toolchain")
 import("utils.ci.is_running", {alias = "ci_is_running"})
 
-CLANG_MIN_VER = is_subhost("windows") and "19" or "17"
-CLANG_CL_MIN_VER = "19"
-GCC_MIN_VER = "11"
-MSVC_MIN_VER = "14.29"
+-- default minimum compiler versions for C++ modules support
+-- sub-tests can override these with local variables before calling run_tests()
+local _CLANG_MIN_VER = is_subhost("windows") and "19" or "17"
+local _CLANG_CL_MIN_VER = "19"
+local _GCC_MIN_VER = "11"
+local _MSVC_MIN_VER = "14.29"
+
+function clang_min_ver()
+    return _CLANG_MIN_VER
+end
+
+function clang_cl_min_ver()
+    return _CLANG_CL_MIN_VER
+end
+
+function gcc_min_ver()
+    return _GCC_MIN_VER
+end
+
+function msvc_min_ver()
+    return _MSVC_MIN_VER
+end
 
 function _build(check_outdata)
     local flags = ""
@@ -39,11 +57,11 @@ function can_build()
         return true
     elseif is_host("linux") then
         local gcc = find_tool("gcc", {version = true})
-        if gcc and gcc.version and semver.compare(gcc.version, GCC_MIN_VER) >= 0 then
+        if gcc and gcc.version and semver.compare(gcc.version, gcc_min_ver()) >= 0 then
             return true
         end
         local clang = find_tool("clang", {version = true})
-        if clang and clang.version and semver.compare(clang.version, CLANG_MIN_VER) >= 0 then
+        if clang and clang.version and semver.compare(clang.version, clang_min_ver()) >= 0 then
             return true
         end
     end
@@ -132,7 +150,7 @@ function run_tests(clang_options, gcc_options, msvc_options)
             if not clang_options.disable_clang_cl then
                 local clang_cl_options = table.clone(clang_options)
                 clang_cl_options.compiler = "clang-cl"
-                clang_cl_options.version = CLANG_CL_MIN_VER
+                clang_cl_options.version = clang_cl_min_ver()
                 build_tests("clang-cl", clang_cl_options)
                 build_tests("clang-cl", table.join(clang_options, {two_phases = false}))
             end
@@ -204,8 +222,8 @@ function run_tests(clang_options, gcc_options, msvc_options)
 end
 
 function main(_)
-    local clang_options = {compiler = "clang", version = CLANG_MIN_VER}
-    local gcc_options = {compiler = "gcc", version = GCC_MIN_VER}
-    local msvc_options = {version = MSVC_MIN_VER}
+    local clang_options = {compiler = "clang", version = clang_min_ver()}
+    local gcc_options = {compiler = "gcc", version = gcc_min_ver()}
+    local msvc_options = {version = msvc_min_ver()}
     run_tests(clang_options, gcc_options, msvc_options)
 end
