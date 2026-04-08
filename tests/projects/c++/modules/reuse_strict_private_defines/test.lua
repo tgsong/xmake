@@ -13,26 +13,30 @@ function _build()
     if ci_is_running() then
         flags = "-vD"
     end
-    local outdata = os.iorun("xmake -r " .. flags)
     local leaked = false
     local missing_sysincludedir = true
-    for line in outdata:gmatch("[^\r\n]+") do
-        if line:find("Consumer", 1, true) then
-            if line:find(PRIVATE_DEFINE, 1, true) then
-                leaked = true
-            end
-            if line:find(PUBLIC_SYSINCLUDEDIR, 1, true) then
-                missing_sysincludedir = false
+    local outdata = try { function () return os.iorun("xmake -rv") end }
+    if outdata then
+        for line in outdata:gmatch("[^\r\n]+") do
+            if line:find("Consumer", 1, true) then
+                if line:find(PRIVATE_DEFINE, 1, true) then
+                    leaked = true
+                end
+                if line:find(PUBLIC_SYSINCLUDEDIR, 1, true) then
+                    missing_sysincludedir = false
+                end
             end
         end
+        if leaked then
+            raise("Private dependency defines leaked into Consumer module rebuilds under reuse.strict\n%s", outdata)
+        end
+        if missing_sysincludedir then
+            raise("Missing public sysincludedir in Consumer module rebuilds under reuse.strict\n%s", outdata)
+        end
+    else
+        -- maybe build failed, we need to see verbose errors
+        os.run("xmake " .. flags)
     end
-    if leaked then
-        raise("Private dependency defines leaked into Consumer module rebuilds under reuse.strict\n%s", outdata)
-    end
-    if missing_sysincludedir then
-        raise("Missing public sysincludedir in Consumer module rebuilds under reuse.strict\n%s", outdata)
-    end
-    os.run("xmake " .. flags)
 end
 
 function main(_)
