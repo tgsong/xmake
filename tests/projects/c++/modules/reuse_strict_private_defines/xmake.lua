@@ -1,9 +1,9 @@
 add_rules("mode.debug", "mode.release")
 
-set_languages("cxx20")
+set_languages("c++20")
 
 target("Producer")
-    set_kind("shared")
+    set_kind("static")
     add_defines("PRIVATE_DEP_DEFINE_DO_NOT_PROPAGATE")
     add_sysincludedirs("src/include", {public = true})
     add_files("src/mod.mpp", {public = true})
