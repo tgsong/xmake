@@ -6,7 +6,7 @@ local GCC_MIN_VER = "11"
 local MSVC_MIN_VER = "14.29"
 
 local PRIVATE_DEFINE = "PRIVATE_DEP_DEFINE_DO_NOT_PROPAGATE"
-local PUBLIC_SYSINCLUDEDIR = path.translate(path.absolute("src/include"))
+local PUBLIC_SYSINCLUDEDIR = path.translate("src/include")
 
 function _build()
     local flags = ""
