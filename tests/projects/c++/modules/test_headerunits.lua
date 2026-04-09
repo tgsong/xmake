@@ -1,6 +1,10 @@
 inherit("test_base")
 
-local MSVC_MIN_VER = "14.30"
+local _MSVC_MIN_VER = "14.30"
+
+function msvc_min_ver()
+    return _MSVC_MIN_VER
+end
 
 function main(t)
     local gcc_options = {fallbackscanner = true, compiler = "gcc", version = gcc_min_ver()}
@@ -9,7 +13,7 @@ function main(t)
     if os.arch() == "arm64" or is_subhost("msys") then
         gcc_options = nil
     end
-    local msvc_options = {version = MSVC_MIN_VER}
+    local msvc_options = {version = msvc_min_ver()}
     -- skip clang tests, headerunits with clang is not stable
     run_tests(nil, gcc_options, msvc_options)
 end
