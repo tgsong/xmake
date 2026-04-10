@@ -32,7 +32,7 @@ function _is_enabled()
 
     -- disable statistics? need not post it
     local stats = (os.getenv("XMAKE_STATS") or ""):lower()
-    if stats == "false" or stats == 'n' then
+    if option.boolean(stats) == false then
         return false
     end
 
