@@ -258,7 +258,7 @@ end
 
 -- limit root? @see https://github.com/xmake-io/xmake/pull/4513
 function main._limit_root()
-    return not option.get("root") and os.getenv("XMAKE_ROOT") ~= 'y' and os.host() ~= 'haiku'
+    return not option.get("root") and option.boolean(os.getenv("XMAKE_ROOT")) ~= true and os.host() ~= 'haiku'
 end
 
 -- run task
