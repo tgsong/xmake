@@ -227,7 +227,7 @@ function nf_runtime(self, runtime, opt)
     -- and need manual setting of libc++ headerdirectory
     -- @see https://github.com/llvm/llvm-project/issues/79647
     local target = opt.target or opt
-    local llvm_dirs = toolchain_utils.get_llvm_dirs(self:toolchain())
+    local llvm_dirs = self:toolchain() and toolchain_utils.get_llvm_dirs(self:toolchain()) or {}
     -- we will set runtimes in android ndk toolchain
     if not self:is_plat("android") then
         maps = maps or {}
