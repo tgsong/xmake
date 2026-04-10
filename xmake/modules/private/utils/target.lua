@@ -247,7 +247,8 @@ function get_target_package_libfiles(target, opt)
         end
     end
     -- we can only reserve used libraries
-    if project.policy("install.strip_packagelibs") then
+    -- skip wasm platform, because wasm binaries (.html/.js/.wasm) don't support deplibs analysis
+    if project.policy("install.strip_packagelibs") and not target:is_plat("wasm") then
         if target:is_binary() or target:is_shared() or opt.binaryfile then
             -- we need to get all deplibs, e.g. app -> libfoo.so -> libbar.so ...
             -- @see https://github.com/xmake-io/xmake/issues/5325#issuecomment-2242597732
