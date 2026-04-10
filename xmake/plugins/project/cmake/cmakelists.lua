@@ -1094,7 +1094,7 @@ function _add_target_link_libraries(cmakelists, target, outputdir)
 
     if #object_deps ~= 0 then
         if not has_links then
-            cmakelists:print("add_library(target_objectfiles_%s OBJECT IMPORTED GLOBAL)", key)
+            cmakelists:print("add_library(target_objectfiles_%s INTERFACE)", key)
             has_links = true
         end
         cmakelists:print("target_link_libraries(target_objectfiles_%s INTERFACE", key)
