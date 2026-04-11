@@ -285,7 +285,6 @@ function nf_runtime(self, runtime, opt)
                     end
                 end
                 if runtime:endswith("_static") and _has_static_libstdcxx(self) then
-                    maps["c++_static"] = table.join(maps["c++_static"], "-static-libstdc++")
                     maps["stdc++_static"] = table.join(maps["stdc++_static"], "-static-libstdc++")
                 end
             end
