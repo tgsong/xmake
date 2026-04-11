@@ -215,6 +215,18 @@ function project._api_add_toolchaindirs(interp, ...)
             dir = path.absolute(dir, scriptdir)
         end
         toolchain.add_directories(dir)
+        -- auto-register modules directories under each toolchain
+        -- e.g. toolchains/my-c6000/modules/ will be added as module search path
+        -- so that custom toolchain can bundle its tool modules together
+        local toolchain_subdirs = os.dirs(path.join(dir, "*"))
+        if toolchain_subdirs then
+            for _, toolchain_subdir in ipairs(toolchain_subdirs) do
+                local modulesdir = path.join(toolchain_subdir, "modules")
+                if os.isdir(modulesdir) then
+                    sandbox_module.add_directories(modulesdir)
+                end
+            end
+        end
     end
 end
 
