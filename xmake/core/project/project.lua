@@ -220,11 +220,15 @@ function project._api_add_toolchaindirs(interp, ...)
         -- so that custom toolchain can bundle its tool modules together
         local toolchain_subdirs = os.dirs(path.join(dir, "*"))
         if toolchain_subdirs then
+            local modulesdirs = {}
             for _, toolchain_subdir in ipairs(toolchain_subdirs) do
                 local modulesdir = path.join(toolchain_subdir, "modules")
                 if os.isdir(modulesdir) then
-                    sandbox_module.add_directories(modulesdir)
+                    table.insert(modulesdirs, modulesdir)
                 end
+            end
+            if #modulesdirs > 0 then
+                sandbox_module.add_directories(table.unpack(modulesdirs))
             end
         end
     end
