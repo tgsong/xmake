@@ -2132,11 +2132,13 @@ function _instance:fetch(opt)
     -- but windows api headers may declare mixed-case names (e.g. Bcrypt, Crypt32)
     -- @see https://github.com/xmake-io/xmake/issues/9113
     if fetchinfo and fetchinfo.syslinks and self:is_plat("mingw") and os.fscase() then
+        fetchinfo = table.clone(fetchinfo)
         local syslinks = table.wrap(fetchinfo.syslinks)
+        local results = {}
         for i, link in ipairs(syslinks) do
-            syslinks[i] = link:lower()
+            results[i] = link:lower()
         end
-        fetchinfo.syslinks = table.unwrap(syslinks)
+        fetchinfo.syslinks = table.unwrap(results)
     end
 
     -- save to cache
