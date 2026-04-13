@@ -2127,6 +2127,20 @@ function _instance:fetch(opt)
         end
     end
 
+    -- normalize syslinks to lowercase for mingw on case-sensitive host filesystems,
+    -- because mingw import libraries are always lowercase (e.g. libbcrypt.a),
+    -- but windows api headers may declare mixed-case names (e.g. Bcrypt, Crypt32)
+    -- @see https://github.com/xmake-io/xmake/issues/9113
+    if fetchinfo and fetchinfo.syslinks and self:is_plat("mingw") and os.fscase() then
+        fetchinfo = table.clone(fetchinfo)
+        local syslinks = table.wrap(fetchinfo.syslinks)
+        local results = {}
+        for i, link in ipairs(syslinks) do
+            results[i] = link:lower()
+        end
+        fetchinfo.syslinks = table.unwrap(results)
+    end
+
     -- save to cache
     if usecache then
         self._FETCHINFO = fetchinfo
