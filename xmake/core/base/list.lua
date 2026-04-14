@@ -238,22 +238,31 @@ end
 --
 -- @return      the iterator function
 --
+-- Stateful closure so the loop body can safely reassign the first loop
+-- variable under lua 5.4+ (paired with the RDKCONST->VDKREG compile-time
+-- patch in core/src/lua/xmake.lua).
 function list:items()
-    local iter = function (list, item)
-        return list:next(item)
+    -- stateful closure: keep the cursor in an upvalue so the loop body
+    -- can safely reassign the first loop variable (lua 5.4+ merges the
+    -- for-in control slot with the first user variable).
+    local item = nil
+    return function ()
+        item = self:next(item)
+        return item
     end
-    return iter, self, nil
 end
 
 -- iterate elements from back to front
 --
 -- @return      the reverse iterator function
 --
+-- Stateful closure; see `list:items()` for the rationale.
 function list:ritems()
-    local iter = function (list, item)
-        return list:prev(item)
+    local item = nil
+    return function ()
+        item = self:prev(item)
+        return item
     end
-    return iter, self, nil
 end
 
 -- create a new doubly-linked list

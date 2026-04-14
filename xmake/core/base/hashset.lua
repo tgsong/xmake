@@ -119,15 +119,23 @@ end
 -- end
 -- @endcode
 --
+-- Stateful closure so the loop body can safely reassign the first loop
+-- variable under lua 5.4+ (paired with the RDKCONST->VDKREG compile-time
+-- patch in core/src/lua/xmake.lua).
 function hashset:items()
-    return function (t, item)
-        local k, _ = next(t._DATA, item)
-        if k == hashset._NIL then
+    -- keep `next`'s key in an upvalue so the loop body can safely reassign
+    -- the first loop variable. In lua 5.4+ the for-in control slot is
+    -- merged with the first user variable; threading the key through the
+    -- loop would otherwise corrupt `next` on the following iteration.
+    local data = self._DATA
+    local k = nil
+    return function ()
+        k = next(data, k)
+        if k == nil or k == hashset._NIL then
             return nil
-        else
-            return k
         end
-    end, self, nil
+        return k
+    end
 end
 
 -- iterate order items
@@ -175,14 +183,19 @@ end
 -- @endcode
 --
 function hashset:keys()
-    return function (t, key)
-        local k, _ = next(t._DATA, key)
+    -- see hashset:items() for rationale
+    local data = self._DATA
+    local k = nil
+    return function ()
+        k = next(data, k)
+        if k == nil then
+            return nil
+        end
         if k == hashset._NIL then
             return k, nil
-        else
-            return k, k
         end
-    end, self, nil
+        return k, k
+    end
 end
 
 -- iterate order keys (deprecated, please use orderitems())
