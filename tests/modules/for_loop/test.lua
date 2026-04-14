@@ -31,13 +31,23 @@ import("core.base.list")
 import("core.base.hashset")
 
 function test_numeric_for_reassign(t)
-    -- Just needs to compile & run without "attempt to assign to const".
-    local sum = 0
+    -- The point of this test is purely compile-time: without the
+    -- RDKCONST->VDKREG replace in core/src/lua/xmake.lua the write to
+    -- `i` would raise "attempt to assign to const variable" and this
+    -- file wouldn't even parse.
+    --
+    -- We do NOT assert on the value of `i` during iteration. Lua 5.4
+    -- merges the numeric-for control slot with the user's first loop
+    -- variable while 5.5 splits them, so the observable sequence of
+    -- `i` values after a reassignment differs between versions. The
+    -- iteration count lives in its own slot and stays stable, so that
+    -- is what we pin.
+    local n = 0
     for i = 1, 5 do
         i = i * 10
-        sum = sum + i
+        n = n + 1
     end
-    t:require(sum == 10 + 20 + 30 + 40 + 50)
+    t:require(n == 5)
 end
 
 function test_generic_for_reassign_key(t)
