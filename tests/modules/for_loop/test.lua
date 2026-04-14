@@ -1,9 +1,34 @@
--- Regression tests for Lua 5.4 for-loop customizations in xmake:
---   1. RDKCONST is relaxed on the control variable (parser patch), so
---      reassigning `i` in a numeric-for or `k` in a generic-for compiles.
---   2. Sandbox `pairs` snapshots keys so reassigning the first loop
---      variable cannot corrupt the iterator state — otherwise `next`
---      would later fail with "invalid key to 'next'".
+-- Regression tests for the Lua 5.4+ for-loop hazard: the parser merges
+-- the generic-for control slot with the user's first loop variable and
+-- marks it `RDKCONST`, so code like
+--
+--     for k, v in pairs(t) do
+--         k = k:gsub("_", "-")
+--         ...
+--     end
+--
+-- normally fails to compile with "attempt to assign to const variable",
+-- and if we only relax the const check the runtime silently corrupts the
+-- iterator state (next iteration gets the modified key and `next` bails
+-- with "invalid key to 'next'" — or worse, silently skips entries).
+--
+-- xmake works around this in two coordinated places:
+--
+--   1. Compile-time: `core/src/lua/xmake.lua` (and xmake.sh) replace
+--      `RDKCONST);` with `VDKREG);` in lparser.c so assignment to the
+--      first loop variable is allowed through.
+--
+--   2. Runtime: the sandbox iterators (`pairs`, `ipairs`, `irpairs`) and
+--      the base containers (`list:items/ritems`, `hashset:items/keys`)
+--      are implemented as stateful closures keeping their cursor in an
+--      upvalue, so user writes to the first loop variable cannot reach
+--      the iterator's internal state.
+--
+-- These tests pin both behaviors: that reassigning the first loop
+-- variable (a) compiles and (b) produces correct, non-lossy iteration.
+
+import("core.base.list")
+import("core.base.hashset")
 
 function test_numeric_for_reassign(t)
     -- Just needs to compile & run without "attempt to assign to const".
@@ -31,8 +56,8 @@ function test_generic_for_reassign_key(t)
 end
 
 function test_generic_for_reassign_many_keys(t)
-    -- Stress the snapshot path with enough keys that a broken iterator
-    -- would deterministically trip `next` on the second iteration.
+    -- Stress the iterator with enough keys that a broken stateless
+    -- iterator would deterministically trip `next` on the second round.
     local tbl = {}
     for i = 1, 64 do
         tbl["key_" .. i] = i
@@ -47,22 +72,18 @@ function test_generic_for_reassign_many_keys(t)
 end
 
 function test_list_items_reassign(t)
-    import("core.base.list")
     local l = list.new()
     for i = 1, 5 do
         l:push({name = "n" .. i})
     end
-    local names = {}
     for item in l:items() do
         item = nil  -- would corrupt list:next on the next iteration
-        -- re-fetch to prove we don't rely on `item`
     end
-    local count = 0
+    local names = {}
     for item in l:items() do
-        count = count + 1
         table.insert(names, item.name)
     end
-    t:require(count == 5)
+    t:require(#names == 5)
     t:require(names[1] == "n1" and names[5] == "n5")
 end
 
@@ -79,7 +100,6 @@ function test_irpairs_reassign_index(t)
 end
 
 function test_hashset_items_reassign(t)
-    import("core.base.hashset")
     local set = hashset.from({"key_1", "key_2", "key_3", "key_4", "key_5"})
     local seen = {}
     for item in set:items() do
