@@ -114,6 +114,41 @@ function test_hashset_items_reassign(t)
     end
 end
 
+function test_hashset_items_skip_nil_member(t)
+    -- A nil member lives in hashset under the `_NIL` sentinel; iteration
+    -- must skip it rather than terminate, so real entries after it are
+    -- still visited regardless of `next`'s order.
+    local set = hashset.new()
+    set:insert("a")
+    set:insert(nil)
+    set:insert("b")
+    set:insert("c")
+    local seen = {}
+    for item in set:items() do
+        seen[item] = true
+    end
+    local count = 0
+    for _ in pairs(seen) do count = count + 1 end
+    t:require(count == 3)
+    t:require(seen.a and seen.b and seen.c)
+end
+
+function test_hashset_orderitems_skip_nil_member(t)
+    -- use numeric members so the existing orderitems sort (which coerces
+    -- `_NIL` to math.inf) stays within one comparable type.
+    local set = hashset.new()
+    set:insert(1)
+    set:insert(nil)
+    set:insert(2)
+    set:insert(3)
+    local collected = {}
+    for item in set:orderitems() do
+        table.insert(collected, item)
+    end
+    t:require(#collected == 3)
+    t:require(collected[1] == 1 and collected[2] == 2 and collected[3] == 3)
+end
+
 function test_ipairs_reassign_index(t)
     -- With the stock Lua 5.4 `ipairs`, writing to the first loop variable
     -- would silently shift the index on the next iteration (no error,

@@ -127,13 +127,17 @@ function hashset:items()
     -- the first loop variable. In lua 5.4+ the for-in control slot is
     -- merged with the first user variable; threading the key through the
     -- loop would otherwise corrupt `next` on the following iteration.
+    --
+    -- nil-as-a-member is stored under the `_NIL` sentinel. For-loop
+    -- semantics don't let us yield nil (it would end the loop), so we
+    -- skip the sentinel and continue to the next real key; the nil
+    -- member is omitted but entries after it are still visited.
     local data = self._DATA
     local k = nil
     return function ()
-        k = next(data, k)
-        if k == nil or k == hashset._NIL then
-            return nil
-        end
+        repeat
+            k = next(data, k)
+        until k ~= hashset._NIL
         return k
     end
 end
@@ -162,16 +166,18 @@ function hashset:orderitems()
         end
         return a < b
     end)
-    local i = 1
-    return function (t, k)
-        k = orderkeys[i]
-        i = i + 1
-        if k == hashset._NIL then
-            return nil
-        else
-            return k
-        end
-    end, self, nil
+    -- see hashset:items() for the `_NIL` handling rationale
+    local n = #orderkeys
+    local i = 0
+    return function ()
+        local k
+        repeat
+            i = i + 1
+            if i > n then return nil end
+            k = orderkeys[i]
+        until k ~= hashset._NIL
+        return k
+    end
 end
 
 -- iterate keys (deprecated, please use items())
