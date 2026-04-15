@@ -189,16 +189,16 @@ end
 -- @endcode
 --
 function hashset:keys()
-    -- see hashset:items() for rationale
+    -- see hashset:items() for the stateful-closure rationale and the
+    -- `_NIL` skipping behavior.
     local data = self._DATA
     local k = nil
     return function ()
-        k = next(data, k)
+        repeat
+            k = next(data, k)
+        until k ~= hashset._NIL
         if k == nil then
             return nil
-        end
-        if k == hashset._NIL then
-            return k, nil
         end
         return k, k
     end
