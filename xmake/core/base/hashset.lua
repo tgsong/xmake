@@ -119,15 +119,27 @@ end
 -- end
 -- @endcode
 --
+-- Stateful closure so the loop body can safely reassign the first loop
+-- variable under lua 5.4+ (paired with the RDKCONST->VDKREG compile-time
+-- patch in core/src/lua/xmake.lua).
 function hashset:items()
-    return function (t, item)
-        local k, _ = next(t._DATA, item)
-        if k == hashset._NIL then
-            return nil
-        else
-            return k
-        end
-    end, self, nil
+    -- keep `next`'s key in an upvalue so the loop body can safely reassign
+    -- the first loop variable. In lua 5.4+ the for-in control slot is
+    -- merged with the first user variable; threading the key through the
+    -- loop would otherwise corrupt `next` on the following iteration.
+    --
+    -- nil-as-a-member is stored under the `_NIL` sentinel. For-loop
+    -- semantics don't let us yield nil (it would end the loop), so we
+    -- skip the sentinel and continue to the next real key; the nil
+    -- member is omitted but entries after it are still visited.
+    local data = self._DATA
+    local k = nil
+    return function ()
+        repeat
+            k = next(data, k)
+        until k ~= hashset._NIL
+        return k
+    end
 end
 
 -- iterate order items
@@ -154,16 +166,18 @@ function hashset:orderitems()
         end
         return a < b
     end)
-    local i = 1
-    return function (t, k)
-        k = orderkeys[i]
-        i = i + 1
-        if k == hashset._NIL then
-            return nil
-        else
-            return k
-        end
-    end, self, nil
+    -- see hashset:items() for the `_NIL` handling rationale
+    local n = #orderkeys
+    local i = 0
+    return function ()
+        local k
+        repeat
+            i = i + 1
+            if i > n then return nil end
+            k = orderkeys[i]
+        until k ~= hashset._NIL
+        return k
+    end
 end
 
 -- iterate keys (deprecated, please use items())
@@ -175,14 +189,19 @@ end
 -- @endcode
 --
 function hashset:keys()
-    return function (t, key)
-        local k, _ = next(t._DATA, key)
-        if k == hashset._NIL then
-            return k, nil
-        else
-            return k, k
+    -- see hashset:items() for the stateful-closure rationale and the
+    -- `_NIL` skipping behavior.
+    local data = self._DATA
+    local k = nil
+    return function ()
+        repeat
+            k = next(data, k)
+        until k ~= hashset._NIL
+        if k == nil then
+            return nil
         end
-    end, self, nil
+        return k, k
+    end
 end
 
 -- iterate order keys (deprecated, please use orderitems())
@@ -194,6 +213,8 @@ end
 -- @endcode
 --
 function hashset:orderkeys()
+    -- see hashset:items() for the stateful-closure rationale and the
+    -- `_NIL` skipping behavior.
     local orderkeys = table.keys(self._DATA)
     table.sort(orderkeys, function (a, b)
         if a == hashset._NIL then
@@ -210,16 +231,17 @@ function hashset:orderkeys()
         end
         return a < b
     end)
-    local i = 1
-    return function (t, k)
-        k = orderkeys[i]
-        i = i + 1
-        if k == hashset._NIL then
-            return k, nil
-        else
-            return k, k
-        end
-    end, self, nil
+    local n = #orderkeys
+    local i = 0
+    return function ()
+        local k
+        repeat
+            i = i + 1
+            if i > n then return nil end
+            k = orderkeys[i]
+        until k ~= hashset._NIL
+        return k, k
+    end
 end
 
 -- get size of hashset
