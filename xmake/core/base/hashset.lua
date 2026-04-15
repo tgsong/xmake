@@ -213,6 +213,8 @@ end
 -- @endcode
 --
 function hashset:orderkeys()
+    -- see hashset:items() for the stateful-closure rationale and the
+    -- `_NIL` skipping behavior.
     local orderkeys = table.keys(self._DATA)
     table.sort(orderkeys, function (a, b)
         if a == hashset._NIL then
@@ -229,16 +231,17 @@ function hashset:orderkeys()
         end
         return a < b
     end)
-    local i = 1
-    return function (t, k)
-        k = orderkeys[i]
-        i = i + 1
-        if k == hashset._NIL then
-            return k, nil
-        else
-            return k, k
-        end
-    end, self, nil
+    local n = #orderkeys
+    local i = 0
+    return function ()
+        local k
+        repeat
+            i = i + 1
+            if i > n then return nil end
+            k = orderkeys[i]
+        until k ~= hashset._NIL
+        return k, k
+    end
 end
 
 -- get size of hashset
