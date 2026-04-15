@@ -31,6 +31,7 @@ import("vstudio.impl.vsutils", {rootdir = path.join(os.programdir(), "plugins", 
 local template_root = path.join(os.programdir(), "scripts", "vsxmake", "vsproj", "templates")
 local template_sln = path.join(template_root, "sln", "vsxmake.sln")
 local template_vcx = path.join(template_root, "vcxproj", "#target#.vcxproj")
+local template_csproj = path.join(template_root, "csproj", "#target#.csproj")
 
 local template_fil = path.join(template_root, "vcxproj.filters", "#target#.vcxproj.filters")
 local template_props = path.join(template_root, "Xmake.Custom.props")
@@ -146,6 +147,9 @@ function _buildparams(info, target, default)
         elseif args.filets then -- for qt/.ts
             local files = info._targets[target].sourcefiles
             table.insert(r, _filter_files(files, {".ts"}))
+        elseif args.filecs then -- for c#
+            local files = info._targets[target].sourcefiles
+            table.insert(r, _filter_files(files, {".cs"}))
         elseif args.incc then
             local files = table.join(info._targets[target].headerfiles or {}, info._targets[target].extrafiles)
             table.insert(r, _filter_files(files, nil, {".natvis"}))
@@ -239,14 +243,21 @@ function make(version)
 
         for _, target in ipairs(info.targets) do
             local paramsprovidertarget = _buildparams(info, target, "<!-- nil -->")
-            local vcxproj_dir = info._targets[target].vcxprojdir
+            local _target = info._targets[target]
+            local vcxproj_dir = _target.vcxprojdir
+            local projkind = _target.projkind or "cxx"
+            local projext = _target.projext or "vcxproj"
 
             -- write project file
-            local vcxproj_file = path.join(vcxproj_dir, target .. ".vcxproj")
-            _writefileifneeded(vcxproj_file, render(template_vcx, "#([A-Za-z0-9_,%.%*%(%)]+)#", "@([^@]+)@", paramsprovidertarget))
+            local proj_file = path.join(vcxproj_dir, target .. "." .. projext)
+            local proj_template = (projkind == "csharp") and template_csproj or template_vcx
+            _writefileifneeded(proj_file, render(proj_template, "#([A-Za-z0-9_,%.%*%(%)]+)#", "@([^@]+)@", paramsprovidertarget))
 
-            local vcxproj_filters = path.join(vcxproj_dir, target .. ".vcxproj.filters")
-            _writefileifneeded(vcxproj_filters, render(template_fil, "#([A-Za-z0-9_,%.%*%(%)]+)#", "@([^@]+)@", paramsprovidertarget))
+            -- .csproj does not use a .filters sidecar (legacy .vcxproj-only mechanism)
+            if projkind ~= "csharp" then
+                local vcxproj_filters = path.join(vcxproj_dir, target .. ".vcxproj.filters")
+                _writefileifneeded(vcxproj_filters, render(template_fil, "#([A-Za-z0-9_,%.%*%(%)]+)#", "@([^@]+)@", paramsprovidertarget))
+            end
 
             -- add project custom file
             _trycp(template_props, vcxproj_dir)

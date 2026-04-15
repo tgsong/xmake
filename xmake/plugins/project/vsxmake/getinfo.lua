@@ -89,6 +89,20 @@ function _make_arrs(arr, sep)
     return table.concat(r, sep or ";")
 end
 
+-- detect project kind (csharp vs cxx) so vsxmake emits .csproj for C# targets
+function _get_projkind(target)
+    local sourcekinds = table.wrap(target:sourcekinds())
+    if #sourcekinds == 0 then
+        return "cxx"
+    end
+    for _, sk in ipairs(sourcekinds) do
+        if sk ~= "cs" then
+            return "cxx"
+        end
+    end
+    return "csharp"
+end
+
 -- get values from target
 function _get_values_from_target(target, name)
     local values = {}
@@ -122,6 +136,7 @@ function _make_targetinfo(mode, arch, target)
 
     -- save target kind
     targetinfo.kind          = target:kind()
+    targetinfo.projkind      = _get_projkind(target)
 
     -- is default?
     targetinfo.default       = tostring(target:is_default())
@@ -497,6 +512,17 @@ function main(outputdir, vsinfo)
                 _target.vcxprojdir_relative_sln = vsutils.translate_path(path.relative(_target.vcxprojdir, vsinfo.solution_dir))
                 _target.target_id = hash.uuid4(targetname)
                 _target.kind = target:kind()
+                if not _target.projkind then
+                    _target.projkind = _get_projkind(target)
+                    if _target.projkind == "csharp" then
+                        -- C# project type GUID, see https://www.codeproject.com/Reference/720512/List-of-Visual-Studio-Project-Type-GUIDs
+                        _target.projtypeguid = "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC"
+                        _target.projext = "csproj"
+                    else
+                        _target.projtypeguid = "8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942"
+                        _target.projext = "vcxproj"
+                    end
+                end
                 _target.absscriptdir = target:scriptdir()
                 _target.scriptdir = path.relative(target:scriptdir(), _target.vcxprojdir)
                 _target.projectdir = path.relative(project.directory(), _target.vcxprojdir)
