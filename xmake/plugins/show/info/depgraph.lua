@@ -27,6 +27,7 @@ import("private.detect.check_targetname")
 
 function _collect_target_entry(target)
     local deps = table.wrap(target:get("deps"))
+    json.mark_as_array(deps)
 
     return {
         name = target:name(),
@@ -75,6 +76,7 @@ function _collect_target_graph(root_target)
         end
     end
 
+    json.mark_as_array(roots)
     return {
         root_targets = roots,
         targets = targets
@@ -87,14 +89,15 @@ function _print_target_graph(graph)
     cprint("  ${color.dump.string}root targets${clear}: %s", table.concat(graph.root_targets, ", "))
     cprint("")
     for _, target in ipairs(graph.targets) do
-        local deps = #target.deps > 0 and table.concat(target.deps, ", ") or "(none)"
         cprint("  ${color.dump.string}%s${clear}:", target.name)
         cprint("    ${dim}kind${clear}: %s", target.kind)
         if target.group then
             cprint("    ${dim}group${clear}: %s", target.group)
         end
         cprint("    ${dim}default${clear}: %s", tostring(target.default))
-        cprint("    ${dim}deps${clear}: %s", deps)
+        if #target.deps > 0 then
+            cprint("    ${dim}deps${clear}: %s", table.concat(target.deps, ", "))
+        end
     end
 end
 

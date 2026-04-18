@@ -29,3 +29,15 @@ function lists()
     end
     return values
 end
+
+-- get all info values
+function infos()
+    local values = {}
+    for _, filepath in ipairs(os.files(path.join(os.scriptdir(), "info", "*.lua"))) do
+        local name = path.basename(filepath)
+        if name ~= "basic" and name ~= "target" then
+            table.insert(values, name)
+        end
+    end
+    return values
+end

@@ -367,6 +367,7 @@ function main(name)
         json = option.get("json"),
         pretty = option.get("pretty")
     }
+    assert(name, "please specify the target name, e.g. xmake show --info=target --target=xxx")
     local target = assert(check_targetname(name))
 
     local info = _collect_target_info(target)
