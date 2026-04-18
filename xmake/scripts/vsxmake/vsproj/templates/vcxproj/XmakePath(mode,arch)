@@ -1,5 +1,5 @@
   <PropertyGroup Label="XmakePath" Condition="'$(Configuration)|$(Platform)'=='#mode#|#vsarch#'">
-    <XmakeBuilDDir>#builddir#</XmakeBuilDDir>
+    <XmakeBuildDir>#builddir#</XmakeBuildDir>
     <XmakeConfigDir>#configdir#</XmakeConfigDir>
     <XmakeConfigFileDir>#configfiledir#</XmakeConfigFileDir>
     <XmakeTargetDir>#targetdir#</XmakeTargetDir>

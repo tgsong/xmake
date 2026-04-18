@@ -74,7 +74,7 @@ function test_vsxmake_csharp(t)
     os.cd(tempdir)
 
     -- create a C# console project using xmake create
-    os.vrunv("xmake", {"create", "-l", "csharp", "console", projname})
+    os.vrunv("xmake", {"create", "-l", "csharp", "-t", "console", projname})
     os.cd(projname)
 
     -- create sln & csproj

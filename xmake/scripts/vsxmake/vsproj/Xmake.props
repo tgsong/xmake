@@ -29,9 +29,9 @@
   </PropertyGroup>
 
   <PropertyGroup Label="XmakePathsFallback">
-    <XmakeBuilDDir Condition="'$(XmakeBuilDDir)' == ''">$(XmakeProjectDir)\build</XmakeBuilDDir>
-    <XmakeTargetDir Condition="'$(XmakeTargetDir)' == ''">$(XmakeBuilDDir)\$(XmakePlat)\$(XmakeArch)\$(XmakeMode)</XmakeTargetDir>
-    <XmakeConfigFileDir Condition="'$(XmakeConfigFileDir)' == ''">$(XmakeBuilDDir)\$(XmakePlat)\$(XmakeArch)\$(XmakeMode)</XmakeConfigFileDir>
+    <XmakeBuildDir Condition="'$(XmakeBuildDir)' == ''">$(XmakeProjectDir)\build</XmakeBuildDir>
+    <XmakeTargetDir Condition="'$(XmakeTargetDir)' == ''">$(XmakeBuildDir)\$(XmakePlat)\$(XmakeArch)\$(XmakeMode)</XmakeTargetDir>
+    <XmakeConfigFileDir Condition="'$(XmakeConfigFileDir)' == ''">$(XmakeBuildDir)\$(XmakePlat)\$(XmakeArch)\$(XmakeMode)</XmakeConfigFileDir>
 
     <XmakeConfigDir Condition="'$(XmakeConfigDir)' == ''">$(XMAKE_CONFIGDIR)</XmakeConfigDir>
     <XmakeConfigDir Condition="'$(XmakeConfigDir)' == ''">$(XmakeProjectDir)</XmakeConfigDir>
@@ -171,7 +171,7 @@
   <PropertyGroup Label="Path">
     <LibraryPath>$(XmakeLinkDirs);$(LibraryPath)</LibraryPath>
     <OutDir>$(XmakeTargetDir)\</OutDir>
-    <IntDir>$(XmakeBuilDDir)\.vs\$(TargetName)\$(XmakeArch)\$(XmakeMode)\</IntDir>
+    <IntDir>$(XmakeBuildDir)\.vs\$(TargetName)\$(XmakeArch)\$(XmakeMode)\</IntDir>
     <SourcePath>$(XmakeSourceDirs);$(SourcePath)</SourcePath>
   </PropertyGroup>
 
