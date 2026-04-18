@@ -28,6 +28,7 @@ import("private.action.require.impl.repository")
 import("private.action.require.impl.environment")
 import("private.action.require.impl.utils.get_requires")
 
+-- collect single package entry with its direct dependencies
 function _collect_package_entry(instance)
     local deps = {}
     local plaindeps = instance:plaindeps()
@@ -44,6 +45,12 @@ function _collect_package_entry(instance)
     }
 end
 
+-- collect the full dependency graph from loaded package instances
+--
+-- returns a table with:
+--   root_packages: packages that are not depended on by others
+--   packages: all package entries with their direct deps
+--
 function _collect_package_graph(instances)
     local targets = {}
     local roots = {}
@@ -67,6 +74,14 @@ function _collect_package_graph(instances)
     }
 end
 
+-- print dependency tree recursively
+--
+-- e.g.
+--   libpng
+--   \-- zlib
+--
+-- already expanded subtrees are marked with (*) to avoid duplication
+--
 function _print_dep_tree(packages_map, name, prefix, expanded)
     expanded[name] = true
     local entry = packages_map[name]
@@ -86,6 +101,7 @@ function _print_dep_tree(packages_map, name, prefix, expanded)
     end
 end
 
+-- print the package dependency graph as a tree
 function _print_package_graph(graph)
     local packages_map = {}
     for _, pkg in ipairs(graph.packages) do
@@ -98,6 +114,14 @@ function _print_package_graph(graph)
     end
 end
 
+-- print the package dependency graph in graphviz DOT format
+--
+-- e.g.
+--   digraph {
+--       "zlib"
+--       "libpng" -> "zlib"
+--   }
+--
 function _print_dot_graph(graph)
     print("digraph {")
     for _, pkg in ipairs(graph.packages) do
@@ -112,7 +136,13 @@ function _print_dot_graph(graph)
     print("}")
 end
 
--- show the given package depgraph
+-- show the given package dependency graph
+--
+-- supported output formats (via --format):
+--   tree (default): ASCII tree view
+--   json: structured JSON output
+--   dot:  graphviz DOT format
+--
 function main(requires_raw)
 
     -- get requires and extra config
@@ -129,10 +159,11 @@ function main(requires_raw)
         task.run("repo", {update = true})
     end
 
-    -- load all packages
+    -- load all packages and collect dependency graph
     local instances = package.load_packages(requires, {requires_extra = requires_extra})
     local graph = _collect_package_graph(instances)
 
+    -- output in the specified format
     local format = option.get("format") or "tree"
     if format == "json" then
         print(json.encode(graph, {pretty = true, orderkeys = true}))
