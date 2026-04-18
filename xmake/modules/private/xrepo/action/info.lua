@@ -90,6 +90,8 @@ function _info_packages(packages)
     local config_argv = {"f", "-c"}
     if option.get("diagnosis") then
         table.insert(config_argv, "-vD")
+    else
+        table.insert(config_argv, "-q")
     end
     if option.get("plat") then
         table.insert(config_argv, "-p")
