@@ -28,12 +28,8 @@ import("private.detect.check_targetname")
 function _collect_target_entry(target)
     local deps = table.wrap(target:get("deps"))
     json.mark_as_array(deps)
-
     return {
         name = target:name(),
-        kind = target:kind(),
-        group = target:get("group"),
-        default = target:is_default(),
         deps = deps
     }
 end
@@ -83,22 +79,49 @@ function _collect_target_graph(root_target)
     }
 end
 
-function _print_target_graph(graph)
-    print("The dependency graph of targets:")
-    cprint("")
-    cprint("  ${color.dump.string}root targets${clear}: %s", table.concat(graph.root_targets, ", "))
-    cprint("")
-    for _, target in ipairs(graph.targets) do
-        cprint("  ${color.dump.string}%s${clear}:", target.name)
-        cprint("    ${dim}kind${clear}: %s", target.kind)
-        if target.group then
-            cprint("    ${dim}group${clear}: %s", target.group)
-        end
-        cprint("    ${dim}default${clear}: %s", tostring(target.default))
-        if #target.deps > 0 then
-            cprint("    ${dim}deps${clear}: %s", table.concat(target.deps, ", "))
+function _print_dep_tree(targets_map, name, prefix, expanded)
+    expanded[name] = true
+    local entry = targets_map[name]
+    local deps = entry and entry.deps or {}
+    for i, dep in ipairs(deps) do
+        local is_last = (i == #deps)
+        local connector = is_last and "└── " or "├── "
+        local next_prefix = prefix .. (is_last and "    " or "│   ")
+        local dep_entry = targets_map[dep]
+        local dep_deps = dep_entry and dep_entry.deps or {}
+        if expanded[dep] and #dep_deps > 0 then
+            cprint("%s%s${color.dump.string}%s${clear} ${dim}(*)${clear}", prefix, connector, dep)
+        else
+            cprint("%s%s${color.dump.string}%s${clear}", prefix, connector, dep)
+            _print_dep_tree(targets_map, dep, next_prefix, expanded)
         end
     end
+end
+
+function _print_target_graph(graph)
+    local targets_map = {}
+    for _, target in ipairs(graph.targets) do
+        targets_map[target.name] = target
+    end
+    local expanded = {}
+    for _, root in ipairs(graph.root_targets) do
+        cprint("${color.dump.string}%s${clear}", root)
+        _print_dep_tree(targets_map, root, "", expanded)
+    end
+end
+
+function _print_dot_graph(graph)
+    print("digraph {")
+    for _, target in ipairs(graph.targets) do
+        if #target.deps == 0 then
+            print(string.format("    \"%s\"", target.name))
+        else
+            for _, dep in ipairs(target.deps) do
+                print(string.format("    \"%s\" -> \"%s\"", target.name, dep))
+            end
+        end
+    end
+    print("}")
 end
 
 function main(name)
@@ -110,12 +133,15 @@ function main(name)
     end
 
     local graph = _collect_target_graph(root_target)
+    assert(not (option.get("json") and option.get("dot")), "--json and --dot are mutually exclusive")
     if option.get("json") then
         local json_opt
         if option.get("pretty") then
             json_opt = {pretty = true, orderkeys = true}
         end
         print(json.encode(graph, json_opt))
+    elseif option.get("dot") then
+        _print_dot_graph(graph)
     else
         _print_target_graph(graph)
     end

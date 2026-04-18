@@ -32,6 +32,7 @@ task("show")
             {'g', "group",  "kv", nil,   "Filter targets by the given group name."},
             {nil, "json",   "k",  false, "Show information with json format."},
             {nil, "pretty", "k",  false, "Enable pretty formatted json output."},
+            {nil, "dot",    "k",  false, "Output dependency graph in graphviz DOT format."},
             {'i', "info",   "kv", nil,   "Show the given information.",
                 values = function (complete, opt)
                     return import("list").infos()
