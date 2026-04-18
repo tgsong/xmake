@@ -26,10 +26,16 @@ import("core.project.project")
 import("private.detect.check_targetname")
 
 function _collect_target_entry(target)
-    local deps = table.wrap(target:get("deps"))
+    local deps = {}
+    for _, depname in ipairs(table.wrap(target:get("deps"))) do
+        local dep = target:dep(depname)
+        if dep then
+            table.insert(deps, dep:fullname())
+        end
+    end
     json.mark_as_array(deps)
     return {
-        name = target:name(),
+        name = target:fullname(),
         deps = deps
     }
 end
@@ -38,21 +44,21 @@ function _collect_target_graph(root_target)
     local targets = {}
     local selected = {}
     if root_target then
-        selected[root_target:name()] = true
+        selected[root_target:fullname()] = true
         for _, dep in ipairs(root_target:orderdeps() or {}) do
-            selected[dep:name()] = true
+            selected[dep:fullname()] = true
         end
     end
 
     for _, target in ipairs(project.ordertargets()) do
-        if not root_target or selected[target:name()] then
+        if not root_target or selected[target:fullname()] then
             table.insert(targets, _collect_target_entry(target))
         end
     end
 
     local roots = {}
     if root_target then
-        table.insert(roots, root_target:name())
+        table.insert(roots, root_target:fullname())
     else
         local indegrees = {}
         for _, target in ipairs(targets) do
@@ -85,14 +91,14 @@ function _print_dep_tree(targets_map, name, prefix, expanded)
     local deps = entry and entry.deps or {}
     for i, dep in ipairs(deps) do
         local is_last = (i == #deps)
-        local connector = is_last and "└── " or "├── "
-        local next_prefix = prefix .. (is_last and "    " or "│   ")
+        local connector = is_last and "\\-- " or "|-- "
+        local next_prefix = prefix .. (is_last and "    " or "|   ")
         local dep_entry = targets_map[dep]
         local dep_deps = dep_entry and dep_entry.deps or {}
         if expanded[dep] and #dep_deps > 0 then
-            cprint("%s%s${color.dump.string}%s${clear} ${dim}(*)${clear}", prefix, connector, dep)
+            cprint("%s%s${color.dump.reference}%s${clear} ${dim}(*)${clear}", prefix, connector, dep)
         else
-            cprint("%s%s${color.dump.string}%s${clear}", prefix, connector, dep)
+            cprint("%s%s${color.dump.reference}%s${clear}", prefix, connector, dep)
             _print_dep_tree(targets_map, dep, next_prefix, expanded)
         end
     end

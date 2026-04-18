@@ -35,8 +35,8 @@ function test_depgraph_tree(t)
     t:require(outdata:find("app", 1, true))
     t:require(outdata:find("core", 1, true))
     t:require(outdata:find("ui", 1, true))
-    t:require(outdata:find("├── ", 1, true) or outdata:find("+-- ", 1, true))
-    t:require(outdata:find("└── ", 1, true) or outdata:find("\\-- ", 1, true))
+    t:require(outdata:find("|-- ", 1, true))
+    t:require(outdata:find("\\-- ", 1, true))
 end
 
 function test_depgraph_dot(t)
