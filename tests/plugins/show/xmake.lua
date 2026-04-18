@@ -9,7 +9,12 @@ target("ui")
     add_deps("core")
     add_files("src/ui.c")
 
+target("ext::net")
+    set_kind("static")
+    add_deps("core")
+    add_files("src/net.c")
+
 target("app")
     set_kind("binary")
-    add_deps("core", "ui")
+    add_deps("core", "ui", "ext::net")
     add_files("src/main.c")
