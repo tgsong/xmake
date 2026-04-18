@@ -34,12 +34,12 @@ function _collect_package_entry(instance)
     local plaindeps = instance:plaindeps()
     if plaindeps then
         for _, dep in ipairs(plaindeps) do
-            table.insert(deps, dep:name())
+            table.insert(deps, dep:fullname())
         end
     end
     json.mark_as_array(deps)
     return {
-        name = instance:name(),
+        name = instance:fullname(),
         version = instance:version_str(),
         deps = deps
     }
