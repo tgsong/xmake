@@ -17,7 +17,7 @@ function test_depgraph_json(t)
 end
 
 function test_depgraph_json_for_single_target(t)
-    local outdata = os.iorunv("xmake", {"show", "--info=depgraph", "--target=app", "--json", })
+    local outdata = os.iorunv("xmake", {"show", "--info=depgraph", "--target=app", "--json"})
     local graph = json.decode(outdata)
 
     t:are_equal(graph.root_targets, {"app"})
@@ -31,7 +31,7 @@ function test_depgraph_json_for_single_target(t)
 end
 
 function test_depgraph_tree(t)
-    local outdata = os.iorunv("xmake", {"show", "--info=depgraph", })
+    local outdata = os.iorunv("xmake", {"show", "--info=depgraph"})
     t:require(outdata:find("app", 1, true))
     t:require(outdata:find("core", 1, true))
     t:require(outdata:find("ui", 1, true))
@@ -40,7 +40,7 @@ function test_depgraph_tree(t)
 end
 
 function test_depgraph_dot(t)
-    local outdata = os.iorunv("xmake", {"show", "--info=depgraph", "--dot", })
+    local outdata = os.iorunv("xmake", {"show", "--info=depgraph", "--dot"})
     t:require(outdata:find("digraph {", 1, true))
     t:require(outdata:find('"core"', 1, true))
     t:require(outdata:find('"ui" -> "core"', 1, true))
@@ -50,7 +50,7 @@ function test_depgraph_dot(t)
 end
 
 function test_depgraph_dot_for_single_target(t)
-    local outdata = os.iorunv("xmake", {"show", "--info=depgraph", "--target=ui", "--dot", })
+    local outdata = os.iorunv("xmake", {"show", "--info=depgraph", "--target=ui", "--dot"})
     t:require(outdata:find("digraph {", 1, true))
     t:require(outdata:find('"core"', 1, true))
     t:require(outdata:find('"ui" -> "core"', 1, true))

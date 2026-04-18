@@ -32,8 +32,14 @@ task("show")
             {'g', "group",  "kv", nil,   "Filter targets by the given group name."},
             {nil, "json",   "k",  false, "Show information with json format."},
             {nil, "pretty", "k",  false, "Enable pretty formatted json output."},
-            {nil, "dot",    "k",  false, "Output dependency graph in graphviz DOT format."},
+            {nil, "dot",    "k",  false, "Output dependency graph in graphviz DOT format (only for --info=depgraph)."},
             {'i', "info",   "kv", nil,   "Show the given information.",
+                                         "e.g.",
+                                         "    - xmake show --info=depgraph",
+                                         "    - xmake show --info=depgraph --target=app",
+                                         "    - xmake show --info=depgraph --json --pretty",
+                                         "    - xmake show --info=depgraph --dot",
+                                         "values:",
                 values = function (complete, opt)
                     return import("list").infos()
                 end},
