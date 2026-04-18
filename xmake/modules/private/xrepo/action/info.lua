@@ -40,6 +40,17 @@ function menu_options()
                                        "e.g.",
                                        "    - xrepo fetch --configs=\"runtimes='MD'\" zlib",
                                        "    - xrepo fetch --configs=\"regex=true,thread=true\" boost"},
+        {nil, "depgraph",   "k",  nil, "Show the dependency graph of the given packages.",
+                                       "e.g.",
+                                       "    - xrepo info --depgraph libpng",
+                                       "    - xrepo info --depgraph --format=json libpng",
+                                       "    - xrepo info --depgraph --format=dot libpng"},
+        {nil, "format",     "kv", nil, "Set the output format.",
+                                       "e.g.",
+                                       "    - xrepo info --format=json zlib",
+                                       "    - xrepo info --depgraph --format=dot libpng",
+                                       "values: json (for --info/--depgraph), tree/dot (for --depgraph only)",
+                                       values = {"tree", "json", "dot"}},
         {},
         {nil, "packages",   "vs", nil, "The packages list.",
                                        "e.g.",
@@ -101,7 +112,16 @@ function _info_packages(packages)
     os.vrunv(os.programfile(), config_argv)
 
     -- show info
-    local require_argv = {"require", "--info"}
+    local require_argv = {"require"}
+    if option.get("depgraph") then
+        table.insert(require_argv, "--depgraph")
+    else
+        table.insert(require_argv, "--info")
+    end
+    local format = option.get("format")
+    if format then
+        table.insert(require_argv, "--format=" .. format)
+    end
     if option.get("verbose") then
         table.insert(require_argv, "-v")
     end
