@@ -9,7 +9,7 @@
     <!-- <XmakeConfigDir Condition="'$(XmakeMode)|$(XmakeArch)' == 'release|x86'">$(XmakeProjectDir)\.xmake</XmakeConfigDir> -->
 
     <!-- set output dir for xmake tasks -->
-    <!-- <XmakeBuilDDir>$(XmakeProjectDir)\build</XmakeBuilDDir> -->
+    <!-- <XmakeBuildDir>$(XmakeProjectDir)\build</XmakeBuildDir> -->
   </PropertyGroup>
 
   <PropertyGroup Label="XmakeFlags">
