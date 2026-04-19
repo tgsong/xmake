@@ -77,6 +77,7 @@ function _collect_package_info(instance)
     local urls = instance:urls()
     if urls and #urls > 0 then
         info.urls = {}
+        json.mark_as_array(info.urls)
         local schemes = instance:schemes_orderlist()
         if schemes then
             for _, scheme in ipairs(schemes) do
@@ -85,6 +86,7 @@ function _collect_package_info(instance)
                     if surls and #surls > 0 then
                         local scheme_name = scheme:is_default() and "default" or scheme:name()
                         local scheme_info = {name = scheme_name, urls = {}}
+                        json.mark_as_array(scheme_info.urls)
                         for _, url in ipairs(surls) do
                             local url_entry = {url = filter.handle(url, instance)}
                             if git.asgiturl(url) then
@@ -112,6 +114,7 @@ function _collect_package_info(instance)
     local deps = instance:orderdeps()
     if deps and #deps > 0 then
         info.deps = {}
+        json.mark_as_array(info.deps)
         for _, dep in ipairs(deps) do
             local dep_requireinfo = dep:requireinfo() or {}
             table.insert(info.deps, dep_requireinfo.originstr)
@@ -121,6 +124,7 @@ function _collect_package_info(instance)
     info.cachedir = instance:cachedir()
     info.installdir = instance:installdir()
     info.searchdirs = table.wrap(core_package.searchdirs())
+    json.mark_as_array(info.searchdirs)
 
     -- fetch info
     local fetchinfo = instance:fetch()
@@ -141,6 +145,7 @@ function _collect_package_info(instance)
     else
         table.insert(platforms, "all")
     end
+    json.mark_as_array(platforms)
     info.platforms = platforms
 
     -- requires
@@ -182,9 +187,11 @@ function _collect_package_info(instance)
             end
         end
         if #configs > 0 then
+            json.mark_as_array(configs)
             info.configs = configs
         end
         if #builtin_configs > 0 then
+            json.mark_as_array(builtin_configs)
             info.builtin_configs = builtin_configs
         end
     end
@@ -193,11 +200,13 @@ function _collect_package_info(instance)
     local components = instance:get("components")
     if components then
         info.components = {}
+        json.mark_as_array(info.components)
         for _, comp in ipairs(components) do
             local comp_info = {name = comp}
             local plaindeps = instance:extraconf("components", comp, "deps")
             if plaindeps then
                 comp_info.deps = table.wrap(plaindeps)
+                json.mark_as_array(comp_info.deps)
             end
             table.insert(info.components, comp_info)
         end
@@ -207,6 +216,7 @@ function _collect_package_info(instance)
     local references = instance:references()
     if references then
         info.references = {}
+        json.mark_as_array(info.references)
         for projectdir, refdate in pairs(references) do
             table.insert(info.references, {dir = projectdir, date = refdate, exists = os.isdir(projectdir)})
         end
@@ -457,6 +467,7 @@ function main(requires_raw)
     local format = option.get("format")
     if format == "json" then
         local results = {}
+        json.mark_as_array(results)
         for _, instance in ipairs(instances) do
             table.insert(results, _collect_package_info(instance))
         end
