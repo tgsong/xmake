@@ -40,6 +40,17 @@ function menu_options()
                                        "e.g.",
                                        "    - xrepo fetch --configs=\"runtimes='MD'\" zlib",
                                        "    - xrepo fetch --configs=\"regex=true,thread=true\" boost"},
+        {nil, "depgraph",   "k",  nil, "Show the dependency graph of the given packages.",
+                                       "e.g.",
+                                       "    - xrepo info --depgraph libpng",
+                                       "    - xrepo info --depgraph --format=json libpng",
+                                       "    - xrepo info --depgraph --format=dot libpng"},
+        {nil, "format",     "kv", nil, "Set the output format.",
+                                       "e.g.",
+                                       "    - xrepo info --format=json zlib",
+                                       "    - xrepo info --depgraph --format=dot libpng",
+                                       "values: json (for --info/--depgraph), tree/dot (for --depgraph only)",
+                                       values = {"tree", "json", "dot"}},
         {},
         {nil, "packages",   "vs", nil, "The packages list.",
                                        "e.g.",
@@ -75,10 +86,13 @@ function _info_packages(packages)
         os.cd(workdir)
     end
 
-    -- do configure first
+    -- do configure first, use `-q` to suppress checking noise
+    -- unless `-vD` is enabled for diagnosis
     local config_argv = {"f", "-c"}
     if option.get("diagnosis") then
         table.insert(config_argv, "-vD")
+    else
+        table.insert(config_argv, "-q")
     end
     if option.get("plat") then
         table.insert(config_argv, "-p")
@@ -88,20 +102,29 @@ function _info_packages(packages)
         table.insert(config_argv, "-a")
         table.insert(config_argv, option.get("arch"))
     end
-    local mode  = option.get("mode")
+    local mode = option.get("mode")
     if mode then
         table.insert(config_argv, "-m")
         table.insert(config_argv, mode)
     end
-    local kind  = option.get("kind")
+    local kind = option.get("kind")
     if kind then
         table.insert(config_argv, "-k")
         table.insert(config_argv, kind)
     end
     os.vrunv(os.programfile(), config_argv)
 
-    -- show info
-    local require_argv = {"require", "--info"}
+    -- show package info or dependency graph
+    local require_argv = {"require"}
+    if option.get("depgraph") then
+        table.insert(require_argv, "--depgraph")
+    else
+        table.insert(require_argv, "--info")
+    end
+    local format = option.get("format")
+    if format then
+        table.insert(require_argv, "--format=" .. format)
+    end
     if option.get("verbose") then
         table.insert(require_argv, "-v")
     end

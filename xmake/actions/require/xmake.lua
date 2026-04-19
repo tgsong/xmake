@@ -65,6 +65,17 @@ task("require")
                 ,   {nil, "info",       "k",  nil,       "Show the given package info.",
                                                          "e.g.",
                                                          "    $ xmake require --info tbox"                                     }
+                ,   {nil, "depgraph",  "k",  nil,       "Show the dependency graph of the given packages.",
+                                                         "e.g.",
+                                                         "    $ xmake require --depgraph libpng",
+                                                         "    $ xmake require --depgraph --format=json libpng",
+                                                         "    $ xmake require --depgraph --format=dot libpng"                  }
+                ,   {nil, "format",    "kv", nil,       "Set the output format.",
+                                                         "e.g.",
+                                                         "    $ xmake require --info --format=json zlib",
+                                                         "    $ xmake require --depgraph --format=dot libpng",
+                                                         "values: json (for --info/--depgraph), tree/dot (for --depgraph only)",
+                                                         values = {"tree", "json", "dot"}                                      }
                 ,   {nil, "check",      "k",  nil,      "Check whether the given package is supported",
                                                          "e.g.",
                                                          "    $ xmake require --check tbox"                                    }

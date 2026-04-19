@@ -27,6 +27,7 @@ import("core.platform.platform")
 import("private.action.require.list")
 import("private.action.require.scan")
 import("private.action.require.info")
+import("private.action.require.depgraph")
 import("private.action.require.fetch")
 import("private.action.require.clean")
 import("private.action.require.search")
@@ -110,6 +111,11 @@ function main()
     elseif option.get("info") then
 
         info(option.get("requires"))
+
+    -- show the given package depgraph
+    elseif option.get("depgraph") then
+
+        depgraph(option.get("requires"))
 
     -- fetch the library info of the given packages
     elseif option.get("fetch") then
