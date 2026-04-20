@@ -208,8 +208,8 @@ function _get_qtenvs(qmake, sdkdir)
     local results
 
     -- Try with -qtconf first if sdkdir is provided
-    if sdkdir then
-        local conf_paths = {path.join(sdkdir, "bin", "target_qt.conf"), path.join(sdkdir, "bin", "qt.conf")}
+    if sdkdir then        
+        local conf_paths = {path.join(sdkdir, "bin", "target_qt.conf"), path.join(sdkdir, "bin", "qt.conf"), path.join(sdkdir, "qt.conf")}        
         for _, conf_path in ipairs(conf_paths) do
             if os.isfile(conf_path) then
                 results = try {function () return os.iorunv(qmake, {"-query", "-qtconf", conf_path}) end}
@@ -288,6 +288,19 @@ function _find_qt(sdkdir, sdkver, sdkdir_host)
     local includedir = qtenvs.QT_INSTALL_HEADERS
     local mkspecsdir = qtenvs.QMAKE_MKSPECS or path.join(qtenvs.QT_HOST_DATA, "mkspecs")
     local mkspec = qtenvs.QMAKE_XSPEC or qtenvs.QMAKE_SPEC
+
+    -- handle qt sysroot
+    if qtenvs.QT_SYSROOT and qtenvs.QT_SYSROOT ~= "" then
+        local qt_sysroot = qtenvs.QT_SYSROOT
+        sdkdir = qt_sysroot .. sdkdir
+        bindir = qt_sysroot .. bindir
+        libexecdir = qt_sysroot .. libexecdir
+        qmldir = qt_sysroot .. qmldir
+        libdir = qt_sysroot .. libdir
+        pluginsdir = qt_sysroot .. pluginsdir
+        includedir = qt_sysroot .. includedir
+    end
+
     -- for 6.2
     local bindir_host = qtenvs.QT_HOST_BINS
     if not bindir_host and libexecdir and is_plat("android", "iphoneos") then
