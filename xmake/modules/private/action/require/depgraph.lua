@@ -139,7 +139,7 @@ end
 -- show the given package dependency graph
 --
 -- supported output formats (via --format):
---   tree (default): ASCII tree view
+--   plain (default): ASCII tree view
 --   json: structured JSON output
 --   dot:  graphviz DOT format
 --
@@ -164,7 +164,7 @@ function main(requires_raw)
     local graph = _collect_package_graph(instances)
 
     -- output in the specified format
-    local format = option.get("format") or "tree"
+    local format = option.get("format") or "plain"
     if format == "json" then
         print(json.encode(graph, {pretty = true, orderkeys = true}))
     elseif format == "dot" then

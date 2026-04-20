@@ -128,8 +128,13 @@ function main()
 
     config.load()
 
+    -- support --format=json, with --json/--pretty backward compatibility
+    local format = option.get("format") or "plain"
+    if format == "plain" and option.get("json") then
+        format = "json"
+    end
     local opt = {
-        json = option.get("json"),
+        json = format == "json",
         pretty = option.get("pretty")
     }
     local result = opt.json and {} or nil
@@ -138,9 +143,9 @@ function main()
     result = _show_project_info(opt, result)
 
     if opt.json then
-        local json_opt
-        if opt.pretty then
-            json_opt = {pretty = true, orderkeys = true}
+        local json_opt = {pretty = true, orderkeys = true}
+        if option.get("json") and not option.get("pretty") then
+            json_opt = nil
         end
         print(json.encode(result or {}, json_opt))
     end

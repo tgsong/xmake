@@ -139,14 +139,19 @@ function main(name)
     end
 
     local graph = _collect_target_graph(root_target)
-    assert(not (option.get("json") and option.get("dot")), "--json and --dot are mutually exclusive")
-    if option.get("json") then
-        local json_opt
-        if option.get("pretty") then
-            json_opt = {pretty = true, orderkeys = true}
+
+    -- support --format=json/dot/plain, with --json/--pretty backward compatibility
+    local format = option.get("format") or "plain"
+    if format == "plain" and option.get("json") then
+        format = "json"
+    end
+    if format == "json" then
+        local json_opt = {pretty = true, orderkeys = true}
+        if option.get("json") and not option.get("pretty") then
+            json_opt = nil
         end
         print(json.encode(graph, json_opt))
-    elseif option.get("dot") then
+    elseif format == "dot" then
         _print_dot_graph(graph)
     else
         _print_target_graph(graph)
