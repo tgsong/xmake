@@ -41,6 +41,7 @@ function _collect_package_entry(instance)
     return {
         name = instance:fullname(),
         version = instance:version_str(),
+        configs_str = package.get_configs_str(instance),
         deps = deps
     }
 end
@@ -74,11 +75,27 @@ function _collect_package_graph(instances)
     }
 end
 
+-- format version and configs as a suffix string for plain output
+-- e.g. " v1.3.2 [shared:y, debug:n]"
+function _format_package_suffix(entry)
+    local parts = {}
+    if entry.version then
+        table.insert(parts, entry.version)
+    end
+    if entry.configs_str and #entry.configs_str > 0 then
+        table.insert(parts, entry.configs_str)
+    end
+    if #parts > 0 then
+        return " " .. table.concat(parts, " ")
+    end
+    return ""
+end
+
 -- print dependency tree recursively
 --
 -- e.g.
---   libpng
---   \-- zlib
+--   libpng v1.6.56
+--   \-- zlib v1.3.2
 --
 -- already expanded subtrees are marked with (*) to avoid duplication
 --
@@ -92,10 +109,11 @@ function _print_dep_tree(packages_map, name, prefix, expanded)
         local next_prefix = prefix .. (is_last and "    " or "|   ")
         local dep_entry = packages_map[dep]
         local dep_deps = dep_entry and dep_entry.deps or {}
+        local suffix = dep_entry and _format_package_suffix(dep_entry) or ""
         if expanded[dep] and #dep_deps > 0 then
-            cprint("%s%s${color.dump.reference}%s${clear} ${dim}(*)${clear}", prefix, connector, dep)
+            cprint("%s%s${color.dump.reference}%s${clear}${dim}%s (*)${clear}", prefix, connector, dep, suffix)
         else
-            cprint("%s%s${color.dump.reference}%s${clear}", prefix, connector, dep)
+            cprint("%s%s${color.dump.reference}%s${clear}${dim}%s${clear}", prefix, connector, dep, suffix)
             _print_dep_tree(packages_map, dep, next_prefix, expanded)
         end
     end
@@ -109,7 +127,9 @@ function _print_package_graph(graph)
     end
     local expanded = {}
     for _, root in ipairs(graph.root_packages) do
-        cprint("${color.dump.string}%s${clear}", root)
+        local entry = packages_map[root]
+        local suffix = entry and _format_package_suffix(entry) or ""
+        cprint("${color.dump.string}%s${clear}${dim}%s${clear}", root, suffix)
         _print_dep_tree(packages_map, root, "", expanded)
     end
 end
@@ -166,6 +186,10 @@ function main(requires_raw)
     -- output in the specified format
     local format = option.get("format") or "plain"
     if format == "json" then
+        -- strip configs_str, it's only for plain display
+        for _, pkg in ipairs(graph.packages) do
+            pkg.configs_str = nil
+        end
         print(json.encode(graph, {pretty = true, orderkeys = true}))
     elseif format == "dot" then
         _print_dot_graph(graph)
