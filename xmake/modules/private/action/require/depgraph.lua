@@ -108,10 +108,22 @@ function _print_dep_tree(packages_map, name, prefix, expanded)
         local connector = is_last and "\\-- " or "|-- "
         local next_prefix = prefix .. (is_last and "    " or "|   ")
         local dep_entry = packages_map[dep]
-        local dep_deps = dep_entry and dep_entry.deps or {}
         local suffix = dep_entry and _format_package_suffix(dep_entry) or ""
-        if expanded[dep] and #dep_deps > 0 then
-            cprint("%s%s${color.dump.reference}%s${clear}${dim}%s (*)${clear}", prefix, connector, dep, suffix)
+        if expanded[dep] then
+            -- already expanded, show with (*) and list direct children as references
+            local dep_deps = dep_entry and dep_entry.deps or {}
+            if #dep_deps > 0 then
+                cprint("%s%s${color.dump.reference}%s${clear}${dim}%s${clear}", prefix, connector, dep, suffix)
+                for j, subdep in ipairs(dep_deps) do
+                    local sub_is_last = (j == #dep_deps)
+                    local sub_connector = sub_is_last and "\\-- " or "|-- "
+                    local sub_entry = packages_map[subdep]
+                    local sub_suffix = sub_entry and _format_package_suffix(sub_entry) or ""
+                    cprint("%s%s${dim}%s%s (*)${clear}", next_prefix, sub_connector, subdep, sub_suffix)
+                end
+            else
+                cprint("%s%s${color.dump.reference}%s${clear}${dim}%s (*)${clear}", prefix, connector, dep, suffix)
+            end
         else
             cprint("%s%s${color.dump.reference}%s${clear}${dim}%s${clear}", prefix, connector, dep, suffix)
             _print_dep_tree(packages_map, dep, next_prefix, expanded)
