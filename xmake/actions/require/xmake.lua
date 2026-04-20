@@ -74,8 +74,8 @@ task("require")
                                                          "e.g.",
                                                          "    $ xmake require --info --format=json zlib",
                                                          "    $ xmake require --depgraph --format=dot libpng",
-                                                         "values: json (for --info/--depgraph), tree/dot (for --depgraph only)",
-                                                         values = {"tree", "json", "dot"}                                      }
+                                                         "values: json (for --info/--depgraph), dot (for --depgraph only)",
+                                                         values = {"plain", "json", "dot"}                                     }
                 ,   {nil, "check",      "k",  nil,      "Check whether the given package is supported",
                                                          "e.g.",
                                                          "    $ xmake require --check tbox"                                    }

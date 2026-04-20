@@ -363,18 +363,22 @@ function main(name)
 
     -- get target
     config.load()
-    local opt = {
-        json = option.get("json"),
-        pretty = option.get("pretty")
-    }
+
+    -- support --format=json, with --json/--pretty backward compatibility
+    local format = option.get("format") or "plain"
+    if format == "plain" and option.get("json") then
+        format = "json"
+    end
+
+    assert(name, "please specify the target name, e.g. xmake show --info=target --target=xxx")
     local target = assert(check_targetname(name))
 
     local info = _collect_target_info(target)
-    if opt.json then
+    if format == "json" then
         info.api_entries = nil
-        local json_opt
-        if opt.pretty then
-            json_opt = {pretty = true, orderkeys = true}
+        local json_opt = {pretty = true, orderkeys = true}
+        if option.get("json") and not option.get("pretty") then
+            json_opt = nil
         end
         print(json.encode(info or {}, json_opt))
     else
