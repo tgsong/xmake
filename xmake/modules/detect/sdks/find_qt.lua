@@ -208,7 +208,7 @@ function _get_qtenvs(qmake, sdkdir)
     local results
 
     -- Try with -qtconf first if sdkdir is provided
-    if sdkdir then        
+    if sdkdir then
         local conf_paths = {path.join(sdkdir, "bin", "target_qt.conf"), path.join(sdkdir, "bin", "qt.conf"), path.join(sdkdir, "qt.conf")}        
         for _, conf_path in ipairs(conf_paths) do
             if os.isfile(conf_path) then
@@ -291,7 +291,7 @@ function _find_qt(sdkdir, sdkver, sdkdir_host)
 
     -- handle qt sysroot
     local qt_sysroot = qtenvs.QT_SYSROOT or ""
-    if #qt_sysroot > 0 and path.isdir(qt_sysroot) then        
+    if #qt_sysroot > 0 and path.isdir(qt_sysroot) then
         sdkdir = path.join(qt_sysroot, sdkdir)
         bindir = path.join(qt_sysroot, bindir)
         libexecdir = path.join(qt_sysroot, libexecdir)
