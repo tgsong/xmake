@@ -209,7 +209,7 @@ function _get_qtenvs(qmake, sdkdir)
 
     -- Try with -qtconf first if sdkdir is provided
     if sdkdir then
-        local conf_paths = {path.join(sdkdir, "bin", "target_qt.conf"), path.join(sdkdir, "bin", "qt.conf"), path.join(sdkdir, "qt.conf")}        
+        local conf_paths = {path.join(sdkdir, "bin", "target_qt.conf"), path.join(sdkdir, "bin", "qt.conf"), path.join(sdkdir, "qt.conf")}
         for _, conf_path in ipairs(conf_paths) do
             if os.isfile(conf_path) then
                 results = try {function () return os.iorunv(qmake, {"-query", "-qtconf", conf_path}) end}
