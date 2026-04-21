@@ -37,7 +37,7 @@ function _link(target, linkdirs, framework, qt_sdkver, infix)
             else
                 debug_suffix = "d"
             end
-        elseif target:is_plat("android") or target:is_plat("linux") then
+        elseif target:is_plat("android") or target:is_plat("linux") or target:is_plat("cross") then
             debug_suffix = ""
         end
         if qt_sdkver:ge("5.0") then
@@ -67,7 +67,7 @@ function _find_static_links_3rd(target, linkdirs, qt_sdkver, libpattern)
         debug_suffix = "d"
     elseif target:is_plat("mingw") then
         debug_suffix = "d"
-    elseif target:is_plat("android") or target:is_plat("linux") then
+    elseif target:is_plat("android") or target:is_plat("linux") or target:is_plat("cross")  then
         debug_suffix = ""
     end
     for _, linkdir in ipairs(linkdirs) do
@@ -459,6 +459,8 @@ function main(target, opt)
         fallbackmkspec = "linux-g++"
         target:add("rpathdirs", qt.libdir)
         target:add("linkdirs", qt.libdir)
+    elseif target:is_plat("cross") then
+        _add_includedirs(target, qt.includedir)
     elseif target:is_plat("windows") then
         target:set("frameworks", nil)
         _add_includedirs(target, qt.includedir)
