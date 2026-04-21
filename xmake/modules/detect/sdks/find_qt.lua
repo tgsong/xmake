@@ -290,15 +290,15 @@ function _find_qt(sdkdir, sdkver, sdkdir_host)
     local mkspec = qtenvs.QMAKE_XSPEC or qtenvs.QMAKE_SPEC
 
     -- handle qt sysroot
-    if qtenvs.QT_SYSROOT and qtenvs.QT_SYSROOT ~= "" then
-        local qt_sysroot = qtenvs.QT_SYSROOT
-        sdkdir = qt_sysroot .. sdkdir
-        bindir = qt_sysroot .. bindir
-        libexecdir = qt_sysroot .. libexecdir
-        qmldir = qt_sysroot .. qmldir
-        libdir = qt_sysroot .. libdir
-        pluginsdir = qt_sysroot .. pluginsdir
-        includedir = qt_sysroot .. includedir
+    local qt_sysroot = qtenvs.QT_SYSROOT or ""
+    if #qt_sysroot > 0 and path.isdir(qt_sysroot) then        
+        sdkdir = path.join(qt_sysroot, sdkdir)
+        bindir = path.join(qt_sysroot, bindir)
+        libexecdir = path.join(qt_sysroot, libexecdir)
+        qmldir = path.join(qt_sysroot, qmldir)
+        libdir = path.join(qt_sysroot, libdir)
+        pluginsdir = path.join(qt_sysroot, pluginsdir)
+        includedir = path.join(qt_sysroot, includedir)
     end
 
     -- for 6.2
