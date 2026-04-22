@@ -27,7 +27,7 @@ import("core.sandbox.module")
 -- we just remove some known extension, because we need to reverse others, e.g. ld.lld, ld64.lld
 --
 function _remove_suffix(name)
-    local exts = hashset.of("exe", "bat", "sh", "ps1", "ps")
+    local exts = hashset.of("exe", "bat", "cmd", "sh", "ps1", "ps")
     name = name:gsub("%.(%w+)", function (ext)
         ext = ext:lower()
         if exts:has(ext) then
