@@ -89,8 +89,7 @@ end
 function _has_linux_headers_config(linux_headers, config)
     local configdata = _get_linux_headers_config(linux_headers)
     if configdata then
-        local normalized = configdata:gsub("\r\n", "\n"):gsub("\r", "\n")
-        for _, line in ipairs(normalized:split("\n")) do
+        for _, line in ipairs(configdata:split("\n")) do
             if line == config .. "=y" or line == "#define " .. config .. " 1" then
                 return true
             end
