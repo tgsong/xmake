@@ -25,6 +25,79 @@ import("core.cache.memcache")
 import("lib.detect.find_tool")
 import("utils.progress")
 
+function _get_linux_headers_builddir(linux_headers)
+    return linux_headers.builddir or linux_headers.sdkdir
+end
+
+function _get_linux_arch(target)
+    if target:is_arch("arm", "armv7") then
+        return "arm"
+    elseif target:is_arch("arm64", "arm64-v8a") then
+        return "arm64"
+    elseif target:is_arch("x86", "i386") then
+        return "x86"
+    elseif target:is_arch("x86_64", "x64") then
+        return "x86_64"
+    elseif target:is_arch("mips", "mipsel", "mips64", "mips64el") then
+        return "mips"
+    elseif target:is_arch("ppc", "ppc64", "powerpc", "powerpc64") then
+        return "powerpc"
+    elseif target:is_arch("riscv64", "riscv32") then
+        return "riscv"
+    end
+end
+
+function _get_linux_cross_compile(target)
+    local cc = target:tool("cc")
+    if cc then
+        return cc:match("^(.*%-)gcc[%-%d%.]*$")
+    end
+end
+
+function _get_linux_headers_modulecommon(linux_headers)
+    local builddir = _get_linux_headers_builddir(linux_headers)
+    local sdkdir = linux_headers.sdkdir and path.normalize(linux_headers.sdkdir) or nil
+    local normalized_builddir = builddir and path.normalize(builddir) or nil
+    local modulecommon = sdkdir and path.join(sdkdir, "scripts", "module-common.c") or nil
+    if modulecommon and not os.isfile(modulecommon) and normalized_builddir and normalized_builddir ~= sdkdir then
+        modulecommon = path.join(normalized_builddir, "scripts", "module-common.c")
+    end
+    if modulecommon and os.isfile(modulecommon) then
+        return modulecommon
+    end
+end
+
+function _get_linux_headers_config(linux_headers)
+    local builddir = _get_linux_headers_builddir(linux_headers)
+    local key = table.concat({linux_headers.sdkdir, builddir or "", "config"}, "|")
+    local configdata = memcache.get2("linux.driver", key, "data")
+    if configdata == nil then
+        local configfile = path.join(builddir, "include", "config", "auto.conf")
+        if os.isfile(configfile) then
+            configdata = io.readfile(configfile)
+        else
+            configfile = path.join(linux_headers.includedir, "generated", "autoconf.h")
+            if os.isfile(configfile) then
+                configdata = io.readfile(configfile)
+            end
+        end
+        memcache.set2("linux.driver", key, "data", configdata or false)
+    end
+    return configdata or nil
+end
+
+function _has_linux_headers_config(linux_headers, config)
+    local configdata = _get_linux_headers_config(linux_headers)
+    if configdata then
+        for _, line in ipairs(configdata:split("\n")) do
+            if line == config .. "=y" or line == "#define " .. config .. " 1" then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 -- get linux-headers sdk
 function _get_linux_headers_sdk(target)
     local linux_headersdir = target:values("linux.driver.linux-headers")
@@ -57,7 +130,7 @@ end
 
 -- get cflags from make
 function _get_cflags_from_make(target, sdkdir, builddir)
-    local key = sdkdir .. target:arch()
+    local key = table.concat({sdkdir, builddir or "", target:arch(), "v2"}, "|")
     local cflags = memcache.get2("linux.driver", key, "cflags")
     local ldflags_o = memcache.get2("linux.driver", key, "ldflags_o")
     local ldflags_ko = memcache.get2("linux.driver", key, "ldflags_ko")
@@ -95,21 +168,12 @@ module_exit(hello_exit);
         if builddir then
             table.insert(argv, "O=" .. builddir)
         end
-        if not target:is_plat(os.subhost()) then
+        if target:is_cross() then
             -- e.g.	$(MAKE) -C $(KERN_DIR) V=1 ARCH=arm64 CROSS_COMPILE=/mnt/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu- M=$(PWD) modules
-            local arch
-            if target:is_arch("arm", "armv7") then
-                arch = "arm"
-            elseif target:is_arch("arm64", "arm64-v8a") then
-                arch = "arm64"
-            elseif target:is_arch("mips") then
-                arch = "mips"
-            elseif target:is_arch("ppc", "ppc64", "powerpc", "powerpc64") then
-                arch = "powerpc"
-            end
+            local arch = _get_linux_arch(target)
             assert(arch, "unknown arch(%s)!", target:arch())
-            local cc = target:tool("cc")
-            local cross = cc:gsub("%-gcc$", "-")
+            local cross = _get_linux_cross_compile(target)
+            assert(cross, "unknown cross-compile prefix for cc(%s)!", target:tool("cc"))
             table.insert(argv, "ARCH=" .. arch)
             table.insert(argv, "CROSS_COMPILE=" .. cross)
         end
@@ -130,6 +194,11 @@ module_exit(hello_exit);
                                 plugindir = path.absolute(plugindir, sdkdir)
                             end
                             cflag = "-fplugin=" .. plugindir
+                            has_cflag = true
+                        elseif cflag == "-nostdinc" or cflag == "-undef" or cflag == "-pg"
+                            or cflag:startswith("-std=") or cflag:startswith("-O")
+                            or cflag:startswith("-g") or cflag:startswith("-U")
+                            or cflag:startswith("--param=") then
                             has_cflag = true
                         elseif cflag:startswith("-f") or cflag:startswith("-m")
                             or (cflag:startswith("-W") and not cflag:startswith("-Wp,-MMD,") and not cflag:startswith("-Wp,-MD,"))
@@ -251,6 +320,21 @@ function link(target, opt)
     local targetfile  = target:targetfile()
     local dependfile  = target:dependfile(targetfile)
     local objectfiles = target:objectfiles()
+    local linux_headers = target:data("linux.driver.linux_headers")
+    local builddir = linux_headers and _get_linux_headers_builddir(linux_headers) or nil
+    local dependfiles = table.join({}, objectfiles)
+    if builddir then
+        local kernelsymvers = path.join(builddir, "Module.symvers")
+        if os.isfile(kernelsymvers) then
+            table.insert(dependfiles, kernelsymvers)
+        end
+    end
+    if linux_headers then
+        local modulecommon = _get_linux_headers_modulecommon(linux_headers)
+        if modulecommon then
+            table.insert(dependfiles, modulecommon)
+        end
+    end
     depend.on_changed(function ()
 
         -- trace
@@ -258,9 +342,8 @@ function link(target, opt)
 
         -- get module scripts
         local modpost
-        local linux_headers = target:data("linux.driver.linux_headers")
         if linux_headers then
-            modpost = path.join(linux_headers.builddir or linux_headers.sdkdir, "scripts", "mod", "modpost")
+            modpost = path.join(builddir, "scripts", "mod", "modpost")
         end
         assert(modpost and os.isfile(modpost), "scripts/mod/modpost not found!")
 
@@ -300,7 +383,18 @@ function link(target, opt)
         -- generate target.mod.c
         local orderfile = path.join(path.directory(targetfile_o), "modules.order")
         local symversfile = path.join(path.directory(targetfile_o), "Module.symvers")
-        argv = {"-m", "-a", "-o", symversfile, "-e", "-N", "-w", "-T", orderfile}
+        argv = {"-m", "-a", "-o", symversfile, "-e", "-N", "-w"}
+        if _has_linux_headers_config(linux_headers, "CONFIG_BASIC_MODVERSIONS") then
+            table.insert(argv, "-b")
+        end
+        if _has_linux_headers_config(linux_headers, "CONFIG_EXTENDED_MODVERSIONS") then
+            table.insert(argv, "-x")
+        end
+        table.join2(argv, "-T", orderfile)
+        local kernelsymvers = path.join(builddir, "Module.symvers")
+        if os.isfile(kernelsymvers) then
+            table.join2(argv, "-i", kernelsymvers)
+        end
         io.writefile(orderfile, targetfile_o .. "\n")
         os.vrunv(modpost, argv)
 
@@ -308,10 +402,22 @@ function link(target, opt)
         local targetfile_mod_c = targetfile_o:gsub("%.o$", ".mod.c")
         local targetfile_mod_o = targetfile_o:gsub("%.o$", ".mod.o")
         local compinst = target:compiler("cc")
+        target:fileconfig_set(targetfile_mod_c, {defines = "KBUILD_BASENAME=\"" .. path.basename(targetfile_mod_c) .. "\""})
         if option.get("verbose") then
             print(compinst:compcmd(targetfile_mod_c, targetfile_mod_o, {target = target, rawargs = true}))
         end
         assert(compinst:compile(targetfile_mod_c, targetfile_mod_o, {target = target}))
+
+        -- compile .module-common.o for vermagic/retpoline metadata on modern kernels
+        local modulecommon_sourcefile = _get_linux_headers_modulecommon(linux_headers)
+        local modulecommon_objectfile
+        if modulecommon_sourcefile then
+            modulecommon_objectfile = path.join(path.directory(targetfile_o), ".module-common.o")
+            if option.get("verbose") then
+                print(compinst:compcmd(modulecommon_sourcefile, modulecommon_objectfile, {target = target, rawargs = true}))
+            end
+            assert(compinst:compile(modulecommon_sourcefile, modulecommon_objectfile, {target = target}))
+        end
 
         -- link target.ko
         argv = {}
@@ -321,10 +427,13 @@ function link(target, opt)
         end
         local targetfile_o = target:objectfile(targetfile)
         table.join2(argv, "-o", targetfile, targetfile_o, targetfile_mod_o)
+        if modulecommon_objectfile then
+            table.insert(argv, modulecommon_objectfile)
+        end
         os.mkdir(path.directory(targetfile))
         os.vrunv(ld, argv)
 
-    end, {dependfile = dependfile, lastmtime = os.mtime(target:targetfile()), files = objectfiles, changed = target:is_rebuilt()})
+    end, {dependfile = dependfile, lastmtime = os.mtime(target:targetfile()), files = dependfiles, changed = target:is_rebuilt()})
 end
 
 function install(target)
