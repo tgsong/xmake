@@ -7,14 +7,12 @@ MODULE_AUTHOR("Ruki");
 MODULE_DESCRIPTION("A simple Hello World Module");
 MODULE_ALIAS("a simplest module");
 
-static int hello_init(void)
-{
+static int hello_init(void) {
     printk(KERN_INFO "Hello World: %d\n", add(1, 2));
     return 0;
 }
 
-static void hello_exit(void)
-{
+static void hello_exit(void) {
     printk(KERN_INFO "Goodbye World\n");
 }
 
