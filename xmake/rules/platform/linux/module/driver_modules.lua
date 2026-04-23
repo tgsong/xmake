@@ -29,6 +29,17 @@ function _get_linux_headers_builddir(linux_headers)
     return linux_headers.builddir or linux_headers.sdkdir
 end
 
+function _get_linux_headers_modulecommon(linux_headers)
+    local builddir = _get_linux_headers_builddir(linux_headers)
+    local modulecommon = path.join(linux_headers.sdkdir, "scripts", "module-common.c")
+    if not os.isfile(modulecommon) and builddir ~= linux_headers.sdkdir then
+        modulecommon = path.join(builddir, "scripts", "module-common.c")
+    end
+    if os.isfile(modulecommon) then
+        return modulecommon
+    end
+end
+
 function _get_linux_headers_config(linux_headers)
     local builddir = _get_linux_headers_builddir(linux_headers)
     local key = table.concat({linux_headers.sdkdir, builddir or "", "config"}, "|")
@@ -51,7 +62,8 @@ end
 function _has_linux_headers_config(linux_headers, config)
     local configdata = _get_linux_headers_config(linux_headers)
     if configdata then
-        return configdata:find(config .. "=y", 1, true) or configdata:find("#define " .. config .. " 1", 1, true)
+        local normalized = "\n" .. configdata:gsub("\r\n", "\n"):gsub("\r", "\n") .. "\n"
+        return normalized:find("\n" .. config .. "=y\n", 1, true) or normalized:find("\n#define " .. config .. " 1\n", 1, true)
     end
 end
 
@@ -296,11 +308,8 @@ function link(target, opt)
         end
     end
     if linux_headers then
-        local modulecommon = path.join(linux_headers.sdkdir, "scripts", "module-common.c")
-        if not os.isfile(modulecommon) and builddir and builddir ~= linux_headers.sdkdir then
-            modulecommon = path.join(builddir, "scripts", "module-common.c")
-        end
-        if os.isfile(modulecommon) then
+        local modulecommon = _get_linux_headers_modulecommon(linux_headers)
+        if modulecommon then
             table.insert(dependfiles, modulecommon)
         end
     end
@@ -378,12 +387,9 @@ function link(target, opt)
         assert(compinst:compile(targetfile_mod_c, targetfile_mod_o, {target = target}))
 
         -- compile .module-common.o for vermagic/retpoline metadata on modern kernels
-        local modulecommon_sourcefile = path.join(linux_headers.sdkdir, "scripts", "module-common.c")
-        if not os.isfile(modulecommon_sourcefile) and builddir ~= linux_headers.sdkdir then
-            modulecommon_sourcefile = path.join(builddir, "scripts", "module-common.c")
-        end
+        local modulecommon_sourcefile = _get_linux_headers_modulecommon(linux_headers)
         local modulecommon_objectfile
-        if os.isfile(modulecommon_sourcefile) then
+        if modulecommon_sourcefile then
             modulecommon_objectfile = path.join(path.directory(targetfile_o), ".module-common.o")
             if option.get("verbose") then
                 print(compinst:compcmd(modulecommon_sourcefile, modulecommon_objectfile, {target = target, rawargs = true}))
