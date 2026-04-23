@@ -1,7 +1,7 @@
 set_plat("linux")
 
-option("linux-headers", {showmenu = true, description = "Set kernel headers/source tree path."})
-option("linux-builddir", {showmenu = true, description = "Set kernel build/output tree path."})
+option("linux-headers", {description = "Set kernel headers/source tree path."})
+option("linux-builddir", {description = "Set kernel build/output tree path."})
 
 -- Example:
 -- xmake f -p linux -a arm64 --cc=/path/to/aarch64-linux-gnu-gcc \
