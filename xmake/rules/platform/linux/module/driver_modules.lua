@@ -29,6 +29,31 @@ function _get_linux_headers_builddir(linux_headers)
     return linux_headers.builddir or linux_headers.sdkdir
 end
 
+function _get_linux_arch(target)
+    if target:is_arch("arm", "armv7") then
+        return "arm"
+    elseif target:is_arch("arm64", "arm64-v8a") then
+        return "arm64"
+    elseif target:is_arch("x86", "i386") then
+        return "x86"
+    elseif target:is_arch("x86_64", "x64") then
+        return "x86_64"
+    elseif target:is_arch("mips", "mipsel", "mips64", "mips64el") then
+        return "mips"
+    elseif target:is_arch("ppc", "ppc64", "powerpc", "powerpc64") then
+        return "powerpc"
+    elseif target:is_arch("riscv64", "riscv32") then
+        return "riscv"
+    end
+end
+
+function _get_linux_cross_compile(target)
+    local cc = target:tool("cc")
+    if cc then
+        return cc:match("^(.*%-)gcc[%-%d%.]*$")
+    end
+end
+
 function _get_linux_headers_modulecommon(linux_headers)
     local builddir = _get_linux_headers_builddir(linux_headers)
     local modulecommon = path.join(linux_headers.sdkdir, "scripts", "module-common.c")
@@ -137,21 +162,12 @@ module_exit(hello_exit);
         if builddir then
             table.insert(argv, "O=" .. builddir)
         end
-        if not target:is_plat(os.subhost()) then
+        if not target:is_plat(os.subhost()) or not target:is_arch(os.subarch()) then
             -- e.g.	$(MAKE) -C $(KERN_DIR) V=1 ARCH=arm64 CROSS_COMPILE=/mnt/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu- M=$(PWD) modules
-            local arch
-            if target:is_arch("arm", "armv7") then
-                arch = "arm"
-            elseif target:is_arch("arm64", "arm64-v8a") then
-                arch = "arm64"
-            elseif target:is_arch("mips") then
-                arch = "mips"
-            elseif target:is_arch("ppc", "ppc64", "powerpc", "powerpc64") then
-                arch = "powerpc"
-            end
+            local arch = _get_linux_arch(target)
             assert(arch, "unknown arch(%s)!", target:arch())
-            local cc = target:tool("cc")
-            local cross = cc:gsub("%-gcc$", "-")
+            local cross = _get_linux_cross_compile(target)
+            assert(cross, "unknown cross-compile prefix for cc(%s)!", target:tool("cc"))
             table.insert(argv, "ARCH=" .. arch)
             table.insert(argv, "CROSS_COMPILE=" .. cross)
         end
