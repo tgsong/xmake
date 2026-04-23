@@ -56,11 +56,13 @@ end
 
 function _get_linux_headers_modulecommon(linux_headers)
     local builddir = _get_linux_headers_builddir(linux_headers)
-    local modulecommon = path.join(linux_headers.sdkdir, "scripts", "module-common.c")
-    if not os.isfile(modulecommon) and builddir ~= linux_headers.sdkdir then
-        modulecommon = path.join(builddir, "scripts", "module-common.c")
+    local sdkdir = linux_headers.sdkdir and path.normalize(linux_headers.sdkdir) or nil
+    local normalized_builddir = builddir and path.normalize(builddir) or nil
+    local modulecommon = sdkdir and path.join(sdkdir, "scripts", "module-common.c") or nil
+    if modulecommon and not os.isfile(modulecommon) and normalized_builddir and normalized_builddir ~= sdkdir then
+        modulecommon = path.join(normalized_builddir, "scripts", "module-common.c")
     end
-    if os.isfile(modulecommon) then
+    if modulecommon and os.isfile(modulecommon) then
         return modulecommon
     end
 end
@@ -87,9 +89,14 @@ end
 function _has_linux_headers_config(linux_headers, config)
     local configdata = _get_linux_headers_config(linux_headers)
     if configdata then
-        local normalized = "\n" .. configdata:gsub("\r\n", "\n"):gsub("\r", "\n") .. "\n"
-        return normalized:find("\n" .. config .. "=y\n", 1, true) or normalized:find("\n#define " .. config .. " 1\n", 1, true)
+        local normalized = configdata:gsub("\r\n", "\n"):gsub("\r", "\n")
+        for _, line in ipairs(normalized:split("\n")) do
+            if line == config .. "=y" or line == "#define " .. config .. " 1" then
+                return true
+            end
+        end
     end
+    return false
 end
 
 -- get linux-headers sdk
@@ -162,7 +169,7 @@ module_exit(hello_exit);
         if builddir then
             table.insert(argv, "O=" .. builddir)
         end
-        if not target:is_plat(os.subhost()) or not target:is_arch(os.subarch()) then
+        if target:is_cross() then
             -- e.g.	$(MAKE) -C $(KERN_DIR) V=1 ARCH=arm64 CROSS_COMPILE=/mnt/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu- M=$(PWD) modules
             local arch = _get_linux_arch(target)
             assert(arch, "unknown arch(%s)!", target:arch())
