@@ -361,14 +361,15 @@ function link(target, opt)
         if ldflags_o then
             table.join2(argv, ldflags_o)
         end
-        local targetfile_o = target:objectfile(targetfile)
+        local targetfile_base = path.join(path.directory(target:objectfile(targetfile)), target:basename())
+        local targetfile_o = targetfile_base .. ".o"
         table.join2(argv, "-o", targetfile_o)
         table.join2(argv, objectfiles)
         os.mkdir(path.directory(targetfile_o))
         os.vrunv(ld, argv)
 
         -- generate target.mod
-        local targetfile_mod = targetfile_o:gsub("%.o$", ".mod")
+        local targetfile_mod = targetfile_base .. ".mod"
         io.writefile(targetfile_mod, table.concat(objectfiles, "\n") .. "\n\n")
 
         -- generate .sourcename.o.cmd
@@ -399,8 +400,8 @@ function link(target, opt)
         os.vrunv(modpost, argv)
 
         -- compile target.mod.c
-        local targetfile_mod_c = targetfile_o:gsub("%.o$", ".mod.c")
-        local targetfile_mod_o = targetfile_o:gsub("%.o$", ".mod.o")
+        local targetfile_mod_c = targetfile_base .. ".mod.c"
+        local targetfile_mod_o = targetfile_base .. ".mod.o"
         local compinst = target:compiler("cc")
         target:fileconfig_set(targetfile_mod_c, {defines = "KBUILD_BASENAME=\"" .. path.basename(targetfile_mod_c) .. "\""})
         if option.get("verbose") then
@@ -425,7 +426,6 @@ function link(target, opt)
         if ldflags_ko then
             table.join2(argv, ldflags_ko)
         end
-        local targetfile_o = target:objectfile(targetfile)
         table.join2(argv, "-o", targetfile, targetfile_o, targetfile_mod_o)
         if modulecommon_objectfile then
             table.insert(argv, modulecommon_objectfile)
