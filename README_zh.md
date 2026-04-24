@@ -216,6 +216,7 @@ $ xmake f --menu
 * Portage on Gentoo/Linux (portage::libhandy)
 * Nimble for nimlang (nimble::zip >1.3)
 * Cargo for rust (cargo::base64 0.13.0)
+* NuGet (nuget::Humanizer.Core 2.14.1)
 
 ### 包管理特性
 
