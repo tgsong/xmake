@@ -60,7 +60,7 @@ function _get_customcmd(package, installcmds, cmd)
                     dstfile = path.join(dstfile, path.filename(srcfile))
                 end
             end
-            table.insert(installcmds, string.format("install -Dpm0644 \"%s\" \"%s\"", srcfile, dstfile))
+            table.insert(installcmds, string.format("install -Dpm0644 \"%s\" \"%s\"", path.absolute(srcfile), dstfile))
         end
     elseif kind == "rm" then
         local filepath = _translate_filepath(package, cmd.filepath)
